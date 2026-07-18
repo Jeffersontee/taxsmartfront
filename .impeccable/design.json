@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-17T20:58:00Z",
+  "title": "Design System: Tax Smart Contabilidade",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Laranja Tax Smart", "canonical": "#ff3300", "tonalRamp": ["#330a00", "#661400", "#991f00", "#cc2900", "#ff3300", "#ff5c33", "#ff8566", "#ffad99"] },
+      "secondary": { "role": "secondary", "displayName": "Cinza Alternado", "canonical": "#f4f5f8", "tonalRamp": ["#1a1c22", "#343844", "#4e5466", "#687088", "#828caa", "#a4adbe", "#c6cdd3", "#f4f5f8"] },
+      "dark-bg": { "role": "neutral", "displayName": "Preto Premium", "canonical": "#050505", "tonalRamp": ["#000000", "#050505", "#111111", "#222222", "#333333", "#555555", "#777777", "#999999"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Títulos hero e afirmações de alto impacto." },
+      "kicker": { "displayName": "Kicker", "purpose": "Eyebrows rastreáveis sobre os blocos (Em caixa alta)." }
+    },
+    "shadows": [
+      { "name": "glow-primary", "value": "0 8px 32px rgba(255, 51, 0, 0.3)", "purpose": "Efeito de luz neon em botões de ação e hover de cards." }
+    ],
+    "motion": [
+      { "name": "slideUpFade", "value": "0.6s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Entrada em cascata dos elementos na tela." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "992px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Glow Button",
+      "kind": "button",
+      "refersTo": "button-primary-glow",
+      "description": "Call to action principal em seções escuras.",
+      "html": "<button class=\"ds-btn-primary-glow\">Fale com um Especialista</button>",
+      "css": ".ds-btn-primary-glow { background: #ff3300; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; padding: 18px 40px; border-radius: 50px; border: none; box-shadow: 0 8px 32px rgba(255, 51, 0, 0.3); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; } .ds-btn-primary-glow:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 51, 0, 0.5); }"
+    },
+    {
+      "name": "Bento Item",
+      "kind": "card",
+      "refersTo": "bento-item",
+      "description": "Bloco de serviços da grade assimétrica.",
+      "html": "<div class=\"ds-bento-item\"><div class=\"ds-icon-wrapper\">X</div><h3>ESTRATÉGIA</h3><p>Desenvolvimento de ações.</p></div>",
+      "css": ".ds-bento-item { background-color: #f4f5f8; padding: 40px; border-radius: 32px; text-align: left; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid transparent; } .ds-icon-wrapper { width: 64px; height: 64px; background-color: rgba(255, 51, 0, 0.1); color: #ff3300; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; transition: all 0.4s ease; font-size: 2rem; font-weight: bold; } .ds-bento-item h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; color: #333333; margin: 0 0 12px; transition: color 0.3s ease; } .ds-bento-item p { font-family: 'Inter', sans-serif; font-size: 1rem; color: #666666; line-height: 1.6; margin: 0; transition: color 0.3s ease; } .ds-bento-item:hover { background-color: #ff3300; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(255, 51, 0, 0.2); } .ds-bento-item:hover .ds-icon-wrapper { background-color: #ffffff; } .ds-bento-item:hover h3, .ds-bento-item:hover p { color: #ffffff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Revolução Laranja",
+    "overview": "O design da Tax Smart abandona a estética burocrática clássica (fundos cinzas e paredes de texto). A nova versão foca no contraste extremo de um Dark Mode premium (primeira dobra) que valoriza o laranja vibrante da marca. O sistema usa Bento Grids ultra arredondados e a tipografia geométrica 'Outfit' para construir autoridade, tecnologia e confiança sem o peso do tradicionalismo.",
+    "keyCharacteristics": [
+      "Alto Contraste: Uso de áreas em Preto Absoluto para destacar o Laranja Neon.",
+      "Tipografia Agressiva: A fonte Outfit nos títulos injeta confiança e juventude corporativa.",
+      "Layout Dinâmico: Bento Grids com hover inversivo (fundo cinza para laranja).",
+      "Animação como Voz: Tudo entra em cena via slideUpFade, dando percepção de performance."
+    ],
+    "rules": [
+      {
+        "name": "The Dark Impact Rule",
+        "body": "A primeira dobra (Hero Section) das páginas institucionais adota fundos ultra escuros (#050505) com a tipografia branca e destaque em Laranja, comunicando aspecto premium.",
+        "section": "colors"
+      },
+      {
+        "name": "The Outfit Strike Rule",
+        "body": "A fonte Outfit está reservada para os Display Titles e Kickers, operando no modo Bold (700/800). Todo o texto longo continua na Inter para garantir a legibilidade.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glow Fallback Rule",
+        "body": "Botões primários no ambiente Dark recebem um glow (sombra espalhada) na cor laranja, substituindo o conceito de drop-shadow puro por iluminação.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar a tipografia Outfit em h1, h2, e Kickers em caixa alta.",
+      "Do usar animações em cascata (slideUpFade) respeitando atrasos de 100ms a 400ms.",
+      "Do estruturar seções usando Bento Grid com bordas de 32px e hover state inversivo."
+    ],
+    "donts": [
+      "Don't usar paredes de texto longas sem interrupções visuais, espaçamentos ou listas.",
+      "Don't voltar para os 'ion-cards' engessados do Ionic sem tratamentos de raio ou padding customizados.",
+      "Don't colocar sombras comuns nos cards da grade Bento fora do hover state (eles devem ser flat e só elevar na interação)."
+    ]
+  }
+}

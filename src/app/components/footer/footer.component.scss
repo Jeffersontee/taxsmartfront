@@ -1,0 +1,54 @@
+.footer-section {
+  background-color: #f9f9f9;
+  padding: 60px 20px 20px;
+  color: #555555;
+  border-top: 1px solid #e0e0e0;
+
+  .footer-title {
+    color: #111111;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+
+    ion-icon {
+      color: var(--ion-color-primary);
+      font-size: 1.2rem;
+    }
+  }
+
+  .social-links {
+    margin-top: 20px;
+
+    a {
+      display: inline-block;
+      margin-right: 15px;
+      color: #333333;
+      font-size: 1.8rem;
+      transition: color 0.3s;
+
+      &:hover {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-section p {
+    justify-content: center;
+  }
+}
+@media (min-width: 769px) {
+  .footer-section p {
+    justify-content: flex-start;
+  }
+}

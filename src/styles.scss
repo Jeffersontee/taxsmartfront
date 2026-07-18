@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   GLOBAL FIX PARA CONTEÚDO RASPADO (SCRAPED)
+   ========================================================================== */
+.extracted-content * {
+  /* Força a cor do texto para escuro (modo light), removendo o black inline */
+  color: #333333 !important;
+  font-family: 'Inter', sans-serif !important;
+  background-color: transparent !important;
+  line-height: 1.6 !important;
+  word-wrap: break-word;
+}
+
+/* Títulos devem herdar a cor principal (Laranja) */
+.extracted-content h1,
+.extracted-content h2,
+.extracted-content h3,
+.extracted-content h1 *,
+.extracted-content h2 *,
+.extracted-content h3 * {
+  color: var(--ion-color-primary) !important;
+}
+
+/* Imagens, tabelas e iframes responsivos */
+.extracted-content img,
+.extracted-content table,
+.extracted-content iframe {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   GLOBAL TYPOGRAPHY HIERARCHY
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6,
+.display-title, .page-title, .section-title, .banner-title, ion-card-title {
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+}
+
+/* ==========================================================================
+   GLOBAL Z-INDEX FIX FOR DROPDOWNS
+   ========================================================================== */
+ion-content {
+  z-index: 0 !important;
+}

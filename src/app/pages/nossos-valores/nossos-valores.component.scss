@@ -1,0 +1,96 @@
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up-fade-1 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 100ms; opacity: 0; }
+.slide-up-fade-2 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 200ms; opacity: 0; }
+.slide-up-fade-3 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 300ms; opacity: 0; }
+
+.valores-section {
+  padding: 80px 0;
+  background-color: #ffffff;
+  
+  .display-title {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    color: #333333;
+    margin: 0 0 16px;
+    letter-spacing: -0.03em;
+  }
+  
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    color: #555555;
+    margin: 0 auto 64px;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(6, 1fr);
+    
+    .bento-item {
+      &:nth-child(1), &:nth-child(2) {
+        grid-column: span 3;
+      }
+      &:nth-child(3), &:nth-child(4), &:nth-child(5) {
+        grid-column: span 2;
+      }
+    }
+  }
+}
+
+.bento-item {
+  background-color: #f4f5f8; // Cinza Alternado
+  padding: 40px;
+  border-radius: 24px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+  
+  &:hover {
+    background-color: #ff3300;
+    transform: translateY(-8px);
+    
+    h3, p, ion-icon {
+      color: #ffffff;
+    }
+  }
+  
+  ion-icon {
+    font-size: 3rem;
+    color: #ff3300;
+    margin-bottom: 24px;
+    transition: color 0.3s ease;
+  }
+  
+  h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333333;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+    transition: color 0.3s ease;
+  }
+  
+  p {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #555555;
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+}

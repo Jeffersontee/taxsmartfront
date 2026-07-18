@@ -1,0 +1,113 @@
+<ion-app>
+  <!-- Partículas Animadas de Clique -->
+  @for (p of particles; track p.id) {
+    <div class="click-particle" [style.left.px]="p.x" [style.top.px]="p.y">
+      <ion-icon name="arrow-up-outline"></ion-icon>
+    </div>
+  }
+
+  <!-- Menu Lateral Mobile -->
+  <ion-menu contentId="main-page" type="overlay">
+    <ion-header>
+      <ion-toolbar color="secondary">
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content color="secondary">
+      <ion-list lines="none" style="background: transparent">
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button (click)="scrollTo('main-content')"><ion-label>HOME</ion-label></ion-item>
+
+          <ion-item-divider color="secondary">SOBRE NÓS</ion-item-divider>
+          <ion-item button (click)="scrollTo('quem-somos')"><ion-label>Quem Somos</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('nossos-valores')"><ion-label>Nossos Valores</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('ramos-de-atividades')">
+            <ion-label>Ramos de Atividades</ion-label>
+          </ion-item>
+
+          <ion-item-divider color="secondary">SERVIÇOS</ion-item-divider>
+          <ion-item button (click)="scrollTo('servicos')"><ion-label>Serviços</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('servicos')"><ion-label>Fiscal</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('servicos')"><ion-label>Contábil</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('servicos')"><ion-label>Departamento Pessoal</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('servicos')"><ion-label>Legalização</ion-label></ion-item>
+
+          <ion-item-divider color="secondary">CONSULTORIA</ion-item-divider>
+          <ion-item button (click)="scrollTo('consultoria')"><ion-label>Consultoria</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('contabilidade')"><ion-label>Contabilidade</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('servicos-tributario')"><ion-label>Tributário</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('consultoria-trabalhista')"><ion-label>Trabalhista</ion-label></ion-item>
+          <ion-item button (click)="scrollTo('planejamento-financeiro')">
+            <ion-label>Planejamento Financeiro</ion-label>
+          </ion-item>
+
+          <ion-item-divider color="secondary">CONTATO</ion-item-divider>
+          <ion-item button (click)="scrollTo('contato')"><ion-label>Contato</ion-label></ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Conteúdo Principal -->
+  <div class="ion-page" id="main-page">
+    <!-- HEADER DESKTOP & MOBILE -->
+    <ion-header class="ion-no-border">
+      <div class="custom-toolbar top-nav">
+        <div class="logo-wrapper" routerLink="/">
+          <span class="logo-text">Tax</span>
+          <div class="logo-s-wrapper">
+            <span class="logo-s">S</span>
+            <ion-icon name="arrow-up-outline" class="logo-arrow"></ion-icon>
+          </div>
+          <span class="logo-text">mart</span>
+        </div>
+
+        <div class="desktop-nav ion-hide-md-down">
+          <ion-button (click)="scrollTo('main-content')" color="dark" fill="clear">HOME</ion-button>
+
+          <div class="dropdown-wrapper">
+            <ion-button (click)="scrollTo('quem-somos')" color="dark" fill="clear">SOBRE NÓS</ion-button>
+            <div class="dropdown-menu">
+              <a href="javascript:void(0)" (click)="scrollTo('quem-somos')">Quem Somos</a>
+              <a href="javascript:void(0)" (click)="scrollTo('nossos-valores')">Nossos Valores</a>
+              <a href="javascript:void(0)" (click)="scrollTo('ramos-de-atividades')">Ramos de Atividades</a>
+            </div>
+          </div>
+
+          <div class="dropdown-wrapper">
+            <ion-button (click)="scrollTo('servicos')" color="dark" fill="clear">SERVIÇOS</ion-button>
+            <div class="dropdown-menu">
+              <a href="javascript:void(0)" (click)="scrollTo('servicos')">Serviços</a>
+              <a href="javascript:void(0)" (click)="scrollTo('servicos')">Fiscal</a>
+              <a href="javascript:void(0)" (click)="scrollTo('servicos')">Contábil</a>
+              <a href="javascript:void(0)" (click)="scrollTo('servicos')">Dept. Pessoal</a>
+              <a href="javascript:void(0)" (click)="scrollTo('servicos')">Legalização</a>
+            </div>
+          </div>
+
+          <div class="dropdown-wrapper">
+            <ion-button (click)="scrollTo('consultoria')" color="dark" fill="clear">CONSULTORIA</ion-button>
+            <div class="dropdown-menu">
+              <a href="javascript:void(0)" (click)="scrollTo('consultoria')">Consultoria</a>
+              <a href="javascript:void(0)" (click)="scrollTo('contabilidade')">Contabilidade</a>
+              <a href="javascript:void(0)" (click)="scrollTo('servicos-tributario')">Tributário</a>
+              <a href="javascript:void(0)" (click)="scrollTo('consultoria-trabalhista')">Trabalhista</a>
+              <a href="javascript:void(0)" (click)="scrollTo('planejamento-financeiro')">Planejamento</a>
+            </div>
+          </div>
+
+          <ion-button (click)="scrollTo('contato-page')" color="dark" fill="clear">CONTATO</ion-button>
+        </div>
+
+        <div class="mobile-nav ion-hide-md-up">
+          <ion-menu-button color="dark"></ion-menu-button>
+        </div>
+      </div>
+    </ion-header>
+
+    <!-- PÁGINAS RENDERIZADAS AQUI -->
+    <main class="router-container" style="flex: 1; position: relative">
+      <ion-router-outlet></ion-router-outlet>
+    </main>
+  </div>
+</ion-app>

@@ -1,0 +1,31 @@
+/**
+ * Ionic Light Theme & TaxSmart Colors
+ * -----------------------------------------------------
+ */
+
+:root {
+  /** primary (Laranja TaxSmart) **/
+  --ion-color-primary: #ff3300;
+  --ion-color-primary-rgb: 255, 51, 0;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e02d00;
+  --ion-color-primary-tint: #ff471a;
+
+  /** secondary (Fundo Claro para Seções Alternadas) **/
+  --ion-color-secondary: #f4f5f8;
+  --ion-color-secondary-rgb: 244, 245, 248;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #d7d8da;
+  --ion-color-secondary-tint: #f5f6f9;
+
+  /** Background principal forçado para branco para garantir Light Mode **/
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+
+  --ion-text-color: #333333;
+  --ion-text-color-rgb: 51, 51, 51;
+
+  --ion-font-family: 'Inter', sans-serif;
+}

@@ -1,0 +1,157 @@
+<ion-content id="home-content">
+  <!-- DARK HERO SECTION -->
+  <div class="hero-section dark-mode">
+    <div class="hero-overlay"></div>
+    <ion-grid class="hero-grid" fixed>
+      <ion-row class="ion-align-items-center ion-justify-content-center">
+        <ion-col size="12" size-md="10" class="ion-text-center context-content">
+          <h4 class="kicker slide-up-fade-1">A Revolução Laranja</h4>
+          <h1 class="hero-title slide-up-fade-2">
+            Mais do que números, entregamos<br>
+            <span class="highlight">confiança e tecnologia.</span>
+          </h1>
+          <p class="hero-subtitle slide-up-fade-3">
+            Somos especialistas na saúde contábil e financeira do seu negócio. Simplificamos sua operação para você focar no que realmente importa: crescer.
+          </p>
+          <div class="hero-actions slide-up-fade-4">
+            <button class="btn-primary-glow" (click)="setContactModalOpen(true)">
+              Falar com um Especialista
+            </button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- INTENTION MODAL -->
+  <ion-modal [isOpen]="isContactModalOpen()" (didDismiss)="setContactModalOpen(false)" class="contact-modal">
+    <ng-template>
+      <ion-header class="ion-no-border modal-header">
+        <ion-toolbar color="transparent">
+          <ion-title>Como prefere falar?</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setContactModalOpen(false)">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding modal-content dark-mode">
+        <div class="modal-body">
+          <a class="modal-btn whatsapp-btn" href="https://api.whatsapp.com/send/?phone=5511989321207" target="_blank" (click)="setContactModalOpen(false)">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            <div>
+              <strong>Chamar no WhatsApp</strong>
+              <span>Resposta em minutos</span>
+            </div>
+          </a>
+          
+          <a class="modal-btn email-btn" href="mailto:contato@taxsmart.com.br" (click)="setContactModalOpen(false)">
+            <ion-icon name="mail-outline"></ion-icon>
+            <div>
+              <strong>Enviar E-mail</strong>
+              <span>Ideal para propostas completas</span>
+            </div>
+          </a>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- DIFERENCIAIS (Bento Grid) -->
+  <div class="features-section">
+    <ion-grid fixed>
+      <ion-row class="ion-text-center">
+        <ion-col size="12" class="context-content section-header">
+          <h4 class="kicker">O que fazemos</h4>
+          <h2 class="display-title">Tiramos o peso da burocracia<br>das suas costas.</h2>
+        </ion-col>
+      </ion-row>
+
+      <div class="bento-grid ion-margin-top">
+        <div class="bento-item slide-up-fade-1">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+          </div>
+          <h3>ESTRATÉGIA</h3>
+          <p>Desenvolvimento de ações estratégicas focadas no seu segmento de mercado para aprimorar o modelo de gestão.</p>
+        </div>
+
+        <div class="bento-item slide-up-fade-2">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <path d="M8 14h.01"></path>
+              <path d="M12 14h.01"></path>
+              <path d="M16 14h.01"></path>
+              <path d="M8 18h.01"></path>
+              <path d="M12 18h.01"></path>
+              <path d="M16 18h.01"></path>
+            </svg>
+          </div>
+          <h3>PLANEJAMENTO</h3>
+          <p>As melhores escolhas financeiras e tributárias para garantir lucro e expansão saudável a longo prazo.</p>
+        </div>
+
+        <div class="bento-item slide-up-fade-3">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+              <polyline points="16 7 22 7 22 13"></polyline>
+            </svg>
+          </div>
+          <h3>CRESCIMENTO</h3>
+          <p>Métricas precisas (KPIs) para maximizar o retorno sobre o capital empregado dos sócios e acionistas.</p>
+        </div>
+      </div>
+    </ion-grid>
+  </div>
+
+  <!-- LAZY LOADED COMPONENTS (Performance) -->
+  <div id="quem-somos">
+    @defer (on viewport) {
+      <app-quem-somos></app-quem-somos>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="nossos-valores">
+    @defer (on viewport) {
+      <app-nossos-valores></app-nossos-valores>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="ramos-de-atividades">
+    @defer (on viewport) {
+      <app-ramos-de-atividades></app-ramos-de-atividades>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="servicos">
+    @defer (on viewport) {
+      <app-servicos></app-servicos>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="consultoria">
+    @defer (on viewport) {
+      <app-consultoria></app-consultoria>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="contato-page">
+    @defer (on viewport) {
+      <app-contato></app-contato>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  @defer (on viewport) {
+    <app-footer></app-footer>
+  } @placeholder { <div style="height: 200px;"></div> }
+</ion-content>
