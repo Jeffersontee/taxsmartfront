@@ -62,3 +62,16 @@ src/lib/impeccable/ImpeccableLiveRoot.svelte
 src/lib/impeccable/__runtime.js
 src/lib/impeccable/[0-9a-f]*/
 # impeccable-live-ignore-end
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Ionic build output
+/www/
+
+# Temporary files
+temp_*.md
+*.tmp
