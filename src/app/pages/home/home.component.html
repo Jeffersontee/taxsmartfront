@@ -1,6 +1,6 @@
 <ion-content id="home-content">
   <!-- DARK HERO SECTION -->
-  <div class="hero-section dark-mode">
+  <div id="top" class="hero-section dark-mode">
     <div class="hero-overlay"></div>
     <ion-grid class="hero-grid" fixed>
       <ion-row class="ion-align-items-center ion-justify-content-center">
@@ -136,6 +136,30 @@
   <div id="servicos">
     @defer (on viewport) {
       <app-servicos></app-servicos>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="fiscal">
+    @defer (on viewport) {
+      <app-fiscal></app-fiscal>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="contabil">
+    @defer (on viewport) {
+      <app-contabilidade></app-contabilidade>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="departamento-pessoal">
+    @defer (on viewport) {
+      <app-departamento-pessoal></app-departamento-pessoal>
+    } @placeholder { <div style="height: 400px;"></div> }
+  </div>
+
+  <div id="legalizacao">
+    @defer (on viewport) {
+      <app-legalizacao></app-legalizacao>
     } @placeholder { <div style="height: 400px;"></div> }
   </div>
 

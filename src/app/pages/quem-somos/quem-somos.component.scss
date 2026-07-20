@@ -1,32 +1,21 @@
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(32px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.slide-up-fade-1 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 100ms; opacity: 0; }
-.slide-up-fade-2 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 200ms; opacity: 0; }
-.slide-up-fade-3 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 300ms; opacity: 0; }
+.slide-up-fade-1 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 100ms; opacity: 0; }
+.slide-up-fade-2 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 200ms; opacity: 0; }
+.slide-up-fade-3 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 300ms; opacity: 0; }
 
 .modern-section {
-  padding: 80px 0;
-  background-color: var(--ion-background-color);
-  min-height: calc(100vh - 60px);
-  display: flex;
-  align-items: center;
+  padding: 120px 0 80px;
+  background-color: #050505; // Dark Impact Rule
+  min-height: 100vh;
+  color: #ffffff;
 }
 
 .content-row {
-  @media (min-width: 992px) {
-    min-height: 500px;
-  }
-}
-
-.context-col {
-  margin-bottom: 48px;
-  @media (min-width: 992px) {
-    margin-bottom: 0;
-    padding-right: 48px;
-  }
+  margin-bottom: 40px;
 }
 
 .context-content {
@@ -34,31 +23,41 @@
     font-family: 'Outfit', sans-serif;
     font-size: 1rem;
     font-weight: 700;
-    color: var(--ion-color-primary);
+    color: #ff3300;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin: 0 0 16px;
+    margin: 0 0 24px;
   }
   
   .display-title {
     font-family: 'Outfit', sans-serif;
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(3rem, 6vw, 4.5rem);
     font-weight: 800;
-    color: var(--ion-text-color);
+    color: #ffffff;
     line-height: 1.1;
     letter-spacing: -0.03em;
-    margin: 0 0 24px;
+    margin: 0 0 32px;
     
     .highlight {
-      color: var(--ion-color-primary);
+      color: #ff3300;
     }
   }
   
-  .subtitle {
+  .lead-text {
+    font-family: 'Inter', sans-serif;
     font-size: 1.25rem;
-    color: var(--ion-color-secondary-shade);
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
-    margin: 0;
+    margin: 0 0 32px;
+  }
+  
+  .mission-statement {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    padding-left: 20px;
+    border-left: 3px solid #ff3300;
   }
 }
 
@@ -69,18 +68,125 @@
   
   .brand-shape {
     width: 100%;
-    max-width: 400px;
+    max-width: 360px;
     aspect-ratio: 1;
-    background: linear-gradient(135deg, rgba(255,51,0,0.1) 0%, rgba(255,51,0,0.02) 100%);
+    background: linear-gradient(135deg, rgba(255,51,0,0.15) 0%, rgba(255,51,0,0.02) 100%);
     border-radius: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     transform: rotate(-3deg);
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+    border: 1px solid rgba(255, 51, 0, 0.2);
+    
+    .hero-icon {
+      font-size: 120px;
+      color: #ff3300;
+      opacity: 0.8;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
     
     &:hover {
       transform: rotate(0deg) scale(1.02);
+      box-shadow: 0 20px 60px rgba(255, 51, 0, 0.15);
+      
+      .hero-icon {
+        transform: scale(1.1);
+        opacity: 1;
+      }
     }
+  }
+}
+
+// Bento Grid
+.values-row {
+  margin-top: 40px;
+}
+
+.bento-col {
+  margin-bottom: 24px;
+}
+
+.bento-item {
+  background-color: #121212;
+  border-radius: 32px;
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: default;
+  
+  .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(255, 51, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    transition: all 0.4s ease;
+    
+    ion-icon {
+      font-size: 28px;
+      color: #ff3300;
+      transition: all 0.4s ease;
+    }
+  }
+  
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+    transition: color 0.4s ease;
+  }
+  
+  p {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+    margin: 0;
+    transition: color 0.4s ease;
+  }
+  
+  // The Hover Inversion Rule
+  &:hover {
+    background-color: #ff3300;
+    box-shadow: 0 20px 40px rgba(255, 51, 0, 0.2);
+    transform: translateY(-8px);
+    border-color: #ff3300;
+    
+    .icon-wrapper {
+      background: rgba(255,255,255,0.2);
+      
+      ion-icon {
+        color: #ffffff;
+      }
+    }
+    
+    h3, p {
+      color: #ffffff;
+    }
+    
+    p {
+      opacity: 0.9;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .modern-section {
+    display: flex;
+    align-items: center;
+  }
+  
+  .context-col {
+    padding-right: 48px;
   }
 }

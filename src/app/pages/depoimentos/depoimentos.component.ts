@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { businessOutline, listOutline } from 'ionicons/icons';
+import { playCircleOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-legalizacao',
+  selector: 'app-depoimentos',
   standalone: true,
   imports: [IonGrid, IonRow, IonCol, IonIcon],
-  templateUrl: './legalizacao.component.html',
-  styleUrls: ['./legalizacao.component.scss'],
+  templateUrl: './depoimentos.component.html',
+  styleUrls: ['./depoimentos.component.scss'],
 })
-export class LegalizacaoComponent implements OnInit {
+export class DepoimentosComponent  implements OnInit {
+
   constructor() {
-    addIcons({ businessOutline, listOutline });
+    addIcons({ playCircleOutline });
   }
+
   ngOnInit() {}
+
 }

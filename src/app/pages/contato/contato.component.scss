@@ -136,8 +136,14 @@
 
       .method-value {
         font-family: 'Inter', sans-serif;
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 500;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        
+        @media (min-width: 768px) {
+          font-size: 1.125rem;
+        }
       }
     }
   }

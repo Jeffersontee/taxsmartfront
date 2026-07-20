@@ -36,7 +36,7 @@ export const routes: Routes = [
   {
     path: 'contabil',
     loadComponent: () =>
-      import('./pages/contabil/contabil.component').then((m) => m.ContabilComponent),
+      import('./pages/contabilidade/contabilidade.component').then((m) => m.ContabilidadeComponent),
   },
   {
     path: 'departamento-pessoal',

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { heart } from 'ionicons/icons';
 
 @Component({
   selector: 'app-footer',
@@ -8,4 +10,8 @@ import { IonicModule } from '@ionic/angular';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
-export class FooterComponent {}
+export class FooterComponent {
+  constructor() {
+    addIcons({ heart });
+  }
+}

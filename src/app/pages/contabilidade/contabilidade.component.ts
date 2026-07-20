@@ -1,15 +1,18 @@
-import { IonGrid, IonRow, IonCol, IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
+import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { pieChartOutline, trendingUpOutline } from 'ionicons/icons';
 
 @Component({
-  standalone: true,
   selector: 'app-contabilidade',
+  standalone: true,
+  imports: [IonGrid, IonRow, IonCol, IonIcon],
   templateUrl: './contabilidade.component.html',
   styleUrls: ['./contabilidade.component.scss'],
-  imports: [IonGrid, IonRow, IonCol, IonCard, IonCardContent],
 })
 export class ContabilidadeComponent implements OnInit {
-  constructor() {}
-
+  constructor() {
+    addIcons({ pieChartOutline, trendingUpOutline });
+  }
   ngOnInit() {}
 }

@@ -19,8 +19,12 @@ import { ServicosComponent } from '../servicos/servicos.component';
 import { RamosDeAtividadesComponent } from '../ramos-de-atividades/ramos-de-atividades.component';
 import { ConsultoriaComponent } from '../consultoria/consultoria.component';
 import { ContatoComponent } from '../contato/contato.component';
+import { FiscalComponent } from '../fiscal/fiscal.component';
+import { DepartamentoPessoalComponent } from '../departamento-pessoal/departamento-pessoal.component';
+import { LegalizacaoComponent } from '../legalizacao/legalizacao.component';
 import { addIcons } from 'ionicons';
 import { logoWhatsapp, mailOutline, closeOutline } from 'ionicons/icons';
+import { ContabilidadeComponent } from '../contabilidade/contabilidade.component';
 
 @Component({
   selector: 'app-home',
@@ -44,6 +48,10 @@ import { logoWhatsapp, mailOutline, closeOutline } from 'ionicons/icons';
     RamosDeAtividadesComponent,
     ConsultoriaComponent,
     ContatoComponent,
+    FiscalComponent,
+    ContabilidadeComponent,
+    DepartamentoPessoalComponent,
+    LegalizacaoComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

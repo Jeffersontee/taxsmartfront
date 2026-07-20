@@ -1,86 +1,71 @@
+.section-padding { padding: 80px 20px; }
+.bg-light { background-color: #f8f9fa; }
+.dark-impact { background-color: #000; color: #fff; }
+.text-light { color: #d1d1d1 !important; }
+
+.order-lg-1 { order: 1; }
+.order-lg-2 { order: 2; }
+@media (max-width: 991px) {
+  .order-lg-1 { order: 2; }
+  .order-lg-2 { order: 1; }
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+.grid-3-cols {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.bento-item {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  
+  ion-icon { font-size: 36px; color: var(--ion-color-primary); margin-bottom: 16px; }
+  h3 { margin: 0 0 12px; font-size: 1.25rem; font-weight: 700; color: #111; }
+  p { margin: 0; font-size: 0.95rem; color: #666; line-height: 1.5; }
+  
+  &:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+}
+
+.highlight-card {
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, #ff6a00 100%);
+  h3, p, ion-icon { color: #fff !important; }
+}
+
+.dark-card {
+  background: #111;
+  border: 1px solid #333;
+  h3 { color: #fff; }
+  p { color: #aaa; }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  h3 { color: #fff; }
+  p { color: #ccc; }
+}
+
+.kicker { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--ion-color-primary); margin-bottom: 12px; letter-spacing: 1px; }
+.display-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 24px; line-height: 1.1; letter-spacing: -1px; }
+.dark-impact .display-title { color: #fff; }
+.lead-text { font-size: 1.1rem; color: #555; line-height: 1.6; margin-bottom: 16px; }
+
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(32px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-.slide-up-fade-1 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 100ms; opacity: 0; }
-.slide-up-fade-2 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 200ms; opacity: 0; }
-.slide-up-fade-3 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 300ms; opacity: 0; }
-
-.modern-section {
-  padding: 80px 0;
-  background-color: var(--ion-background-color);
-  min-height: calc(100vh - 60px);
-  display: flex;
-  align-items: center;
-}
-
-.content-row {
-  @media (min-width: 992px) {
-    min-height: 500px;
-  }
-}
-
-.context-col {
-  margin-bottom: 48px;
-  @media (min-width: 992px) {
-    margin-bottom: 0;
-    padding-right: 48px;
-  }
-}
-
-.context-content {
-  .kicker {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--ion-color-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 0 0 16px;
-  }
-  
-  .display-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 800;
-    color: var(--ion-text-color);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    margin: 0 0 24px;
-    
-    .highlight {
-      color: var(--ion-color-primary);
-    }
-  }
-  
-  .subtitle {
-    font-size: 1.25rem;
-    color: var(--ion-color-secondary-shade);
-    line-height: 1.6;
-    margin: 0;
-  }
-}
-
-.illustration-col {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  .brand-shape {
-    width: 100%;
-    max-width: 400px;
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, rgba(255,51,0,0.1) 0%, rgba(255,51,0,0.02) 100%);
-    border-radius: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: rotate(-3deg);
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    
-    &:hover {
-      transform: rotate(0deg) scale(1.02);
-    }
-  }
-}
+.slide-up-fade-1 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 100ms; opacity: 0; }
+.slide-up-fade-2 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 200ms; opacity: 0; }

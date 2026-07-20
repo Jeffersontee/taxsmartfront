@@ -1,15 +1,18 @@
-import { IonGrid, IonRow, IonCol, IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
+import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { documentTextOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 
 @Component({
-  standalone: true,
   selector: 'app-fiscal',
+  standalone: true,
+  imports: [IonGrid, IonRow, IonCol, IonIcon],
   templateUrl: './fiscal.component.html',
   styleUrls: ['./fiscal.component.scss'],
-  imports: [IonGrid, IonRow, IonCol, IonCard, IonCardContent],
 })
 export class FiscalComponent implements OnInit {
-  constructor() {}
-
+  constructor() {
+    addIcons({ documentTextOutline, shieldCheckmarkOutline });
+  }
   ngOnInit() {}
 }
