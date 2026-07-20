@@ -25,6 +25,7 @@ import { LegalizacaoComponent } from '../legalizacao/legalizacao.component';
 import { addIcons } from 'ionicons';
 import { logoWhatsapp, mailOutline, closeOutline } from 'ionicons/icons';
 import { ContabilidadeComponent } from '../contabilidade/contabilidade.component';
+import { PlanejamentoFinanceiroComponent } from '../planejamento-financeiro/planejamento-financeiro.component';
 
 @Component({
   selector: 'app-home',
@@ -52,6 +53,7 @@ import { ContabilidadeComponent } from '../contabilidade/contabilidade.component
     ContabilidadeComponent,
     DepartamentoPessoalComponent,
     LegalizacaoComponent,
+    PlanejamentoFinanceiroComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

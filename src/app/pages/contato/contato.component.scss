@@ -22,9 +22,8 @@
 }
 
 .contact-section {
-  padding: 64px 0;
-  background-color: #f4f5f8; // Cinza Alternado (background)
-  min-height: calc(100vh - 60px);
+  padding: 80px 20px;
+  background-color: #f4f5f8;
   display: flex;
   align-items: center;
 }
@@ -117,6 +116,12 @@
       background-color: rgba(255, 255, 255, 0.15);
       border-radius: 12px;
       flex-shrink: 0;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    &:hover ion-icon {
+      background-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .method-details {

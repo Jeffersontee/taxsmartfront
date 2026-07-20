@@ -9,9 +9,8 @@
 .slide-up-fade-4 { animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: 400ms; opacity: 0; }
 
 .consultoria-section {
-  padding: 80px 0;
+  padding: 80px 20px;
   background-color: #ffffff;
-  min-height: calc(100vh - 60px);
   display: flex;
   align-items: center;
 }
