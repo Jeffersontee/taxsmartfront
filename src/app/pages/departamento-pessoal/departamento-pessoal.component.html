@@ -3,7 +3,6 @@
     <ion-row class="ion-justify-content-center ion-text-center">
       <ion-col size="12" size-md="8">
         <div class="context-content slide-up-fade-1">
-          <h4 class="kicker">Recursos Humanos</h4>
           <h2 class="display-title">Departamento Pessoal</h2>
           <p class="lead-text">
             Cuidamos de toda a burocracia trabalhista para que você foque exclusivamente na gestão de talentos e resultados.
@@ -11,34 +10,23 @@
         </div>
       </ion-col>
     </ion-row>
+
     <ion-row class="ion-margin-top slide-up-fade-2">
-       <div class="bento-grid grid-3-cols" style="width: 100%;">
-         <div class="bento-item">
-            <ion-icon name="people-outline"></ion-icon>
-            <h3>Admissões e Rescisões</h3>
-            <p>Gestão completa da entrada e saída de colaboradores.</p>
-         </div>
-         <div class="bento-item highlight-card">
-            <ion-icon name="cash-outline"></ion-icon>
-            <h3>Folha de Pagamento</h3>
-            <p>Elaboração impecável de recibos, férias, pró-labore e adiantamentos.</p>
-         </div>
-         <div class="bento-item">
-            <ion-icon name="calculator-outline"></ion-icon>
-            <h3>Encargos Trabalhistas</h3>
-            <p>Apuração rigorosa de IRRF, INSS, FGTS e demais contribuições.</p>
-         </div>
-         <div class="bento-item">
-            <ion-icon name="file-tray-stacked-outline"></ion-icon>
-            <h3>Obrigações Acessórias</h3>
-            <p>Transmissão segura de SEFIP, CAGED, RAIS e e-Social.</p>
-         </div>
-         <div class="bento-item">
-            <ion-icon name="document-outline"></ion-icon>
-            <h3>Informes de Rendimentos</h3>
-            <p>Elaboração técnica e entrega anual aos colaboradores.</p>
-         </div>
-       </div>
+      <div class="dp-bento-grid">
+        @for (item of items; track item.id; let i = $index) {
+          <div
+            class="bento-item"
+            [class.highlight-card]="selectedCardIndex() === i"
+            (click)="selectCard(i)"
+          >
+            <div class="icon-box">
+              <ion-icon [name]="item.icon"></ion-icon>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+        }
+      </div>
     </ion-row>
   </ion-grid>
 </div>

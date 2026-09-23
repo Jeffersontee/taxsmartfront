@@ -12,18 +12,19 @@ if (!skillName) {
 
 // O script assume que está sendo rodado a partir da raiz do projeto
 const projectRoot: string = process.cwd();
-const agentsDir: string = path.join(projectRoot, '.agents', 'skills', skillName);
+const skillDir: string = path.join(projectRoot, '.agents', 'skills', skillName);
 
-if (fs.existsSync(agentsDir)) {
-  console.error(`ERRO: A skill '${skillName}' já existe em ${agentsDir}.`);
+if (fs.existsSync(skillDir)) {
+  console.error(`ERRO: A skill '${skillName}' já existe em ${skillDir}.`);
   process.exit(1);
 }
 
-// Criar pastas
+// Criar estrutura de pastas padrão TaxSmart + Impeccable
 const dirsToCreate: string[] = [
-  agentsDir,
-  path.join(agentsDir, 'references'),
-  path.join(agentsDir, 'scripts')
+  skillDir,
+  path.join(skillDir, 'agents'),      // <-- Nova pasta para os arquivos .toml/.yaml do Impeccable
+  path.join(skillDir, 'references'),  // <-- Documentações extensas de apoio
+  path.join(skillDir, 'scripts')     // <-- Automações locais em bash/node
 ];
 
 dirsToCreate.forEach(dir => {
@@ -31,7 +32,7 @@ dirsToCreate.forEach(dir => {
   console.log(`Pasta criada: ${dir}`);
 });
 
-// Template do SKILL.md
+// Template do SKILL.md (Formato Roteador de Gatilho Curto do TaxSmart)
 const skillMdContent: string = `---
 name: ${skillName}
 description: ${skillDesc}
@@ -39,23 +40,25 @@ description: ${skillDesc}
 
 # ${skillName.replace(/-/g, ' ').toUpperCase()}
 
-Instruções base para esta skill. Consulte a pasta \`references\` para mais detalhes técnicos.
+Este arquivo atua estritamente como roteador e gatilho de ativação do ecossistema. 
 
-## Regras
-1. (Defina aqui o passo a passo que o agente deve seguir)
+## Referências e Dependências Técnicas
+* **Agentes Operacionais:** Consulte \`.agents/skills/${skillName}/agents/\` para configurações e loops executáveis.
+* **Bases de Conhecimento:** Consulte \`.agents/skills/${skillName}/references/\` para guias técnicos profundos.
+* **Automações de Desenvolvimento:** Consulte \`.agents/skills/${skillName}/scripts/\` para utilitários CLI.
 `;
 
-fs.writeFileSync(path.join(agentsDir, 'SKILL.md'), skillMdContent);
+fs.writeFileSync(path.join(skillDir, 'SKILL.md'), skillMdContent);
 console.log(`Arquivo SKILL.md gerado com sucesso.`);
 
 // Arquivo de referência base
 const refContent: string = `# Documentação de Referência: ${skillName}
 
-Este arquivo deve ser usado para armazenar toda a documentação longa, explicações arquiteturais ou detalhes de implementação maiores que 500 linhas.
-Lembre-se de manter o \`SKILL.md\` curto e referenciar este arquivo quando necessário.
+Este arquivo armazena a documentação longa, explicações arquiteturais e detalhes de implementação complexos.
+Mantenha o \`SKILL.md\` limpo e adicione novas diretrizes detalhadas como novos arquivos markdown nesta pasta \`references/\`.
 `;
 
-fs.writeFileSync(path.join(agentsDir, 'references', 'docs.md'), refContent);
+fs.writeFileSync(path.join(skillDir, 'references', 'docs.md'), refContent);
 console.log(`Arquivo references/docs.md gerado com sucesso.`);
 
-console.log(`\n🎉 Skill '${skillName}' orquestrada e criada com sucesso!`);
+console.log(`\n🎉 Skill '${skillName}' orquestrada e criada com sucesso no padrão TaxSmart!`);

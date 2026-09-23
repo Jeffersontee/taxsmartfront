@@ -102,22 +102,39 @@ export class AppComponent {
   async scrollTo(sectionId: string) {
     if (this.router.url !== '/' && this.router.url !== '/home') {
       await this.router.navigate(['/']);
-      setTimeout(() => this.executeScroll(sectionId), 200); // Aguarda a home renderizar
+      setTimeout(() => this.executeScroll(sectionId), 150);
     } else {
       this.executeScroll(sectionId);
     }
   }
 
-  private async executeScroll(sectionId: string) {
-    const element = document.getElementById(sectionId);
+  private async executeScroll(sectionId: string, attempts = 0) {
     const contentEl = document.querySelector('ion-content#home-content') as any;
+
+    if (sectionId === 'top' || sectionId === 'main-content') {
+      if (contentEl) {
+        contentEl.scrollToTop(500);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    const element = document.getElementById(sectionId);
 
     if (element && contentEl) {
       const scrollElement = await contentEl.getScrollElement();
-      const y = element.getBoundingClientRect().top + scrollElement.scrollTop - 80;
-      contentEl.scrollToPoint(0, y, 500);
-    } else {
-      console.warn('Falha no scroll: Elemento ou ionContent ausente!');
+      const headerOffset = 80;
+      const elementRect = element.getBoundingClientRect();
+      const currentScrollTop = scrollElement.scrollTop;
+      const targetY = elementRect.top + currentScrollTop - headerOffset;
+
+      contentEl.scrollToPoint(0, Math.max(0, targetY), 500);
+    } else if (attempts < 5) {
+      // Se o elemento estiver sendo hidratado pelo @defer ou transição, tenta novamente
+      setTimeout(() => this.executeScroll(sectionId, attempts + 1), 60);
+    } else if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 }

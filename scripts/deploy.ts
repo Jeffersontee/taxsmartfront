@@ -71,6 +71,15 @@ async function deploy(): Promise<void> {
     // Agora estamos DENTRO da pasta public_html
     const localDistPath = path.join(process.cwd(), 'dist/taxsmartfront/browser');
     
+    // Garante que .env e .htaccess existam no dist antes do upload
+    const fs = await import('fs');
+    if (fs.existsSync(path.join(process.cwd(), 'public/.env'))) {
+      fs.copyFileSync(path.join(process.cwd(), 'public/.env'), path.join(localDistPath, '.env'));
+    }
+    if (fs.existsSync(path.join(process.cwd(), 'public/.htaccess'))) {
+      fs.copyFileSync(path.join(process.cwd(), 'public/.htaccess'), path.join(localDistPath, '.htaccess'));
+    }
+
     console.log(`📤 Fazendo upload dos arquivos novos de ${localDistPath} para public_html...`);
     await client.uploadFromDir(localDistPath, '.');
 

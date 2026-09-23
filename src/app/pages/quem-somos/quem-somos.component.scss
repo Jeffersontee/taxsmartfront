@@ -1,192 +1,288 @@
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.slide-up-fade-1 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 100ms; opacity: 0; }
-.slide-up-fade-2 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 200ms; opacity: 0; }
-.slide-up-fade-3 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 300ms; opacity: 0; }
+.slide-up-fade-1 {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 100ms;
+  opacity: 0;
+}
+
+.slide-up-fade-2 {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 200ms;
+  opacity: 0;
+}
+
+.slide-up-fade-3 {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 300ms;
+  opacity: 0;
+}
 
 .modern-section {
-  padding: 120px 0 80px;
-  background-color: #050505; // Dark Impact Rule
-  min-height: 100vh;
+  padding: 100px 0 80px;
+  background-color: #050505;
   color: #ffffff;
 }
 
+/* TOP ROW: CONTEXT & MISSION (STACKED) */
 .content-row {
   margin-bottom: 40px;
 }
 
+.context-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .context-content {
-  .kicker {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #ff3300;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 0 0 24px;
-  }
-  
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+
   .display-title {
     font-family: 'Outfit', sans-serif;
-    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-size: clamp(2.4rem, 4.2vw, 3.6rem);
     font-weight: 800;
     color: #ffffff;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.03em;
-    margin: 0 0 32px;
-    
+    margin: 0 auto 20px;
+    text-align: center;
+    text-wrap: balance;
+
     .highlight {
       color: #ff3300;
     }
   }
-  
+
   .lead-text {
     font-family: 'Inter', sans-serif;
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.6;
-    margin: 0 0 32px;
-  }
-  
-  .mission-statement {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.125rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
-    padding-left: 20px;
-    border-left: 3px solid #ff3300;
+    font-size: clamp(1.05rem, 1.3vw, 1.18rem);
+    color: #e2e8f0;
+    line-height: 1.8;
+    margin: 0 auto 28px;
+    text-align: center;
+    text-wrap: pretty;
   }
 }
 
-.illustration-col {
+.mission-card {
+  width: 100%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #ff3300;
+  border-radius: 20px;
+  padding: 30px 32px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  
-  .brand-shape {
-    width: 100%;
-    max-width: 360px;
-    aspect-ratio: 1;
-    background: linear-gradient(135deg, rgba(255,51,0,0.15) 0%, rgba(255,51,0,0.02) 100%);
-    border-radius: 40px;
-    display: flex;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+
+  .mission-badge {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transform: rotate(-3deg);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
-    border: 1px solid rgba(255, 51, 0, 0.2);
-    
-    .hero-icon {
-      font-size: 120px;
-      color: #ff3300;
-      opacity: 0.8;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 8px;
+    background: rgba(255, 51, 0, 0.15);
+    border: 1px solid rgba(255, 51, 0, 0.3);
+    color: #ff5522;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 14px;
+    border-radius: 50px;
+    margin: 0 auto 16px;
+    width: fit-content;
+
+    ion-icon {
+      font-size: 1rem;
     }
-    
-    &:hover {
-      transform: rotate(0deg) scale(1.02);
-      box-shadow: 0 20px 60px rgba(255, 51, 0, 0.15);
-      
-      .hero-icon {
-        transform: scale(1.1);
-        opacity: 1;
-      }
-    }
+  }
+
+  .mission-text {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(1.02rem, 1.25vw, 1.12rem);
+    color: #f8fafc;
+    line-height: 1.75;
+    margin: 0 auto;
+    text-align: center;
+    text-wrap: pretty;
   }
 }
 
-// Bento Grid
+/* BOTTOM ROW: VALUES CARDS (BENTO) */
 .values-row {
-  margin-top: 40px;
+  margin-top: 8px;
 }
 
 .bento-col {
   margin-bottom: 24px;
+  display: flex;
 }
 
 .bento-item {
-  background-color: #121212;
-  border-radius: 32px;
-  padding: 40px;
+  background-color: #111111;
+  border-radius: 20px;
+  padding: 36px 30px;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255,255,255,0.05);
-  cursor: default;
-  
+  align-items: flex-start;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
   .icon-wrapper {
-    width: 64px;
-    height: 64px;
-    border-radius: 20px;
-    background: rgba(255, 51, 0, 0.1);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255, 51, 0, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 32px;
-    transition: all 0.4s ease;
-    
+    margin-bottom: 20px;
+    transition: all 0.35s ease;
+
     ion-icon {
       font-size: 28px;
       color: #ff3300;
-      transition: all 0.4s ease;
+      transition: all 0.35s ease;
     }
   }
-  
+
   h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #ffffff;
-    margin: 0 0 16px;
+    margin: 0 0 12px;
     letter-spacing: -0.01em;
-    transition: color 0.4s ease;
+    transition: color 0.35s ease;
   }
-  
+
   p {
     font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.6;
+    font-size: 0.98rem;
+    color: #a0aec0;
+    line-height: 1.65;
     margin: 0;
-    transition: color 0.4s ease;
+    transition: color 0.35s ease;
   }
-  
-  // The Hover Inversion Rule
+
   &:hover {
-    background-color: #ff3300;
-    box-shadow: 0 20px 40px rgba(255, 51, 0, 0.2);
-    transform: translateY(-8px);
-    border-color: #ff3300;
-    
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+
+    .icon-wrapper ion-icon {
+      transform: scale(1.08);
+    }
+  }
+
+  /* ESTADO ATIVO: LARANJA */
+  &.highlight-card {
+    background: linear-gradient(135deg, #ff3300 0%, #ff5e00 100%) !important;
+    box-shadow: 0 14px 35px rgba(255, 51, 0, 0.35) !important;
+    border-color: transparent !important;
+
     .icon-wrapper {
-      background: rgba(255,255,255,0.2);
-      
+      background: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+
       ion-icon {
-        color: #ffffff;
+        color: #ff3300 !important;
       }
     }
-    
-    h3, p {
-      color: #ffffff;
-    }
-    
+
+    h3,
     p {
-      opacity: 0.9;
+      color: #ffffff !important;
+    }
+
+    p {
+      opacity: 0.96;
+    }
+
+    &:hover {
+      box-shadow: 0 18px 40px rgba(255, 51, 0, 0.45) !important;
+    }
+  }
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 991px) {
+  .modern-section {
+    padding: 70px 0 50px;
+  }
+
+  .content-row {
+    margin-bottom: 32px;
+  }
+
+  .context-col {
+    margin-bottom: 24px;
+  }
+
+  .context-content {
+    .display-title {
+      font-size: 2.3rem;
+      margin-bottom: 16px;
+    }
+
+    .lead-text {
+      font-size: 1.02rem;
+      line-height: 1.65;
+    }
+  }
+
+  .mission-card {
+    padding: 24px 22px;
+    border-radius: 20px;
+
+    .mission-text {
+      font-size: 0.96rem;
+      line-height: 1.6;
+    }
+  }
+
+  .bento-item {
+    padding: 28px 22px;
+    border-radius: 18px;
+
+    h3 {
+      font-size: 1.22rem;
+    }
+
+    p {
+      font-size: 0.94rem;
     }
   }
 }
 
 @media (min-width: 992px) {
-  .modern-section {
-    display: flex;
-    align-items: center;
-  }
-  
-  .context-col {
-    padding-right: 48px;
+  .context-content {
+    width: 100%;
+    max-width: 100%;
   }
 }

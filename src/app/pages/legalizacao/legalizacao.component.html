@@ -1,9 +1,9 @@
 <div class="modern-section dark-impact section-padding">
   <ion-grid fixed>
     <ion-row class="ion-align-items-center">
-      <ion-col size="12" size-lg="6">
+      <!-- Left Column: Context Text -->
+      <ion-col size="12" size-lg="6" class="context-col">
         <div class="context-content slide-up-fade-1">
-          <h4 class="kicker">Especialidade TaxSmart</h4>
           <h2 class="display-title">Legalização de Empresas</h2>
           <p class="lead-text text-light">
             Além dos serviços contábeis, nossa equipe especializada oferece suporte completo em questões legais, auxiliando na definição do quadro societário mais adequado para sua empresa e na escolha correta das atividades econômicas.
@@ -13,18 +13,23 @@
           </p>
         </div>
       </ion-col>
-      <ion-col size="12" size-lg="5" offset-lg="1">
+
+      <!-- Right Column: Stacked & Centered Cards -->
+      <ion-col size="12" size-lg="6" class="cards-col">
         <div class="bento-grid slide-up-fade-2">
-           <div class="bento-item glass-card">
-              <ion-icon name="business-outline"></ion-icon>
-              <h3>Quadro Societário</h3>
-              <p>Estruturação ideal e blindagem legal para o perfil do seu negócio.</p>
-           </div>
-           <div class="bento-item glass-card">
-              <ion-icon name="list-outline"></ion-icon>
-              <h3>Atividades Econômicas</h3>
-              <p>Escolha assertiva de CNAEs visando máxima otimização tributária.</p>
-           </div>
+          @for (item of items; track item.id; let i = $index) {
+            <div
+              class="bento-item glass-card"
+              [class.highlight-card]="selectedCardIndex() === i"
+              (click)="selectCard(i)"
+            >
+              <div class="icon-box">
+                <ion-icon [name]="item.icon"></ion-icon>
+              </div>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+          }
         </div>
       </ion-col>
     </ion-row>

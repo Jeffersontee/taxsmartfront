@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Bloquear acesso a arquivos de ambiente (.env)
+<FilesMatch "^\.env">
+  Order allow,deny
+  Deny from all
+  Require all denied
+</FilesMatch>
+

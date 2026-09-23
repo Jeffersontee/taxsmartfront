@@ -25,11 +25,12 @@
               </div>
             </a>
             
-            <a href="mailto:contabil@taxsmartcontabilidade.com.br" class="method-item">
+            
+            <a href="mailto:contato@taxsmartcontabilidade.com.br" class="method-item">
               <ion-icon name="mail-outline"></ion-icon>
               <div class="method-details">
                 <span class="method-label">E-mail</span>
-                <span class="method-value">contabil&#64;taxsmartcontabilidade.com.br</span>
+                <span class="method-value">contato&#64;taxsmartcontabilidade.com.br</span>
               </div>
             </a>
             
@@ -50,36 +51,83 @@
           <h2>Fale conosco</h2>
           <p class="form-subtitle">Preencha os campos abaixo e entraremos em contato rapidamente.</p>
           
-          <form class="contact-form">
+          <form class="contact-form" (submit)="sendMessage($event)">
             <div class="form-row">
               <ion-item class="custom-input" lines="none">
                 <ion-label position="stacked">Nome Completo</ion-label>
-                <ion-input type="text" placeholder="Seu nome"></ion-input>
+                <ion-input
+                  type="text"
+                  placeholder="Seu nome"
+                  [ngModel]="nome()"
+                  (ngModelChange)="nome.set($event)"
+                  [disabled]="isLoading()"
+                  name="nome"
+                ></ion-input>
               </ion-item>
             </div>
             
             <div class="form-row split-row">
               <ion-item class="custom-input" lines="none">
                 <ion-label position="stacked">E-mail</ion-label>
-                <ion-input type="email" placeholder="seu@email.com"></ion-input>
+                <ion-input
+                  type="email"
+                  placeholder="seu@email.com"
+                  [ngModel]="email()"
+                  (ngModelChange)="email.set($event)"
+                  [disabled]="isLoading()"
+                  name="email"
+                ></ion-input>
               </ion-item>
               
               <ion-item class="custom-input" lines="none">
                 <ion-label position="stacked">Telefone / WhatsApp</ion-label>
-                <ion-input type="tel" placeholder="(11) 90000-0000"></ion-input>
+                <ion-input
+                  type="tel"
+                  placeholder="(11) 90000-0000"
+                  maxlength="15"
+                  [value]="telefone()"
+                  (ionInput)="onTelefoneInput($event)"
+                  [disabled]="isLoading()"
+                  name="telefone"
+                ></ion-input>
               </ion-item>
             </div>
             
             <div class="form-row">
               <ion-item class="custom-input" lines="none">
                 <ion-label position="stacked">Como podemos ajudar?</ion-label>
-                <ion-textarea rows="4" placeholder="Descreva sua necessidade..."></ion-textarea>
+                <ion-textarea
+                  rows="4"
+                  placeholder="Descreva sua necessidade..."
+                  [ngModel]="mensagem()"
+                  (ngModelChange)="mensagem.set($event)"
+                  [disabled]="isLoading()"
+                  name="mensagem"
+                ></ion-textarea>
               </ion-item>
             </div>
+
+            @if (statusMessage(); as status) {
+              <div [class]="status.type === 'success' ? 'feedback-success' : 'feedback-error'">
+                <ion-icon [name]="status.type === 'success' ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+                <span>{{ status.text }}</span>
+              </div>
+            }
             
-            <ion-button expand="block" class="submit-btn" shape="round">
-              Enviar Mensagem
-              <ion-icon slot="end" name="send-outline"></ion-icon>
+            <ion-button
+              type="submit"
+              expand="block"
+              class="submit-btn"
+              shape="round"
+              [disabled]="isLoading()"
+            >
+              @if (isLoading()) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                <span>Enviando mensagem...</span>
+              } @else {
+                <span>Enviar Mensagem</span>
+                <ion-icon slot="end" name="send-outline"></ion-icon>
+              }
             </ion-button>
           </form>
         </div>
