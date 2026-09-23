@@ -10,7 +10,9 @@
   <ion-menu contentId="main-page" type="overlay">
     <ion-header>
       <ion-toolbar color="secondary">
-        <ion-title>Menu</ion-title>
+        <ion-title>
+          <img src="/taxsmart-text.png" alt="TaxSmart" class="menu-logo-text">
+        </ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content color="secondary">
@@ -55,6 +57,7 @@
       <div class="custom-toolbar top-nav">
         <div class="logo-wrapper" routerLink="/">
           <img src="/logo.png" alt="TaxSmart Logo" class="header-logo">
+          <img src="/taxsmart-text.png" alt="TaxSmart" class="header-logo-text">
         </div>
 
         <div class="desktop-nav ion-hide-md-down">
@@ -88,7 +91,7 @@
             </div>
           </div>
 
-          <ion-button (click)="scrollTo('contato-page')" color="dark" fill="clear">CONTATO</ion-button>
+          <ion-button (click)="scrollTo('contato')" color="dark" fill="clear">CONTATO</ion-button>
         </div>
 
         <div class="mobile-nav ion-hide-md-up">

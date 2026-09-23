@@ -13,6 +13,7 @@ Quando o usuário solicitar a criação de uma nova funcionalidade de aprendizad
 Toda skill criada nesta workspace segue o padrão exigido nas regras globais:
 - Diretório em `.agents/skills/<nome-da-skill>/`
 - `SKILL.md` curto contendo o frontmatter YAML e instruções diretas.
+- Diretório `agents/` para arquivos de configuração `.toml`/`.yaml` do Impeccable.
 - Diretório `references/` para armazenar a documentação pesada.
 - Diretório `scripts/` para utilitários automatizados daquela skill.
 
@@ -22,3 +23,4 @@ Como o script agora é TypeScript nativo (`.ts`), utilize o `ts-node` (via npx) 
 npx ts-node .agents/skills/skill-orchestrator/scripts/create-skill.ts "nome-da-skill" "Breve descrição do que a skill faz"
 ```
 Ele criará a estrutura completa automaticamente. Leia `references/architecture.md` para mais detalhes sobre a organização de agentes.
+

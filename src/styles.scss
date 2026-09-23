@@ -48,3 +48,90 @@ h1, h2, h3, h4, h5, h6,
 ion-content {
   z-index: 0 !important;
 }
+
+/* ==========================================================================
+   GLOBAL CONTAINER & GRID HARMONIZATION (ZOOM & WIDE DISPLAY)
+   ========================================================================== */
+ion-grid[fixed],
+.ion-grid-fixed {
+  width: 100% !important;
+  max-width: 1240px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  box-sizing: border-box !important;
+
+  @media (max-width: 767px) {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Unified Section Spacing */
+.section-padding,
+.modern-section,
+.features-section,
+.valores-section,
+.markets-section,
+.consultoria-section,
+.contact-section {
+  padding-top: 100px !important;
+  padding-bottom: 90px !important;
+  box-sizing: border-box !important;
+
+  @media (max-width: 991px) {
+    padding-top: 64px !important;
+    padding-bottom: 50px !important;
+  }
+}
+
+/* ==========================================================================
+   BRAND TEXT IMAGES
+   ========================================================================== */
+.header-logo-text {
+  height: 36px;
+  width: auto;
+  margin-left: 10px;
+  object-fit: contain;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+
+  @media (max-width: 480px) {
+    height: 28px;
+    margin-left: 6px;
+  }
+}
+
+.menu-logo-text {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  margin-top: 6px;
+}
+
+.footer-brand-img {
+  max-height: 42px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.kicker-brand-img {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.kicker-inline-img {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
+  margin-left: 6px;
+  position: relative;
+  top: -2px;
+}
+

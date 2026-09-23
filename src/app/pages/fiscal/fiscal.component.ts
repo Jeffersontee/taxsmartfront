@@ -1,7 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { documentTextOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+
+interface FiscalItem {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-fiscal',
@@ -10,9 +17,29 @@ import { documentTextOutline, shieldCheckmarkOutline } from 'ionicons/icons';
   templateUrl: './fiscal.component.html',
   styleUrls: ['./fiscal.component.scss'],
 })
-export class FiscalComponent implements OnInit {
+export class FiscalComponent {
+  readonly items: FiscalItem[] = [
+    {
+      id: 'obrigacoes',
+      icon: 'document-text-outline',
+      title: 'Obrigações Acessórias',
+      description: 'Entrega rigorosa de todas as declarações exigidas pelo fisco.',
+    },
+    {
+      id: 'conformidade',
+      icon: 'shield-checkmark-outline',
+      title: 'Conformidade Total',
+      description: 'Tranquilidade e segurança máxima para as operações da sua empresa.',
+    },
+  ];
+
+  selectedCardIndex = signal<number>(0);
+
   constructor() {
     addIcons({ documentTextOutline, shieldCheckmarkOutline });
   }
-  ngOnInit() {}
+
+  selectCard(index: number): void {
+    this.selectedCardIndex.set(index);
+  }
 }

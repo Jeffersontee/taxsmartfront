@@ -46,11 +46,11 @@ components:
     padding: "40px"
 ---
 
-# Design System: Tax Smart Contabilidade
+# Design System: TaxSmart Contabilidade
 
 ## 1. Overview
 
-**Creative North Star: "A Revolução Laranja"**
+**Creative North Star: "TaxSmart"**
 
 O design da Tax Smart abandona a estética burocrática clássica (fundos cinzas e paredes de texto). A nova versão foca no contraste extremo de um Dark Mode premium (primeira dobra) que valoriza o laranja vibrante da marca. O sistema usa Bento Grids ultra arredondados e a tipografia geométrica 'Outfit' para construir autoridade, tecnologia e confiança sem o peso do tradicionalismo.
 
@@ -93,7 +93,7 @@ A paleta de cores rejeita o tédio, abraçando um constraste vibrante entre o es
 - **Headline** (700, clamp(2rem, 4vw, 3rem)): Cabeçalhos de seção (e.g., "O que fazemos").
 - **Title** (700, 1.5rem): Títulos dentro dos blocos Bento Grid.
 - **Body** (400, 1rem/1.25rem, 1.6): Texto de apoio e descrições.
-- **Kicker** (700, 1rem, 0.1em tracking, Uppercase): Eyebrows (sobrenomes de seção) como "A REVOLUÇÃO LARANJA".
+- **Kicker** (700, 1rem, 0.1em tracking, Uppercase): Eyebrows (sobrenomes de seção) como "TaxSmart".
 
 ### Named Rules
 **The Outfit Strike Rule.** A fonte Outfit está reservada para os Display Titles e Kickers, operando no modo Bold (700/800). Todo o texto longo continua na Inter para garantir a legibilidade.

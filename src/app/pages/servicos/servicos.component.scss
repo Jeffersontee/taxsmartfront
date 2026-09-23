@@ -8,9 +8,8 @@
 .slide-up-fade-3 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 300ms; opacity: 0; }
 
 .modern-section {
-  padding: 120px 0 80px;
+  padding: 100px 0 90px;
   background-color: #050505; // Dark Impact Rule
-  min-height: 100vh;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -18,7 +17,7 @@
 }
 
 .content-row {
-  margin-bottom: 60px;
+  margin-bottom: 48px;
 }
 
 .context-content {

@@ -1,63 +1,103 @@
 <div class="markets-section">
-  <ion-grid fixed>
-    <ion-row>
-      <!-- Left Column: Title & Context -->
-      <ion-col size="12" size-lg="5" class="context-col">
-        <div class="sticky-context">
-          <h1 class="display-title">Especialistas em <span class="highlight">diversos setores</span></h1>
-          <p class="subtitle">
-            A Tax Smart entende que cada mercado tem suas próprias regras e desafios tributários.
+  <!-- Central watermark -->
+  <div class="watermark-bg" aria-hidden="true"></div>
+
+  <ion-grid fixed class="organogram-grid">
+    <!-- Top Row: Hub Card (Especialistas em diversos setores) -->
+    <ion-row class="hub-row">
+      <ion-col size="12" size-md="10" offset-md="1" size-lg="8" offset-lg="2" class="hub-col">
+        <div class="hub-card slide-up-fade-1">
+          <h1 class="display-title">
+            Especialistas em <span class="highlight">diversos setores</span>
+          </h1>
+          <p class="hub-subtitle">
+            Entendemos que cada mercado tem suas próprias regras e desafios tributários.
           </p>
-          <ion-button color="primary" expand="block" shape="round" class="action-btn" href="https://wa.me/5511989321207" target="_blank">
-            Fale com um Especialista
-          </ion-button>
+          <a
+            href="https://wa.me/5511989321207"
+            target="_blank"
+            class="action-btn"
+          >
+            FALE COM UM ESPECIALISTA
+          </a>
         </div>
       </ion-col>
+    </ion-row>
 
-      <!-- Right Column: Markets List without cards -->
-      <ion-col size="12" size-lg="6" offset-lg="1" class="markets-col">
-        
-        <div class="market-group" style="--i: 0">
-          <div class="market-header">
-            <ion-icon name="hardware-chip-outline" color="primary"></ion-icon>
-            <h2>Tecnologia</h2>
+    <!-- Desktop Organogram Tree Connector (Top to Bottom Branches) -->
+    <div class="organogram-tree-connector" aria-hidden="true">
+      <svg viewBox="0 0 1000 70" preserveAspectRatio="none" class="tree-svg">
+        <!-- Center Root Node -->
+        <circle cx="500" cy="4" r="5" class="tree-node start-node" />
+
+        <!-- Branch 0: Left -> Tecnologia -->
+        <path
+          d="M 500 4 C 500 40, 166 30, 166 66"
+          class="tree-line"
+          [class.active-line]="selectedCardIndex() === 0"
+        />
+        <circle
+          cx="166"
+          cy="66"
+          r="4"
+          class="tree-node end-node"
+          [class.active-node]="selectedCardIndex() === 0"
+        />
+
+        <!-- Branch 1: Middle -> Construção Civil -->
+        <path
+          d="M 500 4 L 500 66"
+          class="tree-line"
+          [class.active-line]="selectedCardIndex() === 1"
+        />
+        <circle
+          cx="500"
+          cy="66"
+          r="4"
+          class="tree-node end-node"
+          [class.active-node]="selectedCardIndex() === 1"
+        />
+
+        <!-- Branch 2: Right -> Serviços -->
+        <path
+          d="M 500 4 C 500 40, 834 30, 834 66"
+          class="tree-line"
+          [class.active-line]="selectedCardIndex() === 2"
+        />
+        <circle
+          cx="834"
+          cy="66"
+          r="4"
+          class="tree-node end-node"
+          [class.active-node]="selectedCardIndex() === 2"
+        />
+      </svg>
+    </div>
+
+    <!-- Bottom Row: 3 Branch Cards (Tecnologia, Construção Civil, Serviços) -->
+    <ion-row class="branches-row">
+      @for (sector of sectors; track sector.id; let i = $index) {
+        <ion-col size="12" size-lg="4" class="branch-col">
+          <div
+            class="market-card branch-node"
+            [class.highlight-card]="selectedCardIndex() === i"
+            (click)="selectCard(i)"
+            [style.--i]="i"
+          >
+            <div class="market-header">
+              <div class="icon-box">
+                <ion-icon [name]="sector.icon"></ion-icon>
+              </div>
+              <h2>{{ sector.title }}</h2>
+            </div>
+            <ul class="market-items">
+              @for (item of sector.items; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
           </div>
-          <ul class="market-items">
-            <li>Desenvolvedores</li>
-            <li>Programação</li>
-            <li>Serviços de TI</li>
-            <li>Consultoria de TI</li>
-            <li>Web Design</li>
-          </ul>
-        </div>
-
-        <div class="market-group" style="--i: 1">
-          <div class="market-header">
-            <ion-icon name="construct-outline" color="primary"></ion-icon>
-            <h2>Construção Civil</h2>
-          </div>
-          <ul class="market-items">
-            <li>Construção e Reforma</li>
-            <li>Manutenção</li>
-            <li>Energia</li>
-          </ul>
-        </div>
-
-        <div class="market-group" style="--i: 2">
-          <div class="market-header">
-            <ion-icon name="briefcase-outline" color="primary"></ion-icon>
-            <h2>Serviços</h2>
-          </div>
-          <ul class="market-items">
-            <li>Advocacia</li>
-            <li>Cursos e Treinamentos</li>
-            <li>Representantes</li>
-            <li>Segurança</li>
-            <li>Medicina</li>
-          </ul>
-        </div>
-
-      </ion-col>
+        </ion-col>
+      }
     </ion-row>
   </ion-grid>
 </div>

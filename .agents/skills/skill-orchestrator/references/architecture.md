@@ -1,12 +1,58 @@
-# Arquitetura de Customizações da Workspace
+# Arquitetura de Agentes e Estruturação de Arquivos TOML
 
-Conforme os padrões do projeto TaxSmart:
+Este documento serve como a referência técnica oficial para a criação e manutenção de agentes automatizados via arquivos `.toml` do Impeccable dentro da workspace TaxSmart.
 
-1. **.agents/AGENTS.md**: Onde as regras de projeto (`Rules`) globais do repositório devem ser salvas. Regras rápidas que devem ser aplicadas em TODO momento pelo agente.
-2. **.agents/skills/**: Pasta raiz das Skills.
-3. **Módulos da Skill**:
-   - `SKILL.md`: Apenas Metadados (Frontmatter YAML com `name` e `description`) e um body muito curto. Somente ele é lido para dar gatilho (trigger) na skill.
-   - `scripts/`: Onde guardamos bash/node scripts para evitar que o LLM precise ficar inferindo comandos repetitivos.
-   - `references/`: Arquivos Markdown de apoio que o modelo pode ler sob demanda caso a Skill.md exija.
+## 1. Filosofia de Design dos Agentes
+Os agentes criados devem seguir o princípio da **Responsabilidade Única**. Não crie um único agente para resolver múltiplos problemas complexos. Em vez disso, fragmente a automação em agentes especializados (ex: um agente para checar legados, outro para aplicar correções).
 
-Este orquestrador foi criado justamente para automatizar a obediência a este padrão de diretórios, de forma que o Agente não erre nomes ou locais na hora de injetar novos aprendizados de engenharia.
+## 2. Estrutura Padrão do Arquivo TOML
+Todo arquivo de configuração de agente deve ser salvo na pasta `.agents/skills/<nome-da-skill>/agents/` utilizando a nomenclatura `impeccable_<funcao_do_agente>.toml`.
+
+### Campos Obrigatórios e Schema Base
+
+```toml
+[agent]
+name = "nome_unico_do_agente_snake_case"
+version = "1.0.0"
+description = "Explicação clara da função do agente para que o orquestrador saiba quando ativá-lo."
+provider = "openai" # Mantém a consistência com o openai.yaml global
+
+[execution]
+mode = "validation_loop" # Opções comuns: validation_loop, single_run, transform_code
+trigger_on = ["git_commit", "manual_invocation"]
+
+[context]
+# ATENÇÃO: As rotas devem ser relativas partindo do diretório /agents/ da própria skill
+base_skill = "../SKILL.md"
+reference_dir = "../references/"
+
+[scope]
+# Defina estritamente o escopo de atuação para economizar tokens de contexto
+include_extensions = [".ts", ".html", ".scss"]
+exclude_paths = [
+    "node_modules/**",
+    "www/**",
+    ".angular/**",
+    "**/*.spec.ts"
+]
+
+[rules]
+# Chaves booleanas ou parâmetros que guiam o motor interno do script local
+check_compliance = true
+
+[output]
+format = "markdown"
+destination = "stdout"
+generate_diff = true
+```
+
+## 3. Regras Críticas de Caminhos Relativos (Paths)
+Como os arquivos `.toml` residem na subpasta `agents/` de cada módulo de skill, as diretivas do bloco `[context]` devem obrigatoriamente subir um nível (`../`) para alcançar a raiz daquela skill específica:
+* **Incorreto:** `base_skill = "./SKILL.md"` (O motor tentará buscar dentro da pasta de agentes e falhará).
+* **Correto:** `base_skill = "../SKILL.md"`
+* **Correto:** `reference_dir = "../references/"`
+
+## 4. Integração com a Pasta `scripts/`
+Quando um agente precisar disparar uma ação física ou comando no terminal da máquina, ele não deve inferir o código CLI diretamente. Ele deve chamar o script mapeado na pasta local de scripts da skill:
+* Exemplo: Se o agente de modernização precisar validar arquivos, o campo de execução delegará a tarefa para `../scripts/validate-syntax.sh`.
+

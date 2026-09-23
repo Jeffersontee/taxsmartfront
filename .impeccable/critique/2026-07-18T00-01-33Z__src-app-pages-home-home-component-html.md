@@ -62,7 +62,7 @@ Uma página inicial extremamente confiante e moderna. O impacto inicial do Dark 
 - **Red Flag**: Ao clicar em "Falar com um Especialista" num desktop corporativo com restrição de aplicativos (sem WhatsApp), a janela abre para uma página de erro do protocolo `whatsapp://`, sem oferecer opção clara de enviar um email de contato.
 
 ## Minor Observations
-- O *Kicker* "A Revolução Laranja" está ótimo, mas uma animação de fade in ligeiramente mais lenta (delay) que o título faria a entrada parecer ainda mais coreografada.
+- O *Kicker* "TaxSmart" está ótimo, mas uma animação de fade in ligeiramente mais lenta (delay) que o título faria a entrada parecer ainda mais coreografada.
 
 ## Questions to Consider
 - Precisamos de todos esses módulos carregando na rota `/home` ao mesmo tempo, ou faria sentido separar "Consultoria" e "Serviços" em páginas lazy-loaded distintas?

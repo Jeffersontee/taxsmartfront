@@ -1,16 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   IonGrid,
   IonRow,
   IonCol,
-  IonButton,
-  IonContent,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonIcon
+  IonContent
 } from '@ionic/angular/standalone';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { QuemSomosComponent } from '../quem-somos/quem-somos.component';
@@ -22,8 +15,6 @@ import { ContatoComponent } from '../contato/contato.component';
 import { FiscalComponent } from '../fiscal/fiscal.component';
 import { DepartamentoPessoalComponent } from '../departamento-pessoal/departamento-pessoal.component';
 import { LegalizacaoComponent } from '../legalizacao/legalizacao.component';
-import { addIcons } from 'ionicons';
-import { logoWhatsapp, mailOutline, closeOutline } from 'ionicons/icons';
 import { ContabilidadeComponent } from '../contabilidade/contabilidade.component';
 import { PlanejamentoFinanceiroComponent } from '../planejamento-financeiro/planejamento-financeiro.component';
 
@@ -34,14 +25,7 @@ import { PlanejamentoFinanceiroComponent } from '../planejamento-financeiro/plan
     IonGrid,
     IonRow,
     IonCol,
-    IonButton,
     IonContent,
-    IonModal,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonIcon,
     FooterComponent,
     QuemSomosComponent,
     NossosValoresComponent,
@@ -58,14 +42,4 @@ import { PlanejamentoFinanceiroComponent } from '../planejamento-financeiro/plan
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
-  isContactModalOpen = signal(false);
-
-  constructor() {
-    addIcons({ logoWhatsapp, mailOutline, closeOutline });
-  }
-
-  setContactModalOpen(isOpen: boolean) {
-    this.isContactModalOpen.set(isOpen);
-  }
-}
+export class HomeComponent {}

@@ -1,10 +1,10 @@
 <div class="modern-section bg-light section-padding">
   <ion-grid fixed>
     <ion-row class="ion-align-items-center">
+      <!-- Coluna Esquerda: Texto de Apresentação -->
       <ion-col size="12" size-lg="6">
         <div class="context-content slide-up-fade-1">
-          <h4 class="kicker">BPO Financeiro</h4>
-          <h2 class="display-title">Gestão Financeira<br><span class="highlight">Inteligente</span></h2>
+          <h2 class="display-title">BPO<br><span class="highlight">Financeiro</span></h2>
           <p class="lead-text">
             O BPO Financeiro é a terceirização do setor financeiro da sua empresa. Cuidamos das suas finanças com especialistas focados em organizar e otimizar a sua gestão.
           </p>
@@ -13,28 +13,52 @@
           </p>
         </div>
       </ion-col>
-      <ion-col size="12" size-lg="5" offset-lg="1">
-        <div class="bento-grid slide-up-fade-2">
-           <div class="bento-item highlight-card">
-              <ion-icon name="wallet-outline"></ion-icon>
-              <h3>Contas a Pagar e Receber</h3>
-              <p>Gestão ágil e eficiente de todo o seu fluxo de obrigações e recebíveis.</p>
-           </div>
-           <div class="bento-item">
-              <ion-icon name="document-text-outline"></ion-icon>
-              <h3>Faturamento</h3>
-              <p>Emissão de notas fiscais e boletos com precisão e pontualidade.</p>
-           </div>
-           <div class="bento-item">
-              <ion-icon name="sync-outline"></ion-icon>
-              <h3>Rotina Financeira</h3>
-              <p>Conciliação financeira diária e gestão completa do fluxo de caixa.</p>
-           </div>
-           <div class="bento-item">
-              <ion-icon name="bar-chart-outline"></ion-icon>
-              <h3>Decisões Estratégicas</h3>
-              <p>Relatórios financeiros e dashboards de indicadores para decisões assertivas.</p>
-           </div>
+
+      <!-- Coluna Direita: Carrossel de Cards -->
+      <ion-col size="12" size-lg="6">
+        <div class="carousel-wrapper slide-up-fade-2" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
+          <div class="carousel-track-container">
+            <div class="carousel-track" [style.transform]="'translateX(-' + (currentSlideIndex() * 100) + '%)'">
+              @for (item of items; track item.id; let i = $index) {
+                <div class="carousel-slide">
+                  <div
+                    class="bento-item"
+                    [class.highlight-card]="selectedCardIndex() === i"
+                    (click)="selectCard(i)"
+                  >
+                    <div class="icon-box">
+                      <ion-icon [name]="item.icon"></ion-icon>
+                    </div>
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Controles de Navegação do Carrossel -->
+          <div class="carousel-controls">
+            <button type="button" class="nav-btn" (click)="prevSlide()" aria-label="Slide anterior">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <div class="carousel-indicators">
+              @for (item of items; track item.id; let i = $index) {
+                <button
+                  type="button"
+                  class="indicator-dot"
+                  [class.active]="currentSlideIndex() === i"
+                  (click)="goToSlide(i)"
+                  [attr.aria-label]="'Ir para ' + item.title"
+                ></button>
+              }
+            </div>
+
+            <button type="button" class="nav-btn" (click)="nextSlide()" aria-label="Próximo slide">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+          </div>
         </div>
       </ion-col>
     </ion-row>
