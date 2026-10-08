@@ -1,0 +1,372 @@
+<ion-content class="payroll-content">
+  <div class="payroll-container">
+    <!-- Header da Página -->
+    <header class="page-header">
+      <div class="header-titles">
+        <div class="badge-row">
+          <span class="module-tag">Departamento Pessoal</span>
+          <span class="active-dot"></span>
+        </div>
+        <h1 class="page-title">Folha de Pagamento & Pró-labore</h1>
+        <p class="page-subtitle">Gestão de colaboradores, apuração de encargos trabalhistas e emissão de holerites.</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="company-selector">
+          <ion-icon name="business-outline"></ion-icon>
+          <ion-select
+            [value]="selectedCompanyId()"
+            (ionChange)="onCompanyChange($event)"
+            interface="popover"
+            placeholder="Selecione a Empresa"
+          >
+            @for (comp of companies(); track comp._id) {
+              <ion-select-option [value]="comp._id">{{ comp.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <button class="btn-primary" (click)="openNewEmployeeModal()">
+          <ion-icon name="person-add-outline"></ion-icon>
+          <span>Novo Colaborador / Sócio</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Cards de Métricas Principais -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper gross">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Folha Bruta</span>
+          <span class="kpi-value">{{ formatCurrency(totalPayrollGross()) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper net">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Líquido a Pagar</span>
+          <span class="kpi-value highlight">{{ formatCurrency(totalPayrollNet()) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper inss">
+          <ion-icon name="briefcase-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Encargos INSS / FGTS</span>
+          <span class="kpi-value">{{ formatCurrency(totalINSS() + totalFGTS()) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper team">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Quadro de Pessoal</span>
+          <span class="kpi-value">{{ employees().length }} ativos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navegação por Abas -->
+    <div class="tabs-nav">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'employees'"
+        (click)="onTabChange('employees')"
+      >
+        <ion-icon name="people-outline"></ion-icon>
+        <span>Colaboradores & Sócios ({{ employees().length }})</span>
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'calculate'"
+        (click)="onTabChange('calculate')"
+      >
+        <ion-icon name="calculator-outline"></ion-icon>
+        <span>Cálculo da Folha Mensal</span>
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'payslips'"
+        (click)="onTabChange('payslips')"
+      >
+        <ion-icon name="document-text-outline"></ion-icon>
+        <span>Holerites & Recibos ({{ payslips().length }})</span>
+      </button>
+    </div>
+
+    <!-- Conteúdo da Aba 1: Colaboradores -->
+    @if (activeTab() === 'employees') {
+      <section class="tab-panel">
+        <div class="panel-header">
+          <div class="search-box">
+            <ion-icon name="search-outline"></ion-icon>
+            <input
+              type="text"
+              placeholder="Buscar por nome, cargo ou CPF..."
+              [value]="searchTerm()"
+              (input)="searchTerm.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        @if (isLoading()) {
+          <div class="loading-state">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Carregando dados dos colaboradores...</span>
+          </div>
+        } @else if (filteredEmployees().length === 0) {
+          <div class="empty-state">
+            <ion-icon name="people-outline"></ion-icon>
+            <h3>Nenhum colaborador encontrado</h3>
+            <p>Cadastre os colaboradores ou sócios para iniciar o processamento da folha.</p>
+            <button class="btn-primary" (click)="openNewEmployeeModal()">
+              <ion-icon name="person-add-outline"></ion-icon>
+              <span>Cadastrar Agora</span>
+            </button>
+          </div>
+        } @else {
+          <div class="table-card">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Nome do Colaborador</th>
+                  <th>Tipo</th>
+                  <th>Cargo / Função</th>
+                  <th>Salário / Pró-labore</th>
+                  <th>Admissão</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (emp of filteredEmployees(); track emp._id) {
+                  <tr>
+                    <td>
+                      <div class="user-cell">
+                        <div class="avatar">{{ emp.name.charAt(0) }}</div>
+                        <div class="user-meta">
+                          <span class="user-name">{{ emp.name }}</span>
+                          <span class="user-cpf">{{ emp.cpf }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="type-pill" [class.prolabore]="emp.type === 'PRO_LABORE'">
+                        {{ emp.type === 'PRO_LABORE' ? 'Pró-labore' : 'CLT' }}
+                      </span>
+                    </td>
+                    <td>{{ emp.role }}</td>
+                    <td class="salary-cell">{{ formatCurrency(emp.base_salary) }}</td>
+                    <td>{{ emp.admission_date | date: 'dd/MM/yyyy' }}</td>
+                    <td>
+                      <span class="status-badge" [class.active]="emp.status === 'ACTIVE'">
+                        {{ emp.status === 'ACTIVE' ? 'Ativo' : emp.status }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 2: Cálculo da Folha -->
+    @if (activeTab() === 'calculate') {
+      <section class="tab-panel">
+        <div class="calculation-card">
+          <div class="calc-header">
+            <div>
+              <h3>Apuração de Folha de Pagamento</h3>
+              <p>Processamento automático com tabelas vigentes de INSS, IRRF e FGTS Digital.</p>
+            </div>
+            <div class="calc-controls">
+              <div class="competence-input">
+                <ion-icon name="time-outline"></ion-icon>
+                <input
+                  type="text"
+                  placeholder="MM/AAAA"
+                  [value]="selectedCompetence()"
+                  (input)="selectedCompetence.set($any($event.target).value)"
+                />
+              </div>
+              <button class="btn-primary" (click)="calculateMonthlyPayroll()" [disabled]="isCalculating()">
+                @if (isCalculating()) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                  <span>Calculando...</span>
+                } @else {
+                  <ion-icon name="calculator-outline"></ion-icon>
+                  <span>Processar Folha</span>
+                }
+              </button>
+            </div>
+          </div>
+
+          @if (payrolls().length > 0) {
+            <div class="payrolls-history">
+              <h4>Histórico de Folhas Fechadas</h4>
+              <div class="history-grid">
+                @for (p of payrolls(); track p._id) {
+                  <div class="history-card">
+                    <div class="hist-head">
+                      <span class="competence-tag">Competência {{ p.competence }}</span>
+                      <span class="status-badge active">{{ p.status }}</span>
+                    </div>
+                    <div class="hist-values">
+                      <div class="value-row">
+                        <span>Total Bruto:</span>
+                        <strong>{{ formatCurrency(p.total_gross) }}</strong>
+                      </div>
+                      <div class="value-row">
+                        <span>INSS Retido:</span>
+                        <span>{{ formatCurrency(p.total_inss) }}</span>
+                      </div>
+                      <div class="value-row">
+                        <span>IRRF Retido:</span>
+                        <span>{{ formatCurrency(p.total_irrf) }}</span>
+                      </div>
+                      <div class="value-row total-row">
+                        <span>Total Líquido:</span>
+                        <strong class="highlight">{{ formatCurrency(p.total_net) }}</strong>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 3: Holerites -->
+    @if (activeTab() === 'payslips') {
+      <section class="tab-panel">
+        <div class="payslips-grid">
+          @for (slip of payslips(); track slip._id) {
+            <div class="payslip-card">
+              <div class="slip-header">
+                <div>
+                  <span class="slip-comp">Mês {{ slip.competence }}</span>
+                  <h4 class="slip-emp-name">{{ slip.employee_id?.name || 'Colaborador' }}</h4>
+                  <span class="slip-role">{{ slip.employee_id?.role || 'Função' }}</span>
+                </div>
+                <div class="slip-amount">
+                  <span class="amount-label">Valor Líquido</span>
+                  <span class="amount-val">{{ formatCurrency(slip.net_amount) }}</span>
+                </div>
+              </div>
+
+              <div class="slip-breakdown">
+                <div class="break-col earnings">
+                  <span class="break-title">Proventos (+)</span>
+                  <span class="break-val">{{ formatCurrency(slip.total_earnings) }}</span>
+                </div>
+                <div class="break-col deductions">
+                  <span class="break-title">Descontos (-)</span>
+                  <span class="break-val">{{ formatCurrency(slip.total_deductions) }}</span>
+                </div>
+              </div>
+
+              <div class="slip-actions">
+                <button class="btn-download">
+                  <ion-icon name="cloud-download-outline"></ion-icon>
+                  <span>Baixar Recibo PDF</span>
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <ion-icon name="document-text-outline"></ion-icon>
+              <h3>Nenhum holerite emitido</h3>
+              <p>Execute o cálculo da folha na aba anterior para gerar os comprovantes de pagamento.</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+
+  <!-- Modal de Cadastro de Colaborador -->
+  <ion-modal [isOpen]="isEmployeeModalOpen()" (didDismiss)="closeEmployeeModal()">
+    <ng-template>
+      <div class="modal-wrapper">
+        <div class="modal-header">
+          <h3>Novo Colaborador ou Sócio</h3>
+          <button class="btn-close" (click)="closeEmployeeModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()" class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo *</label>
+              <input type="text" formControlName="name" placeholder="Ex: João da Silva" />
+            </div>
+            <div class="form-group">
+              <label>CPF *</label>
+              <input type="text" formControlName="cpf" placeholder="000.000.000-00" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de Vínculo *</label>
+              <select formControlName="type">
+                <option value="CLT">CLT (Funcionário Registrado)</option>
+                <option value="PRO_LABORE">Pró-labore (Sócio / Diretor)</option>
+                <option value="ESTAGIARIO">Estagiário</option>
+                <option value="AUTONOMO">Autônomo</option>
+                <option value="PJ">Prestador PJ</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cargo / Função *</label>
+              <input type="text" formControlName="role" placeholder="Ex: Desenvolvedor Senior" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Salário Base / Pró-labore Bruto (R$) *</label>
+              <input type="number" formControlName="base_salary" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label>Data de Admissão *</label>
+              <input type="date" formControlName="admission_date" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>E-mail Corporativo</label>
+              <input type="email" formControlName="email" placeholder="colaborador@empresa.com.br" />
+            </div>
+            <div class="form-group">
+              <label>Número de Dependentes</label>
+              <input type="number" formControlName="dependents_count" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeEmployeeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="employeeForm.invalid">Salvar Colaborador</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

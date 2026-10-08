@@ -53,6 +53,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'folha',
+        loadComponent: () =>
+          import('./pages/admin/payroll/admin-payroll.component').then(
+            (m) => m.AdminPayrollComponent
+          ),
+      },
+      {
         path: 'appearance',
         loadComponent: () =>
           import('./pages/admin/settings/appearance/appearance.component').then(
