@@ -1,0 +1,539 @@
+.timeline-page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Hero de Controles Superiores
+.timeline-hero-bar {
+  background: linear-gradient(135deg, #0b1f3a 0%, #0d2847 100%);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  .hero-left {
+    flex: 1;
+    min-width: 300px;
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #00d2ff;
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+
+      ion-icon {
+        font-size: 13px;
+      }
+    }
+
+    .hero-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 4px;
+      letter-spacing: -0.4px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.85rem;
+      color: #8fa0b5;
+      margin: 0;
+    }
+  }
+
+  .hero-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .control-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .control-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #8fa0b5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .custom-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        --padding-start: 12px;
+        --padding-end: 12px;
+        --padding-top: 8px;
+        --padding-bottom: 8px;
+        min-width: 150px;
+      }
+    }
+
+    .refresh-action-btn {
+      --border-radius: 10px;
+      --border-color: rgba(255, 255, 255, 0.15);
+      margin: 0;
+      height: 40px;
+    }
+  }
+}
+
+// Resumo / Dashboard Card
+.summary-dashboard-card {
+  background: #0b1524;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+
+  .summary-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+
+    .progress-info {
+      flex: 1;
+      min-width: 280px;
+
+      .progress-title-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        .flash-icon {
+          font-size: 18px;
+          color: #f59e0b;
+        }
+
+        .progress-label {
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #ffffff;
+          flex: 1;
+        }
+
+        .progress-percent {
+          font-size: 0.9rem;
+          font-weight: 800;
+          color: #00d2ff;
+        }
+      }
+
+      .timeline-progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        --background: rgba(255, 255, 255, 0.06);
+        --progress-background: linear-gradient(90deg, #00d2ff, #10b981);
+      }
+    }
+
+    .kpi-mini-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .kpi-mini-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 8px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 85px;
+
+        .mini-label {
+          font-size: 0.68rem;
+          font-weight: 600;
+          color: #718096;
+          text-transform: uppercase;
+        }
+
+        .mini-val {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #ffffff;
+          margin-top: 2px;
+        }
+
+        &.is-success .mini-val {
+          color: #10b981;
+        }
+
+        &.is-warning .mini-val {
+          color: #f59e0b;
+        }
+
+        &.is-danger .mini-val {
+          color: #ef4444;
+        }
+      }
+    }
+  }
+}
+
+// Segment / Tabs de Status
+.status-segment-bar {
+  margin-bottom: 24px;
+
+  .custom-segment {
+    background: #0b1524;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: #8fa0b5;
+      --color-checked: #ffffff;
+      --indicator-color: linear-gradient(135deg, #00d2ff, #0077b6);
+      --indicator-box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      min-height: 38px;
+    }
+  }
+}
+
+// Loading State
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 12px;
+
+  p {
+    color: #8fa0b5;
+    font-size: 0.9rem;
+  }
+}
+
+// Timeline Feed
+.timeline-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-item-card {
+  display: flex;
+  gap: 20px;
+  position: relative;
+
+  .timeline-indicator-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 36px;
+    flex-shrink: 0;
+
+    .indicator-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e293b;
+      border: 2px solid #475569;
+      color: #94a3b8;
+      z-index: 2;
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &.status-concluido {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+        color: #10b981;
+      }
+
+      &.status-impedimento {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      &.status-aberta {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: #f59e0b;
+        color: #f59e0b;
+      }
+
+      &.status-desconsiderado {
+        background: rgba(148, 163, 184, 0.1);
+        border-color: #64748b;
+        color: #64748b;
+      }
+    }
+
+    .indicator-line {
+      flex: 1;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      margin-top: 6px;
+    }
+  }
+
+  .task-card-body {
+    flex: 1;
+    background: #0b1524;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: rgba(0, 210, 255, 0.3);
+      transform: translateX(4px);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .badges-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        .category-pill {
+          font-size: 0.65rem;
+          font-weight: 800;
+          padding: 3px 8px;
+          border-radius: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+
+          &.cat-fiscal {
+            background: rgba(0, 210, 255, 0.15);
+            color: #00d2ff;
+          }
+
+          &.cat-contabil {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+          }
+
+          &.cat-folha {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+          }
+
+          &.cat-legalizacao {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+          }
+
+          &.cat-financeiro {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+          }
+        }
+
+        .company-name-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: #a0aec0;
+          background: rgba(255, 255, 255, 0.03);
+          padding: 3px 8px;
+          border-radius: 6px;
+
+          ion-icon {
+            font-size: 14px;
+            color: #718096;
+          }
+        }
+      }
+
+      .task-status-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+    }
+
+    .task-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 6px;
+    }
+
+    .task-card-desc {
+      font-size: 0.85rem;
+      color: #8fa0b5;
+      margin: 0 0 16px;
+      line-height: 1.5;
+    }
+
+    .impediment-alert-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 20px;
+        color: #ef4444;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .impediment-text {
+        font-size: 0.8rem;
+        color: #fca5a5;
+
+        strong {
+          color: #ffffff;
+          display: block;
+          margin-bottom: 2px;
+        }
+      }
+    }
+
+    .card-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 16px;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #718096;
+
+        ion-icon {
+          font-size: 15px;
+          color: #a0aec0;
+        }
+
+        strong {
+          color: #ffffff;
+        }
+
+        &.tax-highlight {
+          color: #10b981;
+
+          strong {
+            color: #34d399;
+          }
+        }
+      }
+    }
+
+    .card-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      .action-btn {
+        --border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  &.is-done .task-card-body {
+    border-left: 4px solid #10b981;
+  }
+
+  &.is-impediment .task-card-body {
+    border-left: 4px solid #ef4444;
+  }
+}
+
+.empty-timeline-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #0b1524;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+
+  ion-icon {
+    font-size: 52px;
+    color: #10b981;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: #718096;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-hero-bar {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .hero-controls {
+      width: 100%;
+
+      .control-box {
+        flex: 1;
+        min-width: 130px;
+      }
+    }
+  }
+
+  .timeline-item-card {
+    .timeline-indicator-col {
+      display: none;
+    }
+  }
+}

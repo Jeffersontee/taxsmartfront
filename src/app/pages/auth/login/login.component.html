@@ -1,0 +1,140 @@
+<ion-content class="login-page-content" [fullscreen]="true">
+  <div class="login-wrapper">
+    
+    <!-- Background Decorators -->
+    <div class="glow-orb orb-top"></div>
+    <div class="glow-orb orb-bottom"></div>
+
+    <div class="login-container">
+      
+      <!-- Top Navigation / Brand Header -->
+      <div class="login-header">
+        <a routerLink="/" class="back-link">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          <span>Voltar ao Início</span>
+        </a>
+        <div class="brand-badge">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Ambiente Seguro SSL</span>
+        </div>
+      </div>
+
+      <!-- Main Login Card -->
+      <ion-card class="login-card">
+        <ion-card-content>
+          
+          <!-- Logo & Title Section -->
+          <div class="card-brand-header">
+            <div class="logo-box">
+              <img src="/logo.png" alt="TaxSmart Contabilidade" class="brand-logo" />
+            </div>
+            <h1 class="login-title">Acesse sua Conta</h1>
+            <p class="login-subtitle">
+              Portal do Cliente & Painel Integrado de Gestão Contábil
+            </p>
+          </div>
+
+          <!-- Error Alert Message -->
+          @if (errorMessage()) {
+            <div class="error-banner">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- Form Section -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            
+            <!-- Email Input Field -->
+            <div class="input-group">
+              <label class="field-label">Email Corporativo ou Pessoal</label>
+              <div class="custom-input-box" [class.has-error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+                <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+                <input
+                  type="email"
+                  formControlName="email"
+                  placeholder="seu.email@empresa.com.br"
+                  autocomplete="email"
+                  class="native-input"
+                />
+              </div>
+              @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+                <span class="field-error-text">O email é obrigatório.</span>
+              }
+              @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
+                <span class="field-error-text">Informe um formato de email válido.</span>
+              }
+            </div>
+
+            <!-- Password Input Field -->
+            <div class="input-group">
+              <div class="label-row">
+                <label class="field-label">Senha de Acesso</label>
+                <a class="forgot-password-link" href="https://wa.me/5511989321207?text=Ol%C3%A1%2C+preciso+de+ajuda+para+recuperar+minha+senha+na+TaxSmart" target="_blank">
+                  Esqueceu a senha?
+                </a>
+              </div>
+              <div class="custom-input-box" [class.has-error]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+                <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+                <input
+                  [type]="showPassword() ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password"
+                  class="native-input"
+                />
+                <button
+                  type="button"
+                  class="toggle-password-btn"
+                  (click)="toggleShowPassword()"
+                  aria-label="Alternar visualização da senha"
+                >
+                  <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                </button>
+              </div>
+              @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+                <span class="field-error-text">A senha é obrigatória.</span>
+              }
+              @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')) {
+                <span class="field-error-text">A senha deve ter no mínimo 6 caracteres.</span>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="submit-button"
+              [class.loading]="isLoading()"
+            >
+              @if (isLoading()) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                <span>Autenticando...</span>
+              } @else {
+                <span>Entrar no Sistema</span>
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+              }
+            </button>
+
+          </form>
+
+          <!-- Footer Info -->
+          <div class="card-footer">
+            <p class="footer-help">
+              Ainda não é cliente ou precisa de acesso?
+              <a href="https://wa.me/5511989321207" target="_blank" class="contact-link">
+                Fale com a Contabilidade
+              </a>
+            </p>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Copyright Notice -->
+      <div class="copyright-bar">
+        <p>© 2026 TaxSmart Contabilidade. Todos os direitos reservados.</p>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

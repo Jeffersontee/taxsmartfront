@@ -1,0 +1,23 @@
+export enum Strings {
+  // Rotas da Aplicação
+  ROUTE_HOME = '',
+  ROUTE_TIMELINE = 'timeline',
+  ROUTE_FISCAL = 'fiscal',
+  ROUTE_CONTABIL = 'contabil',
+  ROUTE_FOLHA = 'folha',
+  ROUTE_COMPANIES = 'empresas',
+  ROUTE_LOGIN = 'login',
+  ROUTE_ADMIN = 'admin',
+  ROUTE_ADMIN_DASHBOARD = 'admin/dashboard',
+  ROUTE_CLIENTE = 'cliente',
+  ROUTE_CLIENTE_DASHBOARD = 'cliente/dashboard',
+
+  // Endpoints do Backend
+  API_BASE_URL = 'http://localhost:8080/api/v1',
+  API_AUTH_LOGIN = '/auth/login',
+  API_AUTH_REGISTER = '/auth/register',
+  API_AUTH_ME = '/auth/me',
+  API_TASKS = '/tasks',
+  API_TASKS_SUMMARY = '/tasks/summary',
+  API_COMPANIES = '/companies',
+}

@@ -1,5 +1,6 @@
-import { Component, HostListener, ViewChild } from '@angular/core';
-import { Router, RouterOutlet, RouterLink } from '@angular/router';
+import { Component, HostListener, inject, signal, computed } from '@angular/core';
+import { Router, RouterOutlet, RouterLink, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 import {
   IonApp,
   IonHeader,
@@ -31,7 +32,11 @@ import {
   mailOutline,
   locationOutline,
   arrowUpOutline,
+  personCircleOutline,
+  gridOutline,
+  logOutOutline,
 } from 'ionicons/icons';
+import { AuthService } from './services/auth/auth.service';
 
 interface ClickParticle {
   x: number;
@@ -69,10 +74,25 @@ interface ClickParticle {
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  private router = inject(Router);
+  authService = inject(AuthService);
+
+  currentUrl = signal<string>(this.router.url);
+
+  isStandaloneLayout = computed(() => {
+    const url = this.currentUrl();
+    return (
+      url.startsWith('/admin') ||
+      url.startsWith('/cliente') ||
+      url.startsWith('/login') ||
+      url.startsWith('/auth')
+    );
+  });
+
   particles: ClickParticle[] = [];
   particleId = 0;
 
-  constructor(private router: Router) {
+  constructor() {
     addIcons({
       logoInstagram,
       logoLinkedin,
@@ -82,7 +102,20 @@ export class AppComponent {
       mailOutline,
       locationOutline,
       arrowUpOutline,
+      personCircleOutline,
+      gridOutline,
+      logOutOutline,
     });
+
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentUrl.set(event.urlAfterRedirects || event.url);
+      });
+  }
+
+  navigateToDashboard(): void {
+    this.authService.redirectAfterLogin();
   }
 
   @HostListener('document:click', ['$event'])

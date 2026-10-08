@@ -1,0 +1,270 @@
+<div class="timeline-page-container">
+  <!-- Topbar / Hero de Controles -->
+  <div class="timeline-hero-bar">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <ion-icon name="layers-outline"></ion-icon>
+        <span>Linha do Tempo de Obrigações</span>
+      </div>
+      <h1 class="hero-title">Gestão de Rotinas Fiscais & Contábeis</h1>
+      <p class="hero-subtitle">
+        Acompanhe o cronograma, entregas de guias e status operacionais por competência
+      </p>
+    </div>
+
+    <!-- Filtros Superiores em Linha -->
+    <div class="hero-controls">
+      <!-- Seletor de Competência -->
+      <div class="control-box">
+        <label class="control-label">Competência</label>
+        <ion-select
+          [value]="taskService.selectedCompetence()"
+          (ionChange)="onCompetenceChange($event)"
+          interface="popover"
+          class="custom-select"
+        >
+          @for (c of competences; track c) {
+            <ion-select-option [value]="c">{{ c }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <!-- Seletor de Empresa (Se Contador) -->
+      @if (isAccountant()) {
+        <div class="control-box">
+          <label class="control-label">Empresa</label>
+          <ion-select
+            [value]="taskService.selectedCompanyId()"
+            (ionChange)="onCompanyChange($event)"
+            interface="popover"
+            placeholder="Todas as Empresas"
+            class="custom-select"
+          >
+            <ion-select-option value="">Todas as Empresas</ion-select-option>
+            @for (emp of companyService.companies(); track emp._id) {
+              <ion-select-option [value]="emp._id">{{ emp.tradeName || emp.corporateName }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+      }
+
+      <!-- Seletor de Categoria -->
+      <div class="control-box">
+        <label class="control-label">Categoria</label>
+        <ion-select
+          [value]="taskService.selectedCategory()"
+          (ionChange)="onCategoryChange($event)"
+          interface="popover"
+          class="custom-select"
+        >
+          @for (cat of categories; track cat.value) {
+            <ion-select-option [value]="cat.value">{{ cat.label }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <ion-button fill="outline" color="light" class="refresh-action-btn" (click)="fetchData()">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Cards de Resumo & Barra de Progresso -->
+  <div class="summary-dashboard-card">
+    <div class="summary-top-row">
+      <div class="progress-info">
+        <div class="progress-title-row">
+          <ion-icon name="flash-outline" class="flash-icon"></ion-icon>
+          <span class="progress-label">Taxa de Conclusão da Carteira</span>
+          <span class="progress-percent">
+            {{ taskService.summary()?.percentualConclusao || 0 }}%
+          </span>
+        </div>
+        <ion-progress-bar
+          [value]="(taskService.summary()?.percentualConclusao || 0) / 100"
+          color="primary"
+          class="timeline-progress-bar"
+        ></ion-progress-bar>
+      </div>
+
+      <div class="kpi-mini-group">
+        <div class="kpi-mini-item">
+          <span class="mini-label">Total</span>
+          <strong class="mini-val">{{ taskService.summary()?.total || 0 }}</strong>
+        </div>
+        <div class="kpi-mini-item is-success">
+          <span class="mini-label">Concluídas</span>
+          <strong class="mini-val text-success">{{ taskService.summary()?.concluido || taskService.summary()?.concluidas || 0 }}</strong>
+        </div>
+        <div class="kpi-mini-item is-warning">
+          <span class="mini-label">Em Aberto</span>
+          <strong class="mini-val text-warning">{{ taskService.summary()?.aberta || taskService.summary()?.abertas || 0 }}</strong>
+        </div>
+        <div class="kpi-mini-item is-danger">
+          <span class="mini-label">Impedimentos</span>
+          <strong class="mini-val text-danger">{{ taskService.summary()?.impedimento || taskService.summary()?.impedimentos || 0 }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Segment / Filtro por Status -->
+  <div class="status-segment-bar">
+    <ion-segment
+      [value]="taskService.selectedStatusFilter()"
+      (ionChange)="onFilterChange($event)"
+      mode="md"
+      class="custom-segment"
+    >
+      <ion-segment-button value="ALL">
+        <ion-label>TODAS AS OBRIGAÇÕES</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="TaskStatus.ABERTA">
+        <ion-label>EM ABERTO</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="TaskStatus.CONCLUIDO">
+        <ion-label>CONCLUÍDAS</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="TaskStatus.IMPEDIMENTO">
+        <ion-label>IMPEDIMENTOS</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="TaskStatus.DESCONSIDERADO">
+        <ion-label>DESCONSIDERADAS</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Loading State -->
+  @if (taskService.isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Atualizando linha do tempo...</p>
+    </div>
+  }
+
+  <!-- Lista de Tarefas da Linha do Tempo -->
+  <div class="timeline-feed">
+    @for (task of taskService.filteredTasks(); track task._id) {
+      <div class="timeline-item-card" [class.is-done]="task.status === TaskStatus.CONCLUIDO" [class.is-impediment]="task.status === TaskStatus.IMPEDIMENTO">
+        
+        <!-- Marcador Lateral de Linha do Tempo -->
+        <div class="timeline-indicator-col">
+          <div class="indicator-dot" [class]="'status-' + task.status.toLowerCase()">
+            <ion-icon [name]="getStatusIcon(task.status)"></ion-icon>
+          </div>
+          <div class="indicator-line"></div>
+        </div>
+
+        <!-- Conteúdo do Card -->
+        <div class="task-card-body">
+          <div class="card-header-row">
+            <div class="badges-row">
+              <span class="category-pill" [class]="'cat-' + task.category.toLowerCase()">
+                {{ task.category }}
+              </span>
+              <span class="company-name-badge">
+                <ion-icon name="business-outline"></ion-icon>
+                {{ task.companyId.tradeName || task.companyId.corporateName }}
+              </span>
+            </div>
+
+            <div class="status-badge-wrap">
+              <ion-badge [color]="getStatusBadgeColor(task.status)" class="task-status-pill">
+                {{ getStatusLabel(task.status) }}
+              </ion-badge>
+            </div>
+          </div>
+
+          <h3 class="task-card-title">{{ task.title }}</h3>
+          <p class="task-card-desc">{{ task.description }}</p>
+
+          <!-- Seção de Impedimento (se houver) -->
+          @if (task.status === TaskStatus.IMPEDIMENTO && task.impedimentReason) {
+            <div class="impediment-alert-box">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <div class="impediment-text">
+                <strong>Motivo do Impedimento:</strong>
+                <span>{{ task.impedimentReason }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- Metadados e Valores -->
+          <div class="card-meta-row">
+            <div class="meta-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>Vencimento: <strong>{{ task.dueDate | date: 'dd/MM/yyyy' }}</strong></span>
+            </div>
+
+            @if (task.taxAmount) {
+              <div class="meta-item tax-highlight">
+                <span>Valor Guia: <strong>{{ task.taxAmount | currency: 'BRL' }}</strong></span>
+              </div>
+            }
+
+            <div class="meta-item">
+              <span>Competência: <strong>{{ task.competence }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Ações Disponíveis -->
+          <div class="card-actions-row">
+            <!-- Ações para Contador -->
+            @if (isAccountant()) {
+              <ion-button
+                size="small"
+                fill="solid"
+                color="primary"
+                class="action-btn"
+                (click)="openStatusAction(task)"
+              >
+                <ion-icon slot="start" name="refresh-outline"></ion-icon>
+                Alterar Status
+              </ion-button>
+            }
+
+            <!-- Ações para Guias Prontas (PIX e Boleto) -->
+            @if (task.status === TaskStatus.CONCLUIDO) {
+              <ion-button
+                size="small"
+                fill="outline"
+                color="success"
+                class="action-btn"
+                (click)="copyPixCode(task.pixCode)"
+              >
+                <ion-icon slot="start" name="copy-outline"></ion-icon>
+                Copiar PIX
+              </ion-button>
+
+              <ion-button
+                size="small"
+                fill="outline"
+                color="light"
+                class="action-btn"
+                (click)="copyBarcode(task.barcode)"
+              >
+                <ion-icon slot="start" name="download-outline"></ion-icon>
+                Código Boleto
+              </ion-button>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-timeline-state">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <h3>Nenhuma obrigação encontrada</h3>
+        <p>Não há tarefas registradas com os filtros selecionados para a competência {{ taskService.selectedCompetence() }}.</p>
+      </div>
+    }
+  </div>
+
+  <!-- Toast de Notificações -->
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [duration]="3000"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</div>

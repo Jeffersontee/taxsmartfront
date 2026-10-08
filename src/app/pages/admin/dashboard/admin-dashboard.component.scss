@@ -1,0 +1,486 @@
+.dashboard-page-wrapper {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+// Welcome Header Banner
+.dashboard-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .header-texts {
+    .welcome-title {
+      margin: 0 0 6px 0;
+      font-size: 1.625rem;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.02em;
+    }
+
+    .welcome-subtitle {
+      margin: 0;
+      font-size: 0.9375rem;
+      color: #94a3b8;
+
+      strong {
+        color: #fdba74;
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+    }
+
+    .primary-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+// KPI Grid
+.kpi-grid {
+  padding: 0;
+  margin-bottom: 24px;
+
+  ion-col {
+    padding: 6px;
+  }
+
+  .kpi-card {
+    margin: 0;
+    border-radius: 16px;
+    background: rgba(18, 24, 38, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+    ion-card-content {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .kpi-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+
+      &.icon-purple {
+        background: rgba(168, 85, 247, 0.15);
+        color: #c084fc;
+      }
+
+      &.icon-green {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+      }
+
+      &.icon-yellow {
+        background: rgba(234, 179, 8, 0.15);
+        color: #facc15;
+      }
+
+      &.icon-red {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+    }
+
+    .kpi-info {
+      display: flex;
+      flex-direction: column;
+
+      .kpi-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+
+      .kpi-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #f8fafc;
+        line-height: 1.2;
+        margin: 2px 0;
+      }
+
+      .kpi-subtext {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+    }
+  }
+}
+
+// Progress Section Card
+.progress-section-card {
+  background: rgba(18, 24, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .progress-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .bolt-icon {
+        color: #ea580c;
+        font-size: 1.15rem;
+      }
+
+      .progress-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #cbd5e1;
+      }
+    }
+
+    .progress-percent {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #4ade80;
+    }
+  }
+
+  .custom-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ea580c 0%, #22c55e 100%);
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+    }
+  }
+}
+
+// Content Split Grid
+.content-split-grid {
+  padding: 0;
+
+  ion-col {
+    padding: 6px;
+  }
+}
+
+.section-container {
+  background: rgba(18, 24, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  height: 100%;
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    .section-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      ion-icon {
+        color: #ea580c;
+      }
+    }
+
+    .view-all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #fdba74;
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+
+    .badge-counter {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+  }
+}
+
+// Tasks List
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .task-row-card {
+    position: relative;
+    display: flex;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 14px 16px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: rgba(234, 88, 12, 0.3);
+      transform: translateX(3px);
+    }
+
+    .task-status-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+
+      &[data-status="CONCLUIDO"] {
+        background: #22c55e;
+      }
+      &[data-status="IMPEDIMENTO"] {
+        background: #ef4444;
+      }
+      &[data-status="DESCONSIDERADO"] {
+        background: #64748b;
+      }
+      &[data-status="ABERTA"] {
+        background: #eab308;
+      }
+    }
+
+    .task-main-info {
+      width: 100%;
+
+      .task-title-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+
+        .task-title {
+          font-size: 0.9375rem;
+          color: #f8fafc;
+        }
+
+        .status-badge {
+          font-size: 0.7rem;
+          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 6px;
+        }
+      }
+
+      .task-desc {
+        margin: 0 0 8px 0;
+        font-size: 0.8125rem;
+        color: #94a3b8;
+        line-height: 1.4;
+      }
+
+      .task-meta-tags {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.75rem;
+
+        .company-tag {
+          color: #fdba74;
+          font-weight: 600;
+          background: rgba(234, 88, 12, 0.1);
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
+
+        .category-tag {
+          color: #cbd5e1;
+          background: rgba(255, 255, 255, 0.05);
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
+
+        .due-tag {
+          color: #64748b;
+        }
+      }
+    }
+  }
+}
+
+// Companies List
+.companies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .company-card-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(3px);
+    }
+
+    .company-avatar-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ea580c;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .company-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      .company-name {
+        font-size: 0.9rem;
+        color: #f8fafc;
+        margin-bottom: 2px;
+      }
+
+      .company-cnpj {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-bottom: 4px;
+      }
+
+      .company-footer-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .regime-badge {
+          font-size: 0.6875rem;
+          font-weight: 700;
+          color: #38bdf8;
+          background: rgba(56, 189, 248, 0.1);
+          padding: 2px 6px;
+          border-radius: 4px;
+        }
+
+        .city-tag {
+          font-size: 0.7rem;
+          color: #64748b;
+        }
+      }
+    }
+  }
+}
+
+.empty-state-box {
+  text-align: center;
+  padding: 32px 16px;
+  color: #64748b;
+
+  ion-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    color: #475569;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}

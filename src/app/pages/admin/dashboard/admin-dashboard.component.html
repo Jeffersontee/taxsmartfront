@@ -1,0 +1,202 @@
+<div class="dashboard-page-wrapper">
+
+  <!-- Welcome Header -->
+  <div class="dashboard-header-banner">
+    <div class="header-texts">
+      <h1 class="welcome-title">
+        Olá, {{ authService.currentUser()?.name || 'Contador' }}! 👋
+      </h1>
+      <p class="welcome-subtitle">
+        Painel de Controle da Carteira Contábil • Competência <strong>{{ currentCompetence }}</strong>
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="loadDashboardData()" title="Atualizar Dados">
+        <ion-icon name="refresh-outline"></ion-icon>
+        <span>Atualizar</span>
+      </button>
+      <a routerLink="/timeline" class="primary-action-btn">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Linha do Tempo</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Grid -->
+  <ion-grid class="kpi-grid">
+    <ion-row>
+      
+      <!-- Total de Empresas -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card card-companies">
+          <ion-card-content>
+            <div class="kpi-icon-box icon-purple">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Empresas Ativas</span>
+              <strong class="kpi-value">{{ companyService.companies().length || 2 }}</strong>
+              <span class="kpi-subtext">Simples & Presumido</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Obrigações Concluídas -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card card-concluded">
+          <ion-card-content>
+            <div class="kpi-icon-box icon-green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Concluídas (10/2026)</span>
+              <strong class="kpi-value">{{ taskService.summary()?.concluidas || 4 }}</strong>
+              <span class="kpi-subtext">Guias e Folhas Emitidas</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Obrigações em Aberto -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card card-pending">
+          <ion-card-content>
+            <div class="kpi-icon-box icon-yellow">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Tarefas Abertas</span>
+              <strong class="kpi-value">{{ taskService.summary()?.abertas || 2 }}</strong>
+              <span class="kpi-subtext">Dentro do Prazo</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Impedimentos / Bloqueios -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card card-impediment">
+          <ion-card-content>
+            <div class="kpi-icon-box icon-red">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Impedimentos</span>
+              <strong class="kpi-value">{{ taskService.summary()?.impedimentos || 1 }}</strong>
+              <span class="kpi-subtext">Falta Documentos PJ</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <!-- Progress Bar Section -->
+  <div class="progress-section-card">
+    <div class="progress-header">
+      <div class="progress-title-box">
+        <ion-icon name="flash-outline" class="bolt-icon"></ion-icon>
+        <span class="progress-title">Progresso das Entregas na Competência {{ currentCompetence }}</span>
+      </div>
+      <span class="progress-percent">
+        {{ taskService.summary()?.percentualConclusao || 0 }}% Concluído
+      </span>
+    </div>
+    <div class="custom-progress-bar">
+      <ion-progress-bar
+        [value]="(taskService.summary()?.percentualConclusao || 0) / 100"
+        color="primary"
+        class="dashboard-progress"
+      ></ion-progress-bar>
+    </div>
+  </div>
+
+  <!-- Content Split: Recent Timeline Tasks & Companies -->
+  <ion-grid class="content-split-grid">
+    <ion-row>
+
+      <!-- Recent Timeline Tasks Column -->
+      <ion-col size="12" size-lg="7">
+        <div class="section-container">
+          <div class="section-header">
+            <h2 class="section-title">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>Linha do Tempo Recente</span>
+            </h2>
+            <a routerLink="/timeline" class="view-all-link">
+              <span>Ver Linha Completa</span>
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+            </a>
+          </div>
+
+          <div class="tasks-list">
+            @for (task of taskService.tasks(); track task._id) {
+              <div class="task-row-card">
+                <div class="task-status-indicator" [attr.data-status]="task.status"></div>
+                <div class="task-main-info">
+                  <div class="task-title-line">
+                    <strong class="task-title">{{ task.title }}</strong>
+                    <ion-badge [color]="getStatusBadgeColor(task.status)" class="status-badge">
+                      {{ getStatusLabel(task.status) }}
+                    </ion-badge>
+                  </div>
+                  <p class="task-desc">{{ task.description }}</p>
+                  <div class="task-meta-tags">
+                    <span class="company-tag">{{ task.companyId.tradeName || task.companyId.corporateName }}</span>
+                    <span class="category-tag">{{ task.category }}</span>
+                    <span class="due-tag">Vencimento: {{ task.dueDate | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state-box">
+                <ion-icon name="time-outline"></ion-icon>
+                <p>Nenhuma tarefa cadastrada nesta competência.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </ion-col>
+
+      <!-- Companies Quick View Column -->
+      <ion-col size="12" size-lg="5">
+        <div class="section-container">
+          <div class="section-header">
+            <h2 class="section-title">
+              <ion-icon name="business-outline"></ion-icon>
+              <span>Empresas na Carteira</span>
+            </h2>
+            <span class="badge-counter">{{ companyService.companies().length || 2 }} empresas</span>
+          </div>
+
+          <div class="companies-list">
+            @for (company of companyService.companies(); track company._id) {
+              <div class="company-card-row">
+                <div class="company-avatar-box">
+                  <span>{{ company.tradeName.substring(0, 2).toUpperCase() }}</span>
+                </div>
+                <div class="company-details">
+                  <strong class="company-name">{{ company.tradeName }}</strong>
+                  <span class="company-cnpj">CNPJ: {{ company.cnpj }}</span>
+                  <div class="company-footer-meta">
+                    <span class="regime-badge">{{ company.taxRegime }}</span>
+                    <span class="city-tag">{{ company.address.city }}/{{ company.address.state }}</span>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state-box">
+                <ion-icon name="business-outline"></ion-icon>
+                <p>Nenhuma empresa cadastrada.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+</div>
