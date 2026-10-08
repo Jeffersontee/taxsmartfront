@@ -1,0 +1,152 @@
+<ion-split-pane contentId="client-main-content" when="md">
+  <!-- Menu Lateral do Cliente -->
+  <ion-menu contentId="client-main-content" type="overlay" class="client-sidebar">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="sidebar-header-toolbar">
+        <div class="brand-container">
+          <div class="brand-logo-wrap">
+            <img src="/logo.png" alt="TaxSmart Contabilidade" class="brand-logo" />
+          </div>
+          <div class="brand-info">
+            <span class="brand-name">TaxSmart</span>
+            <span class="brand-subtitle">Portal do Cliente</span>
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="sidebar-content">
+      <!-- Card do Usuário Logado -->
+      <div class="user-card">
+        <ion-avatar class="user-avatar">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </ion-avatar>
+        <div class="user-details">
+          <h4 class="user-name">{{ authService.currentUser()?.name || 'Cliente' }}</h4>
+          <span class="user-email">{{ authService.currentUser()?.email }}</span>
+          <ion-badge color="success" class="role-badge">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            Área do Cliente
+          </ion-badge>
+        </div>
+      </div>
+
+      <!-- Links de Navegação -->
+      <ion-list lines="none" class="nav-list">
+        <ion-list-header>
+          <ion-label>PAINEL PRINCIPAL</ion-label>
+        </ion-list-header>
+
+        <ion-item
+          routerLink="/cliente/dashboard"
+          routerLinkActive="active-item"
+          [routerLinkActiveOptions]="{ exact: true }"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="grid-outline"></ion-icon>
+          <ion-label>Visão Geral</ion-label>
+        </ion-item>
+
+        <ion-item
+          routerLink="/timeline"
+          routerLinkActive="active-item"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="time-outline"></ion-icon>
+          <ion-label>Linha do Tempo</ion-label>
+        </ion-item>
+
+        <ion-list-header class="mt-section">
+          <ion-label>FINANCEIRO & TRIBUTOS</ion-label>
+        </ion-list-header>
+
+        <ion-item
+          routerLink="/cliente/dashboard"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="wallet-outline"></ion-icon>
+          <ion-label>Guias & Tributos</ion-label>
+        </ion-item>
+
+        <ion-item
+          routerLink="/cliente/dashboard"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          <ion-label>Documentos Fiscais</ion-label>
+        </ion-item>
+
+        <ion-item
+          routerLink="/cliente/dashboard"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+          <ion-label>Enviar Documentos</ion-label>
+        </ion-item>
+
+        <ion-list-header class="mt-section">
+          <ion-label>ATENDIMENTO</ion-label>
+        </ion-list-header>
+
+        <ion-item
+          routerLink="/contato"
+          detail="false"
+          class="nav-item"
+        >
+          <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
+          <ion-label>Falar com Contador</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+
+    <!-- Rodapé com Logout -->
+    <div class="sidebar-footer">
+      <ion-button expand="block" fill="clear" color="danger" (click)="logout()" class="logout-btn">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Sair do Sistema
+      </ion-button>
+    </div>
+  </ion-menu>
+
+  <!-- Conteúdo Principal -->
+  <div class="ion-page" id="client-main-content">
+    <ion-header class="main-topbar ion-no-border">
+      <ion-toolbar class="topbar-toolbar">
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+
+        <ion-title class="topbar-title">
+          <span>Área do Cliente</span>
+          <span class="portal-badge">TaxSmart Prime</span>
+        </ion-title>
+
+        <ion-buttons slot="end" class="topbar-actions">
+          <ion-button fill="clear" class="notif-btn">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notif-dot"></span>
+          </ion-button>
+
+          <div class="header-user-pill">
+            <div class="avatar-mini">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <div class="user-meta">
+              <span class="user-mini-name">{{ authService.currentUser()?.name }}</span>
+              <span class="user-mini-status">Conectado</span>
+            </div>
+          </div>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="main-content-area">
+      <router-outlet></router-outlet>
+    </ion-content>
+  </div>
+</ion-split-pane>

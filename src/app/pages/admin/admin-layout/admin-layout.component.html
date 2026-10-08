@@ -1,0 +1,123 @@
+<ion-split-pane contentId="admin-main-content" when="md" class="admin-split-pane">
+  
+  <!-- Sidebar Navigation -->
+  <ion-menu contentId="admin-main-content" type="overlay" class="admin-sidebar">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="sidebar-header-toolbar">
+        <div class="sidebar-brand">
+          <img src="/logo.png" alt="TaxSmart" class="brand-icon" />
+          <div class="brand-text-box">
+            <span class="brand-name">TaxSmart</span>
+            <span class="brand-role-badge">Escritório Contábil</span>
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="sidebar-content">
+      
+      <!-- User Profile Card in Sidebar -->
+      <div class="sidebar-user-card">
+        <div class="user-avatar-circle">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </div>
+        <div class="user-info">
+          <strong class="user-name">{{ authService.currentUser()?.name || 'Contador' }}</strong>
+          <span class="user-email">{{ authService.currentUser()?.email }}</span>
+        </div>
+      </div>
+
+      <ion-list lines="none" class="sidebar-menu-list">
+        <ion-list-header class="menu-category-header">PRINCIPAL</ion-list-header>
+
+        <ion-item routerLink="/admin/dashboard" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="grid-outline"></ion-icon>
+          <ion-label>Dashboard Geral</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/admin/timeline" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="time-outline"></ion-icon>
+          <ion-label>Linha do Tempo</ion-label>
+        </ion-item>
+
+        <ion-list-header class="menu-category-header">GESTÃO CONTÁBIL</ion-list-header>
+
+        <ion-item routerLink="/admin/empresas" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="business-outline"></ion-icon>
+          <ion-label>Empresas & Clientes</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/fiscal" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          <ion-label>Módulo Fiscal</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/contabil" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="calculator-outline"></ion-icon>
+          <ion-label>Módulo Contábil</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/departamento-pessoal" routerLinkActive="active-item" class="nav-item" button>
+          <ion-icon slot="start" name="people-outline"></ion-icon>
+          <ion-label>Folha & DP</ion-label>
+        </ion-item>
+
+        <ion-list-header class="menu-category-header">SISTEMA & PLATAFORMA</ion-list-header>
+
+        <ion-item (click)="toggleSettings()" class="nav-item has-submenu" button [detail]="false">
+          <ion-icon slot="start" name="settings-outline"></ion-icon>
+          <ion-label>Configurações</ion-label>
+          <ion-icon slot="end" [name]="isSettingsOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'" class="chevron-icon"></ion-icon>
+        </ion-item>
+
+        @if (isSettingsOpen()) {
+          <div class="submenu-container">
+            <ion-item routerLink="/admin/appearance" routerLinkActive="active-item" class="nav-item sub-item" button [detail]="false">
+              <ion-icon slot="start" name="color-palette-outline"></ion-icon>
+              <ion-label>Aparência & Template</ion-label>
+            </ion-item>
+          </div>
+        }
+      </ion-list>
+    </ion-content>
+
+    <!-- Sidebar Bottom Logout -->
+    <div class="sidebar-footer">
+      <button class="logout-action-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Sair do Sistema</span>
+      </button>
+    </div>
+  </ion-menu>
+
+  <!-- Main Content Outlet -->
+  <div class="ion-page" id="admin-main-content">
+    
+    <!-- Admin Top Navbar -->
+    <ion-header class="admin-top-header ion-no-border">
+      <ion-toolbar class="admin-navbar-toolbar">
+        <ion-buttons slot="start">
+          <ion-menu-button color="light" class="menu-toggle-btn"></ion-menu-button>
+        </ion-buttons>
+
+        <div class="navbar-center-title">
+          <span class="environment-badge">Ambiente de Operação</span>
+        </div>
+
+        <ion-buttons slot="end">
+          <a routerLink="/" class="public-site-link">
+            <span>Ir para o Site</span>
+          </a>
+          <button class="header-logout-btn" (click)="logout()" title="Encerrar Sessão">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="admin-page-container">
+      <router-outlet></router-outlet>
+    </ion-content>
+
+  </div>
+</ion-split-pane>

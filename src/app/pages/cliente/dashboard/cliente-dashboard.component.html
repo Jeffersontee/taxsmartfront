@@ -1,0 +1,253 @@
+<div class="client-dashboard-container">
+  <!-- Cabeçalho / Hero da Empresa -->
+  <div class="company-hero-card">
+    <div class="hero-content">
+      <div class="company-badge-row">
+        <ion-badge color="primary" class="regime-badge">
+          {{ companyTaxRegime() }}
+        </ion-badge>
+        <span class="competence-badge">Competência: <strong>{{ currentCompetence }}</strong></span>
+      </div>
+      <h1 class="company-title">{{ companyName() }}</h1>
+      <p class="company-cnpj">CNPJ: {{ companyCnpj() }}</p>
+    </div>
+
+    <div class="hero-actions">
+      <ion-button fill="outline" color="light" class="refresh-btn" (click)="loadClientData()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Atualizar
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (taskService.isLoading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando obrigações da sua empresa...</p>
+    </div>
+  }
+
+  <!-- Cards de KPI / Resumo do Mês -->
+  <ion-grid class="kpi-grid">
+    <ion-row>
+      <!-- Total de Guias / Obrigações -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card">
+          <ion-card-content>
+            <div class="kpi-header">
+              <span class="kpi-title">Obrigações do Mês</span>
+              <div class="kpi-icon-wrap total-icon">
+                <ion-icon name="document-text-outline"></ion-icon>
+              </div>
+            </div>
+            <div class="kpi-value">{{ taskService.summary()?.total || 0 }}</div>
+            <div class="kpi-footer">
+              <span>Competência {{ currentCompetence }}</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Concluídas / Entregues -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card">
+          <ion-card-content>
+            <div class="kpi-header">
+              <span class="kpi-title">Guias Entregues</span>
+              <div class="kpi-icon-wrap success-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+            </div>
+            <div class="kpi-value text-success">{{ taskService.summary()?.concluido || 0 }}</div>
+            <div class="kpi-footer">
+              <span class="text-success">Prontas para pagamento</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Pendentes / Em Aberto -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card">
+          <ion-card-content>
+            <div class="kpi-header">
+              <span class="kpi-title">Em Processamento</span>
+              <div class="kpi-icon-wrap warning-icon">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+            </div>
+            <div class="kpi-value text-warning">{{ taskService.summary()?.aberta || 0 }}</div>
+            <div class="kpi-footer">
+              <span>Em apuração pelo escritório</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Impedimentos / Pendência de Documentos -->
+      <ion-col size="12" size-sm="6" size-lg="3">
+        <ion-card class="kpi-card">
+          <ion-card-content>
+            <div class="kpi-header">
+              <span class="kpi-title">Aguardando Você</span>
+              <div class="kpi-icon-wrap danger-icon">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+              </div>
+            </div>
+            <div class="kpi-value text-danger">{{ taskService.summary()?.impedimento || 0 }}</div>
+            <div class="kpi-footer">
+              <span class="text-danger">Documentos pendentes</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Seção Central: Guias Disponíveis & Ações Rápidas -->
+  <ion-grid class="main-sections-grid">
+    <ion-row>
+      <!-- Coluna Principal: Linha de Obrigações e Guias -->
+      <ion-col size="12" size-lg="8">
+        <div class="section-card">
+          <div class="section-header">
+            <div class="header-left">
+              <ion-icon name="wallet-outline" class="section-icon"></ion-icon>
+              <div>
+                <h3 class="section-title">Minhas Guias & Obrigações Fiscais</h3>
+                <p class="section-subtitle">Acompanhe e efetue o pagamento dos tributos da sua empresa</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de Tarefas / Guias -->
+          <div class="tasks-list">
+            @for (task of taskService.tasks(); track task._id) {
+              <div class="task-item-card" [class.is-done]="task.status === TaskStatus.CONCLUIDO">
+                <div class="task-main-info">
+                  <div class="task-category-tag" [class]="'cat-' + task.category.toLowerCase()">
+                    {{ task.category }}
+                  </div>
+                  <div class="task-details">
+                    <h4 class="task-title">{{ task.title }}</h4>
+                    <p class="task-desc">{{ task.description }}</p>
+                    <div class="task-meta-row">
+                      <span class="due-date">
+                        <ion-icon name="time-outline"></ion-icon>
+                        Vencimento: <strong>{{ task.dueDate ? (task.dueDate | date: 'dd/MM/yyyy') : 'A definir' }}</strong>
+                      </span>
+                      @if (task.taxAmount) {
+                        <span class="tax-value">
+                          Valor: <strong>{{ task.taxAmount | currency: 'BRL' }}</strong>
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="task-actions-col">
+                  <ion-badge [color]="getStatusBadgeColor(task.status)" class="task-status-badge">
+                    {{ getStatusLabel(task.status) }}
+                  </ion-badge>
+
+                  <!-- Botões de Ação para Guias Prontas -->
+                  @if (task.status === TaskStatus.CONCLUIDO) {
+                    <div class="quick-pay-actions">
+                      <ion-button size="small" fill="solid" color="primary" class="pix-btn" (click)="copyPixCode(task.pixCode)">
+                        <ion-icon slot="start" name="copy-outline"></ion-icon>
+                        PIX Copia & Cola
+                      </ion-button>
+                      <ion-button size="small" fill="outline" color="light" class="barcode-btn" (click)="copyBarcode(task.barcode)">
+                        <ion-icon slot="start" name="download-outline"></ion-icon>
+                        Boleto / Guia
+                      </ion-button>
+                    </div>
+                  } @else if (task.status === TaskStatus.IMPEDIMENTO) {
+                    <div class="impediment-action">
+                      <ion-button size="small" color="danger" fill="outline">
+                        <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+                        Enviar Documento
+                      </ion-button>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <h4>Tudo em dia!</h4>
+                <p>Nenhuma obrigação pendente encontrada para a competência {{ currentCompetence }}.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </ion-col>
+
+      <!-- Coluna Lateral: Envio de Documentos & Atendimento -->
+      <ion-col size="12" size-lg="4">
+        <!-- Card de Envio Rápido -->
+        <div class="section-card upload-card">
+          <div class="section-header">
+            <div class="header-left">
+              <ion-icon name="cloud-upload-outline" class="section-icon text-accent"></ion-icon>
+              <div>
+                <h3 class="section-title">Envio de Documentos</h3>
+                <p class="section-subtitle">Envie notas e extratos para a contabilidade</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="upload-dropzone">
+            <ion-icon name="cloud-upload-outline" class="dropzone-icon"></ion-icon>
+            <p class="dropzone-text">Arraste ou selecione arquivos</p>
+            <span class="dropzone-types">Formatos aceitos: OFX, XML, PDF, PNG</span>
+            <ion-button size="small" color="primary" class="select-file-btn">
+              Selecionar Arquivo
+            </ion-button>
+          </div>
+
+          <div class="quick-doc-types">
+            <div class="doc-type-item">
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>Notas Fiscais de Entrada/Saída</span>
+            </div>
+            <div class="doc-type-item">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <span>Extratos Bancários Mensais (OFX)</span>
+            </div>
+            <div class="doc-type-item">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Recibos de Pagamento & Despesas</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card de Suporte Contábil -->
+        <div class="section-card support-card mt-card">
+          <div class="support-content">
+            <div class="support-icon-wrap">
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </div>
+            <div class="support-text">
+              <h4>Precisa de Suporte?</h4>
+              <p>Sua equipe contábil dedicada está pronta para tirar dúvidas sobre seus tributos e relatórios.</p>
+              <ion-button expand="block" fill="solid" color="success" class="support-btn" routerLink="/contato">
+                Falar com a TaxSmart
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Toast de Notificação -->
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [duration]="3000"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</div>

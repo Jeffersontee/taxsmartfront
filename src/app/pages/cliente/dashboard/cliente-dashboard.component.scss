@@ -1,0 +1,580 @@
+.client-dashboard-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Hero da Empresa
+.company-hero-card {
+  background: linear-gradient(135deg, #0b1f3a 0%, #0d2847 100%);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-content {
+    .company-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+
+      .regime-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(0, 210, 255, 0.2);
+        color: #00d2ff;
+        border: 1px solid rgba(0, 210, 255, 0.4);
+      }
+
+      .competence-badge {
+        font-size: 0.8rem;
+        color: #a0aec0;
+
+        strong {
+          color: #ffffff;
+        }
+      }
+    }
+
+    .company-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .company-cnpj {
+      font-size: 0.88rem;
+      color: #718096;
+      margin: 0;
+    }
+  }
+
+  .hero-actions {
+    .refresh-btn {
+      --border-radius: 10px;
+      --border-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+  }
+}
+
+// Loading State
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 12px;
+
+  p {
+    color: #a0aec0;
+    font-size: 0.9rem;
+  }
+}
+
+// KPI Grid
+.kpi-grid {
+  padding: 0;
+  margin-bottom: 24px;
+
+  ion-row {
+    margin: -8px;
+  }
+
+  ion-col {
+    padding: 8px;
+  }
+
+  .kpi-card {
+    background: #0b1524;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    margin: 0;
+    box-shadow: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 210, 255, 0.3);
+    }
+
+    ion-card-content {
+      padding: 20px;
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+
+      .kpi-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #8fa0b5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .kpi-icon-wrap {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 18px;
+        }
+
+        &.total-icon {
+          background: rgba(0, 210, 255, 0.15);
+          color: #00d2ff;
+        }
+
+        &.success-icon {
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+        }
+
+        &.warning-icon {
+          background: rgba(245, 158, 11, 0.15);
+          color: #f59e0b;
+        }
+
+        &.danger-icon {
+          background: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+        }
+      }
+    }
+
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 8px;
+
+      &.text-success {
+        color: #10b981;
+      }
+
+      &.text-warning {
+        color: #f59e0b;
+      }
+
+      &.text-danger {
+        color: #ef4444;
+      }
+    }
+
+    .kpi-footer {
+      font-size: 0.75rem;
+      color: #718096;
+
+      .text-success {
+        color: #10b981;
+        font-weight: 600;
+      }
+
+      .text-danger {
+        color: #ef4444;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Seções Centrais
+.main-sections-grid {
+  padding: 0;
+
+  ion-row {
+    margin: -10px;
+  }
+
+  ion-col {
+    padding: 10px;
+  }
+}
+
+.section-card {
+  background: #0b1524;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 24px;
+
+  &.mt-card {
+    margin-top: 20px;
+  }
+
+  .section-header {
+    margin-bottom: 20px;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .section-icon {
+        font-size: 24px;
+        color: #00d2ff;
+
+        &.text-accent {
+          color: #00d2ff;
+        }
+      }
+
+      .section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 2px;
+      }
+
+      .section-subtitle {
+        font-size: 0.8rem;
+        color: #718096;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Lista de Tarefas / Guias
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .task-item-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    &.is-done {
+      border-left: 4px solid #10b981;
+    }
+
+    .task-main-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      flex: 1;
+
+      .task-category-tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+
+        &.cat-fiscal {
+          background: rgba(0, 210, 255, 0.15);
+          color: #00d2ff;
+        }
+
+        &.cat-contabil {
+          background: rgba(139, 92, 246, 0.15);
+          color: #a78bfa;
+        }
+
+        &.cat-folha {
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+        }
+
+        &.cat-geral {
+          background: rgba(245, 158, 11, 0.15);
+          color: #f59e0b;
+        }
+      }
+
+      .task-details {
+        .task-title {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 4px;
+        }
+
+        .task-desc {
+          font-size: 0.82rem;
+          color: #8fa0b5;
+          margin: 0 0 8px;
+          line-height: 1.4;
+        }
+
+        .task-meta-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          font-size: 0.78rem;
+
+          .due-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #a0aec0;
+
+            ion-icon {
+              font-size: 14px;
+              color: #718096;
+            }
+
+            strong {
+              color: #ffffff;
+            }
+          }
+
+          .tax-value {
+            color: #10b981;
+            font-weight: 600;
+
+            strong {
+              color: #34d399;
+            }
+          }
+        }
+      }
+    }
+
+    .task-actions-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+
+      .task-status-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+
+      .quick-pay-actions {
+        display: flex;
+        gap: 8px;
+
+        .pix-btn {
+          --border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.75rem;
+        }
+
+        .barcode-btn {
+          --border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.75rem;
+        }
+      }
+
+      .impediment-action {
+        ion-button {
+          --border-radius: 8px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Dropzone de Envio de Documentos
+.upload-dropzone {
+  border: 2px dashed rgba(0, 210, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(0, 210, 255, 0.03);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #00d2ff;
+    background: rgba(0, 210, 255, 0.06);
+  }
+
+  .dropzone-icon {
+    font-size: 40px;
+    color: #00d2ff;
+    margin-bottom: 8px;
+  }
+
+  .dropzone-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 4px;
+  }
+
+  .dropzone-types {
+    font-size: 0.72rem;
+    color: #718096;
+    margin-bottom: 14px;
+  }
+
+  .select-file-btn {
+    --border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+}
+
+.quick-doc-types {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .doc-type-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #a0aec0;
+
+    ion-icon {
+      font-size: 18px;
+      color: #00d2ff;
+    }
+  }
+}
+
+// Suporte Card
+.support-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.2));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+
+  .support-content {
+    display: flex;
+    gap: 16px;
+
+    .support-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ion-icon {
+        font-size: 24px;
+        color: #10b981;
+      }
+    }
+
+    .support-text {
+      h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 6px;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: #a0aec0;
+        margin: 0 0 14px;
+        line-height: 1.4;
+      }
+
+      .support-btn {
+        --border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 48px;
+    color: #10b981;
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: #718096;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .company-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .tasks-list .task-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .task-actions-col {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}

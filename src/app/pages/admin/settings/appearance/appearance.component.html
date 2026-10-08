@@ -1,0 +1,310 @@
+<div class="appearance-container">
+  <!-- Header Banner -->
+  <div class="header-banner">
+    <div class="banner-badge">
+      <ion-icon name="color-palette-outline"></ion-icon>
+      <span>Personalização & Branding</span>
+    </div>
+    <h1 class="banner-title">Identidade Visual & Tema</h1>
+    <p class="banner-subtitle">
+      Personalize as cores, logomarca e apresentação do portal do cliente e painel administrativo da TaxSmart.
+    </p>
+  </div>
+
+  <div class="content-split-layout">
+    <!-- COLUNA DA ESQUERDA: LIVE PREVIEW -->
+    <div class="preview-column">
+      <div class="preview-sticky-wrap">
+        <!-- Toggle Dashboard / Login -->
+        <div class="preview-segment-wrap">
+          <ion-segment
+            [value]="currentPreviewScreen()"
+            (ionChange)="currentPreviewScreen.set($any($event).detail.value)"
+            mode="ios"
+            class="mock-segment"
+          >
+            <ion-segment-button value="dashboard">
+              <ion-label>Dashboard</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="login">
+              <ion-label>Login</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- Smartphone / Card Preview Frame -->
+        <div
+          class="mockup-frame"
+          [class.is-light]="selectedTheme() === 'light'"
+          [style.--custom-primary]="selectedColor()"
+        >
+          <!-- PREVIEW DASHBOARD -->
+          @if (currentPreviewScreen() === 'dashboard') {
+            <div class="mock-app-dashboard">
+              <!-- Topbar do Mockup -->
+              <div class="mock-topbar">
+                <div class="mock-brand">
+                  <div class="mock-logo-box">
+                    @if (logoPreview()) {
+                      <img [src]="logoPreview()" alt="Logo" class="mock-logo-img" />
+                    } @else {
+                      <img src="/logo.png" alt="TaxSmart" class="mock-logo-img" />
+                    }
+                  </div>
+                  <span class="mock-brand-name">TaxSmart</span>
+                </div>
+                <div class="mock-avatar"></div>
+              </div>
+
+              <!-- Hero Box do Mockup -->
+              <div class="mock-hero-box">
+                <span class="mock-hero-badge">Simples Nacional</span>
+                <h4 class="mock-hero-title">TechInova Software</h4>
+                <p class="mock-hero-sub">Competência 10/2026</p>
+              </div>
+
+              <!-- Mini KPI Cards -->
+              <div class="mock-kpi-row">
+                <div class="mock-kpi-card is-active">
+                  <span class="mock-kpi-label">Guias Entregues</span>
+                  <strong class="mock-kpi-val">4</strong>
+                </div>
+                <div class="mock-kpi-card">
+                  <span class="mock-kpi-label">Em Aberto</span>
+                  <strong class="mock-kpi-val">2</strong>
+                </div>
+              </div>
+
+              <!-- Lista de Tarefas / Guias -->
+              <div class="mock-tasks-list">
+                <div class="mock-task-item is-done">
+                  <div class="mock-task-info">
+                    <span class="mock-task-title">DAS - Simples Nacional</span>
+                    <span class="mock-task-due">Venc: 20/10 • R$ 3.840,00</span>
+                  </div>
+                  <button class="mock-task-btn">PIX</button>
+                </div>
+
+                <div class="mock-task-item">
+                  <div class="mock-task-info">
+                    <span class="mock-task-title">Folha de Pagamento</span>
+                    <span class="mock-task-due">Venc: 07/10 • Em apuração</span>
+                  </div>
+                  <span class="mock-task-status">Aberto</span>
+                </div>
+              </div>
+
+              <!-- Bottom Bar -->
+              <div class="mock-bottom-bar">
+                <ion-icon name="grid-outline" class="active"></ion-icon>
+                <ion-icon name="time-outline"></ion-icon>
+                <ion-icon name="wallet-outline"></ion-icon>
+                <ion-icon name="business-outline"></ion-icon>
+              </div>
+            </div>
+          }
+
+          <!-- PREVIEW LOGIN -->
+          @if (currentPreviewScreen() === 'login') {
+            <div class="mock-app-login">
+              <div class="mock-login-logo">
+                @if (logoPreview()) {
+                  <img [src]="logoPreview()" alt="Logo" class="mock-login-logo-img" />
+                } @else {
+                  <img src="/logo.png" alt="TaxSmart" class="mock-login-logo-img" />
+                }
+              </div>
+
+              <h4 class="mock-login-title">Acesse sua Conta</h4>
+              <p class="mock-login-sub">Portal do Cliente TaxSmart</p>
+
+              <div class="mock-input-group">
+                <div class="mock-field">
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>cliente&#64;empresa.com.br</span>
+                </div>
+                <div class="mock-field">
+                  <ion-icon name="lock-closed-outline"></ion-icon>
+                  <span>••••••••••••</span>
+                </div>
+              </div>
+
+              <button class="mock-submit-btn">
+                Entrar no Sistema
+              </button>
+
+              <span class="mock-help-link">Precisa de suporte contábil?</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA DA DIREITA: CONTROLES -->
+    <div class="controls-column">
+      
+      <!-- LOGO UPLOAD -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <h3 class="control-title">Logo da Plataforma / Empresa</h3>
+          <p class="control-desc">Faça upload da logomarca oficial que será exibida no menu, topo e relatórios.</p>
+        </div>
+
+        <div class="upload-row">
+          <div class="logo-preview-box" (click)="logoInput.click()">
+            @if (logoPreview()) {
+              <img [src]="logoPreview()" alt="Logo preview" class="uploaded-img" />
+            } @else {
+              <ion-icon name="image-outline"></ion-icon>
+              <span>Selecionar Logo</span>
+            }
+          </div>
+
+          <div class="upload-actions">
+            <ion-button fill="outline" color="primary" size="small" class="btn-action" (click)="logoInput.click()">
+              <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+              Selecionar Arquivo
+            </ion-button>
+            @if (logoPreview()) {
+              <ion-button fill="clear" color="danger" size="small" (click)="removeLogo()">
+                Remover Logo
+              </ion-button>
+            }
+          </div>
+          <input type="file" #logoInput (change)="onLogoSelected($event)" accept="image/*" hidden />
+        </div>
+      </div>
+
+      <!-- BACKGROUND UPLOAD -->
+      <div class="control-card mt-card">
+        <div class="control-card-header">
+          <h3 class="control-title">Imagem de Fundo (Background)</h3>
+          <p class="control-desc">Adicione uma imagem de fundo para personalizar a atmosfera do sistema.</p>
+        </div>
+
+        <div class="upload-row">
+          <div class="bg-preview-box" (click)="bgInput.click()">
+            @if (backgroundPreview()) {
+              <img [src]="backgroundPreview()" alt="Background preview" class="uploaded-bg-img" />
+            } @else {
+              <ion-icon name="image-outline"></ion-icon>
+              <span>Upload Fundo</span>
+            }
+          </div>
+
+          <div class="upload-actions">
+            <ion-button fill="outline" color="primary" size="small" class="btn-action" (click)="bgInput.click()">
+              <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+              Selecionar Imagem
+            </ion-button>
+            @if (backgroundPreview()) {
+              <ion-button fill="clear" color="danger" size="small" (click)="removeBackground()">
+                Remover Fundo
+              </ion-button>
+            }
+          </div>
+          <input type="file" #bgInput (change)="onBackgroundSelected($event)" accept="image/*" hidden />
+        </div>
+      </div>
+
+      <!-- TEMA: ESCURO VS CLARO -->
+      <div class="control-card mt-card">
+        <div class="control-card-header">
+          <h3 class="control-title">Tema Visual</h3>
+          <p class="control-desc">Escolha entre o modo escuro de alto contraste ou o modo claro corporativo.</p>
+        </div>
+
+        <div class="theme-switch-grid">
+          <div
+            class="theme-card-option"
+            [class.is-selected]="selectedTheme() === 'dark'"
+            (click)="setTheme('dark')"
+          >
+            <div class="theme-thumb dark-thumb">
+              <div class="thumb-header"></div>
+              <div class="thumb-body"></div>
+            </div>
+            <span class="theme-name">Dark Mode (Padrão)</span>
+          </div>
+
+          <div
+            class="theme-card-option"
+            [class.is-selected]="selectedTheme() === 'light'"
+            (click)="setTheme('light')"
+          >
+            <div class="theme-thumb light-thumb">
+              <div class="thumb-header"></div>
+              <div class="thumb-body"></div>
+            </div>
+            <span class="theme-name">Light Mode (Claro)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PALETA DE CORES PRINCIPAIS -->
+      <div class="control-card mt-card">
+        <div class="control-card-header">
+          <h3 class="control-title">Cor Principal da Marca</h3>
+          <p class="control-desc">Usada em botões de ação, indicadores de status, destaques e navegação ativa.</p>
+        </div>
+
+        <div class="palette-swatches">
+          @for (color of presetColors; track color.value) {
+            <div
+              class="swatch-circle"
+              [style.background]="color.value"
+              [class.is-active]="selectedColor().toLowerCase() === color.value.toLowerCase()"
+              (click)="setColor(color.value)"
+              [title]="color.name"
+            >
+              @if (selectedColor().toLowerCase() === color.value.toLowerCase()) {
+                <ion-icon name="checkmark-outline"></ion-icon>
+              }
+            </div>
+          }
+
+          <!-- Cor Customizada via Color Picker -->
+          <div
+            class="swatch-circle custom-swatch"
+            [style.background]="isCustomColor() ? selectedColor() : '#1e293b'"
+            [class.is-active]="isCustomColor()"
+            title="Cor Personalizada"
+          >
+            <input type="color" [value]="selectedColor()" (input)="onCustomColorChange($event)" class="native-color-picker" />
+            @if (isCustomColor()) {
+              <ion-icon name="color-filter-outline"></ion-icon>
+            } @else {
+              <ion-icon name="add-outline"></ion-icon>
+            }
+          </div>
+        </div>
+
+        <div class="selected-color-meta">
+          <span>Cor Atual:</span>
+          <strong>{{ selectedColor() }}</strong>
+        </div>
+      </div>
+
+      <!-- BOTÃO SALVAR -->
+      <div class="save-actions-bar mt-card">
+        <ion-button expand="block" color="primary" class="save-btn" (click)="saveSettings()" [disabled]="isSaving()">
+          @if (isSaving()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            Salvar Alterações Visuais
+          }
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast de Notificação -->
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [duration]="3000"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</div>

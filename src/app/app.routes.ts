@@ -1,10 +1,91 @@
 import { Routes } from '@angular/router';
+import { authGuard, accountantGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
   },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'auth/login',
+    loadComponent: () =>
+      import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+
+  // Área Administrativa / Contábil
+  {
+    path: 'admin',
+    canActivate: [authGuard, accountantGuard],
+    loadComponent: () =>
+      import('./pages/admin/admin-layout/admin-layout.component').then(
+        (m) => m.AdminLayoutComponent
+      ),
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/admin/dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent
+          ),
+      },
+      {
+        path: 'timeline',
+        loadComponent: () =>
+          import('./pages/tasks/timeline/timeline.component').then(
+            (m) => m.TimelineComponent
+          ),
+      },
+      {
+        path: 'appearance',
+        loadComponent: () =>
+          import('./pages/admin/settings/appearance/appearance.component').then(
+            (m) => m.AppearanceComponent
+          ),
+      },
+      {
+        path: 'settings/appearance',
+        loadComponent: () =>
+          import('./pages/admin/settings/appearance/appearance.component').then(
+            (m) => m.AppearanceComponent
+          ),
+      },
+    ],
+  },
+
+  // Área do Cliente / Empresário
+  {
+    path: 'cliente',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/cliente/cliente-layout/cliente-layout.component').then(
+        (m) => m.ClienteLayoutComponent
+      ),
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/cliente/dashboard/cliente-dashboard.component').then(
+            (m) => m.ClienteDashboardComponent
+          ),
+      },
+    ],
+  },
+
   {
     path: 'quem-somos',
     loadComponent: () =>
@@ -87,8 +168,14 @@ export const routes: Routes = [
       import('./pages/contato/contato.component').then((m) => m.ContatoComponent),
   },
   {
+    path: 'timeline',
+    loadComponent: () =>
+      import('./pages/tasks/timeline/timeline.component').then((m) => m.TimelineComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',
   },
 ];
+
