@@ -1,0 +1,312 @@
+<div class="fiscal-container">
+  <!-- Header de Filtros e Empresa -->
+  <div class="fiscal-header">
+    <div class="title-group">
+      <h1 class="page-title">Módulo Fiscal & Tributário</h1>
+      <p class="page-subtitle">
+        Gestão de DF-e, Apuração Automática de Tributos e Central de Guias com PIX
+      </p>
+    </div>
+
+    <div class="filters-bar">
+      <div class="select-wrapper">
+        <label>Empresa Selecionada:</label>
+        <select
+          class="custom-select"
+          [ngModel]="selectedCompanyId()"
+          (ngModelChange)="onCompanyChange($event)"
+        >
+          @for (company of companyService.companies(); track company._id) {
+            <option [value]="company._id">
+              {{ company.tradeName || company.corporateName }} ({{ company.taxRegime }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="select-wrapper">
+        <label>Competência:</label>
+        <div class="badge-competence">{{ selectedCompetence() }}</div>
+      </div>
+
+      <button class="btn-refresh" (click)="loadAllData()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Atualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs / Segment Navigation -->
+  <div class="tabs-navigation">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'invoices'"
+      (click)="onTabChange('invoices')"
+    >
+      <ion-icon name="document-text-outline"></ion-icon>
+      Notas Fiscais & Faturamento
+      <span class="tab-badge">{{ fiscalService.invoices().length }}</span>
+    </button>
+
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'calculation'"
+      (click)="onTabChange('calculation')"
+    >
+      <ion-icon name="calculator-outline"></ion-icon>
+      Apuração de Tributos
+    </button>
+
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'guides'"
+      (click)="onTabChange('guides')"
+    >
+      <ion-icon name="receipt-outline"></ion-icon>
+      Central de Guias Fiscais
+      <span class="tab-badge">{{ fiscalService.guides().length }}</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (fiscalService.isLoading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Processando inteligência fiscal...</p>
+    </div>
+  }
+
+  <!-- CONTEÚDO DA ABA 1: NOTAS FISCAIS & FATURAMENTO -->
+  @if (activeTab() === 'invoices' && !fiscalService.isLoading()) {
+    <!-- Cards de Resumo Consolidado -->
+    @if (fiscalService.summary(); as sum) {
+      <div class="summary-cards-grid">
+        <div class="summary-card revenue">
+          <div class="card-icon"><ion-icon name="trending-up-outline"></ion-icon></div>
+          <div class="card-info">
+            <span class="card-label">Faturamento Bruto (Saídas)</span>
+            <strong class="card-value">{{ sum.totalRevenue | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span class="card-hint">{{ sum.countSaida }} notas emitidas no mês</span>
+          </div>
+        </div>
+
+        <div class="summary-card expenses">
+          <div class="card-icon"><ion-icon name="cash-outline"></ion-icon></div>
+          <div class="card-info">
+            <span class="card-label">Despesas & Compras (Entradas)</span>
+            <strong class="card-value">{{ sum.totalExpenses | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span class="card-hint">{{ sum.countEntrada }} notas tomadas no mês</span>
+          </div>
+        </div>
+
+        <div class="summary-card retained">
+          <div class="card-icon"><ion-icon name="alert-circle-outline"></ion-icon></div>
+          <div class="card-info">
+            <span class="card-label">Impostos Retidos na Fonte</span>
+            <strong class="card-value">{{ (sum.totalRetainedISS + sum.totalRetainedFederal) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span class="card-hint">ISS: {{ sum.totalRetainedISS | currency:'BRL':'symbol':'1.2-2':'pt-BR' }} | Federais: {{ sum.totalRetainedFederal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Tabela de Documentos Fiscais -->
+    <div class="data-table-card">
+      <div class="table-header-box">
+        <h3>Documentos Fiscais Eletrônicos (DF-e)</h3>
+        <button class="btn-action-primary" (click)="onTabChange('calculation')">
+          <ion-icon name="calculator-outline"></ion-icon>
+          Apurar Tributos do Mês
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Número / Série</th>
+              <th>Data Emissão</th>
+              <th>Destinatário / Tomador</th>
+              <th>Operação</th>
+              <th>Valor Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (invoice of fiscalService.invoices(); track invoice._id) {
+              <tr>
+                <td>
+                  <span class="type-pill {{ invoice.type.toLowerCase() }}">{{ invoice.type }}</span>
+                </td>
+                <td><strong>Nº {{ invoice.invoiceNumber }}</strong> (Série {{ invoice.series }})</td>
+                <td>{{ invoice.issueDate | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <div class="client-cell">
+                    <strong>{{ invoice.recipient?.name }}</strong>
+                    <small>{{ invoice.recipient?.cnpjCpf }}</small>
+                  </div>
+                </td>
+                <td>
+                  <span class="operation-pill {{ invoice.operation.toLowerCase() }}">
+                    {{ invoice.operation === 'SAIDA' ? 'Venda / Prestação' : 'Compra / Entrada' }}
+                  </span>
+                </td>
+                <td>
+                  <strong class="amount-value">{{ invoice.netAmount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                </td>
+                <td>
+                  <ion-badge color="success">{{ invoice.status }}</ion-badge>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-row">
+                  Nenhuma nota fiscal registrada para esta empresa na competência selecionada.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- CONTEÚDO DA ABA 2: APURAÇÃO DE TRIBUTOS -->
+  @if (activeTab() === 'calculation' && !fiscalService.isLoading()) {
+    @if (fiscalService.simulation(); as sim) {
+      <div class="calculation-container">
+        <!-- Card de Resumo da Apuração -->
+        <div class="calc-hero-card">
+          <div class="hero-left">
+            <span class="regime-badge">{{ sim.taxRegime }}</span>
+            <h2>Demonstrativo de Apuração — Competência {{ sim.competence }}</h2>
+            <p>Base calculada automaticamente sobre {{ sim.invoicesCount }} notas fiscais emitidas.</p>
+          </div>
+          <div class="hero-right">
+            <div class="stat-box">
+              <span>Alíquota Efetiva</span>
+              <strong>{{ sim.effectiveRate }}%</strong>
+            </div>
+            <div class="stat-box highlight">
+              <span>Total Líquido a Recolher</span>
+              <strong>{{ sim.netTaxPayable | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discriminativo de Tributos -->
+        <div class="data-table-card">
+          <div class="table-header-box">
+            <h3>Discriminação dos Tributos Calculados</h3>
+            <button class="btn-action-success" (click)="generateGuideFromCalculation()">
+              <ion-icon name="receipt-outline"></ion-icon>
+              Salvar Apuração & Emitir Guia com PIX
+            </button>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Tributo / Guia</th>
+                <th>Base de Cálculo</th>
+                <th>Alíquota</th>
+                <th>Valor Calculado</th>
+                <th>Retenções</th>
+                <th>Valor a Pagar</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tax of sim.taxDetails; track tax.name) {
+                <tr>
+                  <td><strong>{{ tax.name }}</strong></td>
+                  <td>{{ tax.baseCalculation | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  <td>{{ tax.rate }}%</td>
+                  <td>{{ tax.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  <td>{{ (tax.retainedAmount || 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  <td><strong class="payable-highlight">{{ (tax.amount - (tax.retainedAmount || 0)) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- CONTEÚDO DA ABA 3: CENTRAL DE GUIAS FISCAIS -->
+  @if (activeTab() === 'guides' && !fiscalService.isLoading()) {
+    <div class="guides-grid">
+      @for (guide of fiscalService.guides(); track guide._id) {
+        <div class="guide-card" [class.paid]="guide.status === 'PAGO'">
+          <div class="guide-header">
+            <div class="guide-type">
+              <span class="guide-type-badge">{{ guide.type }}</span>
+              <h4>{{ guide.title }}</h4>
+            </div>
+            <ion-badge [color]="guide.status === 'PAGO' ? 'success' : 'warning'">
+              {{ guide.status }}
+            </ion-badge>
+          </div>
+
+          <div class="guide-body">
+            <div class="guide-info-row">
+              <span>Competência:</span>
+              <strong>{{ guide.competence }}</strong>
+            </div>
+            <div class="guide-info-row">
+              <span>Vencimento:</span>
+              <strong class="due-date">{{ guide.dueDate | date:'dd/MM/yyyy' }}</strong>
+            </div>
+            <div class="guide-info-row">
+              <span>Valor Total:</span>
+              <strong class="guide-total">{{ guide.totalAmount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            </div>
+
+            @if (guide.barcode) {
+              <div class="barcode-box">
+                <label>Linha Digitável / Código de Barras:</label>
+                <code>{{ guide.barcode }}</code>
+              </div>
+            }
+          </div>
+
+          <div class="guide-actions">
+            @if (guide.pixCopiaECola) {
+              <button class="btn-pix" (click)="copyToClipboard(guide.pixCopiaECola)">
+                <ion-icon name="qr-code-outline"></ion-icon>
+                PIX Copia e Cola
+              </button>
+            }
+
+            @if (guide.status !== 'PAGO') {
+              <button class="btn-pay" (click)="markGuideAsPaid(guide)">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                Baixar Pagamento
+              </button>
+            } @else {
+              <div class="paid-badge">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                Pago
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-card">
+          <ion-icon name="receipt-outline"></ion-icon>
+          <h3>Nenhuma guia fiscal emitida para esta competência.</h3>
+          <p>Realize a apuração na aba <strong>"Apuração de Tributos"</strong> para gerar a guia de recolhimento.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <ion-toast
+    [isOpen]="showToast()"
+    [message]="toastMessage()"
+    [duration]="3000"
+    (didDismiss)="showToast.set(false)"
+    color="success"
+  ></ion-toast>
+</div>

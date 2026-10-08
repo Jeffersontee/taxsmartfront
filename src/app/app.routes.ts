@@ -46,6 +46,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'fiscal',
+        loadComponent: () =>
+          import('./pages/admin/fiscal/admin-fiscal.component').then(
+            (m) => m.AdminFiscalComponent
+          ),
+      },
+      {
         path: 'appearance',
         loadComponent: () =>
           import('./pages/admin/settings/appearance/appearance.component').then(

@@ -9,6 +9,7 @@ export enum Strings {
   ROUTE_LOGIN = 'login',
   ROUTE_ADMIN = 'admin',
   ROUTE_ADMIN_DASHBOARD = 'admin/dashboard',
+  ROUTE_ADMIN_FISCAL = 'admin/fiscal',
   ROUTE_CLIENTE = 'cliente',
   ROUTE_CLIENTE_DASHBOARD = 'cliente/dashboard',
 
@@ -20,4 +21,8 @@ export enum Strings {
   API_TASKS = '/tasks',
   API_TASKS_SUMMARY = '/tasks/summary',
   API_COMPANIES = '/companies',
+  API_FISCAL_INVOICES = '/fiscal/invoices',
+  API_FISCAL_CALCULATE = '/fiscal/calculate',
+  API_FISCAL_CALCULATIONS = '/fiscal/calculations',
+  API_FISCAL_GUIDES = '/fiscal/guides',
 }
