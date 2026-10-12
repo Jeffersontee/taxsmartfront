@@ -45,6 +45,34 @@ export class CompanyService {
   }
 
   /**
+   * Busca lista de empresas cadastradas (alias getCompanies)
+   */
+  getCompanies(search?: string, taxRegime?: string): Observable<ApiResponse<ICompany[]>> {
+    return this.loadCompanies(search, taxRegime);
+  }
+
+  /**
+   * Cadastra uma nova empresa
+   */
+  createCompany(companyData: Partial<ICompany>): Observable<ApiResponse<ICompany>> {
+    this.isLoading.set(true);
+    const url = `${this.baseUrl}${Strings.API_COMPANIES}`;
+    return this.http.post<ApiResponse<ICompany>>(url, companyData).pipe(
+      tap((response) => {
+        this.isLoading.set(false);
+        if (response.success && response.data) {
+          const created = response.data;
+          this.companies.update((list) => [created, ...list]);
+        }
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Busca detalhes de uma empresa por ID
    */
   getCompanyById(companyId: string): Observable<ApiResponse<ICompany>> {

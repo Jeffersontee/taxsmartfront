@@ -34,6 +34,9 @@ import {
   cloudUploadOutline,
   refreshOutline,
   colorPaletteOutline,
+  sparklesOutline,
+  sunnyOutline,
+  moonOutline,
 } from 'ionicons/icons';
 import { ThemeService, IAppearanceConfig } from '../../../../services/theme/theme.service';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -67,8 +70,9 @@ export class AppearanceComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
 
   // Signals para reatividade
-  selectedColor = signal<string>('#00d2ff');
-  selectedTheme = signal<'light' | 'dark'>('dark');
+  selectedColor = signal<string>('#ea580c');
+  selectedSecondaryColor = signal<string>('#00d2ff');
+  selectedTheme = signal<'light' | 'dark'>('light');
   logoPreview = signal<string | null>(null);
   backgroundPreview = signal<string | null>(null);
   currentPreviewScreen = signal<'dashboard' | 'login'>('dashboard');
@@ -79,14 +83,27 @@ export class AppearanceComponent implements OnInit, OnDestroy {
 
   originalAppearance: IAppearanceConfig | null = null;
 
-  // Paleta de cores recomendadas para a TaxSmart
-  presetColors = [
-    { name: 'Cyan Tech (TaxSmart)', value: '#00d2ff' },
-    { name: 'Laranja Corporativo', value: '#ea580c' },
+  // Paleta de cores Primárias recomendadas (TaxSmart Branding)
+  primaryPresetColors = [
+    { name: 'Laranja Corporativo (TaxSmart)', value: '#ea580c' },
+    { name: 'Laranja Flamejante', value: '#f97316' },
+    { name: 'Cyan Tech', value: '#00d2ff' },
+    { name: 'Azul Safira', value: '#2563eb' },
     { name: 'Verde Fiscal', value: '#10b981' },
-    { name: 'Azul Safira', value: '#3b82f6' },
-    { name: 'Roxo Moderno', value: '#8b5cf6' },
+    { name: 'Roxo Royal', value: '#7c3aed' },
     { name: 'Dourado Prime', value: '#f59e0b' },
+    { name: 'Grafite Nobre', value: '#334155' },
+  ];
+
+  // Paleta de cores Secundárias / Apoio recomendadas
+  secondaryPresetColors = [
+    { name: 'Cyan Tech', value: '#00d2ff' },
+    { name: 'Laranja Corporativo', value: '#ea580c' },
+    { name: 'Azul Cobalto', value: '#3b82f6' },
+    { name: 'Esmeralda', value: '#059669' },
+    { name: 'Púrpura', value: '#9333ea' },
+    { name: 'Âmbar', value: '#d97706' },
+    { name: 'Cinza Platina', value: '#64748b' },
   ];
 
   constructor() {
@@ -106,6 +123,9 @@ export class AppearanceComponent implements OnInit, OnDestroy {
       cloudUploadOutline,
       refreshOutline,
       colorPaletteOutline,
+      sparklesOutline,
+      sunnyOutline,
+      moonOutline,
     });
   }
 
@@ -114,6 +134,7 @@ export class AppearanceComponent implements OnInit, OnDestroy {
     this.originalAppearance = { ...current };
 
     if (current.primary_color) this.selectedColor.set(current.primary_color);
+    if (current.secondary_color) this.selectedSecondaryColor.set(current.secondary_color);
     if (current.theme) this.selectedTheme.set(current.theme);
     if (current.logo_url) this.logoPreview.set(current.logo_url);
     if (current.background_image) this.backgroundPreview.set(current.background_image);
@@ -122,6 +143,7 @@ export class AppearanceComponent implements OnInit, OnDestroy {
   applyPreview(): void {
     this.themeService.applyTheme({
       primary_color: this.selectedColor(),
+      secondary_color: this.selectedSecondaryColor(),
       theme: this.selectedTheme(),
       logo_url: this.logoPreview() || undefined,
       background_image: this.backgroundPreview() || undefined,
@@ -133,20 +155,37 @@ export class AppearanceComponent implements OnInit, OnDestroy {
     this.applyPreview();
   }
 
+  setSecondaryColor(color: string): void {
+    this.selectedSecondaryColor.set(color);
+    this.applyPreview();
+  }
+
   setTheme(theme: 'light' | 'dark'): void {
     this.selectedTheme.set(theme);
     this.applyPreview();
   }
 
-  isCustomColor(): boolean {
-    return !this.presetColors.some(
+  isCustomPrimaryColor(): boolean {
+    return !this.primaryPresetColors.some(
       (c) => c.value.toLowerCase() === this.selectedColor().toLowerCase()
     );
   }
 
-  onCustomColorChange(event: any): void {
+  isCustomSecondaryColor(): boolean {
+    return !this.secondaryPresetColors.some(
+      (c) => c.value.toLowerCase() === this.selectedSecondaryColor().toLowerCase()
+    );
+  }
+
+  onCustomPrimaryColorChange(event: any): void {
     const color = event.target.value;
     this.selectedColor.set(color);
+    this.applyPreview();
+  }
+
+  onCustomSecondaryColorChange(event: any): void {
+    const color = event.target.value;
+    this.selectedSecondaryColor.set(color);
     this.applyPreview();
   }
 
@@ -203,6 +242,7 @@ export class AppearanceComponent implements OnInit, OnDestroy {
 
     const config: IAppearanceConfig = {
       primary_color: this.selectedColor(),
+      secondary_color: this.selectedSecondaryColor(),
       theme: this.selectedTheme(),
       logo_url: this.logoPreview() || '',
       background_image: this.backgroundPreview() || '',
@@ -213,8 +253,8 @@ export class AppearanceComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.isSaving.set(false);
-      this.showToast('Configurações de aparência salvas com sucesso!');
-    }, 400);
+      this.showToast('Configurações de aparência salvas e aplicadas com sucesso!');
+    }, 300);
   }
 
   showToast(message: string): void {

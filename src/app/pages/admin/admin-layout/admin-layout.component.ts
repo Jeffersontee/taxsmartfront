@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import {
@@ -20,6 +20,7 @@ import {
   IonRouterOutlet,
   IonBadge,
   IonAvatar,
+  MenuController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -37,9 +38,11 @@ import {
   colorPaletteOutline,
   chevronDownOutline,
   chevronForwardOutline,
+  chevronBackOutline,
   constructOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
+import { UserRole } from '../../../models/user.model';
 
 @Component({
   selector: 'app-admin-layout',
@@ -73,8 +76,32 @@ import { AuthService } from '../../../services/auth/auth.service';
 export class AdminLayoutComponent {
   authService = inject(AuthService);
   private router = inject(Router);
+  private menuCtrl = inject(MenuController);
 
   isSettingsOpen = signal<boolean>(true);
+  isCollapsed = signal<boolean>(
+    localStorage.getItem('taxsmart_admin_sidebar_collapsed') === 'true'
+  );
+
+  roleLabel = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    switch (role) {
+      case UserRole.SUPER_ADMIN:
+        return 'Super Administrador';
+      case UserRole.ACCOUNTANT:
+        return 'Contador Responsável';
+      case UserRole.FISCAL_ANALYST:
+        return 'Analista Fiscal';
+      case UserRole.PAYROLL_ANALYST:
+        return 'Analista de DP';
+      case UserRole.CLIENT_ADMIN:
+        return 'Titular / Diretor';
+      case UserRole.CLIENT_FINANCIAL:
+        return 'Gestor Financeiro';
+      default:
+        return 'Membro da Equipe';
+    }
+  });
 
   constructor() {
     addIcons({
@@ -92,12 +119,26 @@ export class AdminLayoutComponent {
       colorPaletteOutline,
       chevronDownOutline,
       chevronForwardOutline,
+      chevronBackOutline,
       constructOutline,
+    });
+  }
+
+  toggleCollapse(): void {
+    this.isCollapsed.update((val) => {
+      const next = !val;
+      localStorage.setItem('taxsmart_admin_sidebar_collapsed', String(next));
+      return next;
     });
   }
 
   toggleSettings(): void {
     this.isSettingsOpen.update((open) => !open);
+  }
+
+  onNavClick(): void {
+    // No mobile fecha o menu automaticamente após clicar em um link
+    this.menuCtrl.close();
   }
 
   logout(): void {

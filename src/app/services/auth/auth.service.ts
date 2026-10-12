@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Strings } from '../../enum/strings';
-import { User, UserRole, AuthResponseData, ApiResponse } from '../../models/user.model';
+import { User, UserRole, SystemModule, STAFF_ROLES, CLIENT_ROLES, AuthResponseData, ApiResponse } from '../../models/user.model';
 
 const TOKEN_KEY = 'taxsmart_auth_token';
 const USER_KEY = 'taxsmart_auth_user';
@@ -23,7 +23,7 @@ export class AuthService {
   token = signal<string | null>(this.getStoredToken());
   isLoading = signal<boolean>(false);
 
-  // Computeds reativos
+  // Computeds reativos de autenticação e papéis
   isAuthenticated = computed(() => !!this.token() && !!this.currentUser());
   isSuperAdmin = computed(() => this.currentUser()?.role === UserRole.SUPER_ADMIN);
   isAccountant = computed(
@@ -31,7 +31,74 @@ export class AuthService {
       this.currentUser()?.role === UserRole.SUPER_ADMIN ||
       this.currentUser()?.role === UserRole.ACCOUNTANT
   );
-  isClient = computed(() => this.currentUser()?.role === UserRole.CLIENT);
+  isFiscalAnalyst = computed(() => this.currentUser()?.role === UserRole.FISCAL_ANALYST);
+  isPayrollAnalyst = computed(() => this.currentUser()?.role === UserRole.PAYROLL_ANALYST);
+  isStaff = computed(() => {
+    const role = this.currentUser()?.role;
+    return !!role && STAFF_ROLES.includes(role);
+  });
+  isClient = computed(() => {
+    const role = this.currentUser()?.role;
+    return !!role && CLIENT_ROLES.includes(role);
+  });
+  isClientAdmin = computed(() => this.currentUser()?.role === UserRole.CLIENT_ADMIN);
+  isClientFinancial = computed(() => this.currentUser()?.role === UserRole.CLIENT_FINANCIAL);
+  isClientEmployee = computed(() => this.currentUser()?.role === UserRole.CLIENT_EMPLOYEE);
+
+  // Computeds reativos de liberação de módulos
+  canAccessFiscal = computed(() => {
+    if (this.isSuperAdmin() || this.currentUser()?.role === UserRole.ACCOUNTANT || this.currentUser()?.role === UserRole.FISCAL_ANALYST) return true;
+    return this.hasAllowedModule(SystemModule.FISCAL);
+  });
+
+  canAccessPayroll = computed(() => {
+    if (this.isSuperAdmin() || this.currentUser()?.role === UserRole.ACCOUNTANT || this.currentUser()?.role === UserRole.PAYROLL_ANALYST) return true;
+    return this.hasAllowedModule(SystemModule.PAYROLL);
+  });
+
+  canAccessAccounting = computed(() => {
+    if (this.isSuperAdmin() || this.currentUser()?.role === UserRole.ACCOUNTANT || this.currentUser()?.role === UserRole.FISCAL_ANALYST) return true;
+    return this.hasAllowedModule(SystemModule.ACCOUNTING);
+  });
+
+  canAccessCompanies = computed(() => {
+    if (this.isStaff()) return true;
+    return this.hasAllowedModule(SystemModule.COMPANIES);
+  });
+
+  canAccessTimeline = computed(() => {
+    return this.isAuthenticated();
+  });
+
+  canManageSettings = computed(() => this.isSuperAdmin());
+
+  /**
+   * Verifica se o usuário tem permissão para acessar um determinado módulo
+   */
+  canAccess(module: SystemModule): boolean {
+    if (this.isSuperAdmin()) return true;
+    switch (module) {
+      case SystemModule.FISCAL:
+        return this.canAccessFiscal();
+      case SystemModule.PAYROLL:
+        return this.canAccessPayroll();
+      case SystemModule.ACCOUNTING:
+        return this.canAccessAccounting();
+      case SystemModule.COMPANIES:
+        return this.canAccessCompanies();
+      case SystemModule.TIMELINE_TASKS:
+        return this.canAccessTimeline();
+      case SystemModule.SYSTEM_SETTINGS:
+        return this.canManageSettings();
+      default:
+        return this.hasAllowedModule(module);
+    }
+  }
+
+  private hasAllowedModule(module: SystemModule): boolean {
+    const modules = this.currentUser()?.allowedModules;
+    return Array.isArray(modules) && modules.includes(module);
+  }
 
   /**
    * Realiza login no backend e persiste a sessão
@@ -115,10 +182,10 @@ export class AuthService {
    * Redireciona o usuário para o dashboard apropriado conforme seu perfil
    */
   redirectAfterLogin(): void {
-    if (this.isAccountant()) {
+    if (this.isStaff()) {
       this.router.navigate(['/admin/dashboard']);
     } else {
-      this.router.navigate(['/cliente/dashboard']);
+      this.router.navigate(['/client/dashboard']);
     }
   }
 

@@ -21,7 +21,7 @@
             placeholder="Selecione a Empresa"
           >
             @for (comp of companies(); track comp._id) {
-              <ion-select-option [value]="comp._id">{{ comp.name }}</ion-select-option>
+              <ion-select-option [value]="comp._id">{{ comp.tradeName || comp.corporateName }}</ion-select-option>
             }
           </ion-select>
         </div>

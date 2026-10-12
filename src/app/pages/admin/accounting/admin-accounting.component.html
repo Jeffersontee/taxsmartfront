@@ -1,0 +1,339 @@
+<ion-content class="accounting-content">
+  <div class="accounting-container">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-titles">
+        <div class="badge-row">
+          <span class="module-tag">Escrituração Contábil</span>
+          <span class="active-dot"></span>
+        </div>
+        <h1 class="page-title">Módulo Contábil & SPED</h1>
+        <p class="page-subtitle">Partidas dobradas, plano de contas referencial, balancete de verificação e demonstrações.</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="company-selector">
+          <ion-icon name="business-outline"></ion-icon>
+          <ion-select
+            [value]="selectedCompanyId()"
+            (ionChange)="onCompanyChange($event)"
+            interface="popover"
+            placeholder="Selecione a Empresa"
+          >
+            @for (comp of companies(); track comp._id) {
+              <ion-select-option [value]="comp._id">{{ comp.tradeName || comp.corporateName }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <button class="btn-primary" (click)="openEntryModal()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          <span>Novo Lançamento</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- KPIs -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper entries">
+          <ion-icon name="receipt-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Lançamentos no Mês</span>
+          <span class="kpi-value">{{ totalEntriesCount() }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper debits">
+          <ion-icon name="trending-down-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Débitos</span>
+          <span class="kpi-value">{{ formatCurrency(totalDebits()) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper credits">
+          <ion-icon name="trending-up-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Créditos</span>
+          <span class="kpi-value">{{ formatCurrency(totalCredits()) }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper balance">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Status do Balancete</span>
+          <span class="kpi-value highlight">Equilibrado</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navegação de Abas -->
+    <section class="tab-navigation">
+      <ion-segment [value]="activeTab()" (ionChange)="activeTab.set($any($event).detail.value)">
+        <ion-segment-button value="entries">
+          <ion-label>Lançamentos (Diário)</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="chart">
+          <ion-label>Plano de Contas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="trial_balance">
+          <ion-label>Balancete de Verificação</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="dre">
+          <ion-label>DRE & Balanço</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </section>
+
+    <!-- Conteúdo da Aba 1: Lançamentos Diários -->
+    @if (activeTab() === 'entries') {
+      <section class="table-card">
+        <div class="table-header-row">
+          <div class="table-title">
+            <h3>Livro Diário de Escrituração</h3>
+            <span>Partidas dobradas da competência {{ selectedCompetence() }}</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>CÓDIGO</th>
+                <th>DATA</th>
+                <th>CONTA DÉBITO</th>
+                <th>CONTA CRÉDITO</th>
+                <th>HISTÓRICO</th>
+                <th class="text-right">VALOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of journalEntries(); track entry.id) {
+                <tr>
+                  <td class="font-mono">{{ entry.id }}</td>
+                  <td>{{ entry.date | date: 'dd/MM/yyyy' }}</td>
+                  <td><span class="account-tag debit">{{ entry.debitAccount }}</span></td>
+                  <td><span class="account-tag credit">{{ entry.creditAccount }}</span></td>
+                  <td class="history-cell">{{ entry.history }}</td>
+                  <td class="text-right font-bold">{{ formatCurrency(entry.amount) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 2: Plano de Contas -->
+    @if (activeTab() === 'chart') {
+      <section class="table-card">
+        <div class="table-header-row">
+          <div class="table-title">
+            <h3>Plano de Contas Referencial (SPED)</h3>
+            <span>Estrutura hierárquica padronizada de contas ativas</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>CÓDIGO ESTRUTURAL</th>
+                <th>NOME DA CONTA</th>
+                <th>GRUPO</th>
+                <th>NATUREZA</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (acc of chartOfAccounts(); track acc.code) {
+                <tr [class.level-1]="acc.level === 1" [class.level-2]="acc.level === 2">
+                  <td class="font-mono font-bold">{{ acc.code }}</td>
+                  <td [style.padding-left.px]="(acc.level - 1) * 20">{{ acc.name }}</td>
+                  <td><span class="group-tag" [ngClass]="acc.type.toLowerCase()">{{ acc.type }}</span></td>
+                  <td>{{ acc.nature }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 3: Balancete de Verificação -->
+    @if (activeTab() === 'trial_balance') {
+      <section class="table-card">
+        <div class="table-header-row">
+          <div class="table-title">
+            <h3>Balancete de Verificação (4 Colunas)</h3>
+            <span>Competência {{ selectedCompetence() }}</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>CÓDIGO</th>
+                <th>CONTA CONTÁBIL</th>
+                <th class="text-right">DÉBITO</th>
+                <th class="text-right">CRÉDITO</th>
+                <th class="text-right">SALDO ATUAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono">1.1.1.02</td>
+                <td>Bancos Conta Movimento</td>
+                <td class="text-right">{{ formatCurrency(45000) }}</td>
+                <td class="text-right">{{ formatCurrency(3200) }}</td>
+                <td class="text-right font-bold text-success">{{ formatCurrency(41800) }} D</td>
+              </tr>
+              <tr>
+                <td class="font-mono">2.1.2.01</td>
+                <td>Salários e Pró-labore a Pagar</td>
+                <td class="text-right">{{ formatCurrency(0) }}</td>
+                <td class="text-right">{{ formatCurrency(18500) }}</td>
+                <td class="text-right font-bold text-danger">{{ formatCurrency(18500) }} C</td>
+              </tr>
+              <tr>
+                <td class="font-mono">3.1.1.01</td>
+                <td>Receita de Serviços Prestados</td>
+                <td class="text-right">{{ formatCurrency(0) }}</td>
+                <td class="text-right">{{ formatCurrency(45000) }}</td>
+                <td class="text-right font-bold text-danger">{{ formatCurrency(45000) }} C</td>
+              </tr>
+              <tr>
+                <td class="font-mono">4.1.2.01</td>
+                <td>Despesas com Salários e Pró-labore</td>
+                <td class="text-right">{{ formatCurrency(18500) }}</td>
+                <td class="text-right">{{ formatCurrency(0) }}</td>
+                <td class="text-right font-bold text-success">{{ formatCurrency(18500) }} D</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="2" class="font-bold">TOTAIS CONSOLIDADOS:</td>
+                <td class="text-right font-bold">{{ formatCurrency(totalDebits()) }}</td>
+                <td class="text-right font-bold">{{ formatCurrency(totalCredits()) }}</td>
+                <td class="text-right font-bold text-success">EQUILIBRADO</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 4: DRE -->
+    @if (activeTab() === 'dre') {
+      <section class="table-card">
+        <div class="table-header-row">
+          <div class="table-title">
+            <h3>Demonstração do Resultado do Exercício (DRE Sintética)</h3>
+            <span>Competência {{ selectedCompetence() }}</span>
+          </div>
+        </div>
+
+        <div class="dre-summary-box">
+          <div class="dre-line bold">
+            <span>(=) RECEITA BRUTA DE SERVIÇOS</span>
+            <span class="val">{{ formatCurrency(45000) }}</span>
+          </div>
+          <div class="dre-line indent deduction">
+            <span>(-) Deduções e Impostos sobre Serviços (DAS Simples Nacional)</span>
+            <span class="val">{{ formatCurrency(2700) }}</span>
+          </div>
+          <div class="dre-line bold subtotal">
+            <span>(=) RECEITA LÍQUIDA OPERACIONAL</span>
+            <span class="val">{{ formatCurrency(42300) }}</span>
+          </div>
+          <div class="dre-line indent deduction">
+            <span>(-) Despesas com Pessoal & Pró-labore</span>
+            <span class="val">{{ formatCurrency(18500) }}</span>
+          </div>
+          <div class="dre-line indent deduction">
+            <span>(-) Despesas Administrativas & Ocupação</span>
+            <span class="val">{{ formatCurrency(3200) }}</span>
+          </div>
+          <div class="dre-line bold total highlight">
+            <span>(=) LUCRO LÍQUIDO DO PERÍODO</span>
+            <span class="val">{{ formatCurrency(20600) }}</span>
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+
+  <!-- Modal de Novo Lançamento -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="custom-modal">
+    <ng-template>
+      <div class="modal-wrapper">
+        <div class="modal-header">
+          <h2>Novo Lançamento Contábil</h2>
+          <button class="btn-close" (click)="closeModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="entryForm" (ngSubmit)="saveEntry()" class="modal-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Data do Lançamento *</label>
+              <input type="date" formControlName="date" />
+            </div>
+
+            <div class="form-group">
+              <label>Valor (R$) *</label>
+              <input type="number" step="0.01" formControlName="amount" placeholder="0,00" />
+            </div>
+
+            <div class="form-group full-width">
+              <label>Conta a Débito (Aplicação de Recursos) *</label>
+              <select formControlName="debitAccount">
+                <option value="">Selecione a Conta Débito</option>
+                <option value="1.1.1.02 - Bancos Conta Movimento">1.1.1.02 - Bancos Conta Movimento</option>
+                <option value="4.1.2.01 - Despesas com Salários e Pró-labore">4.1.2.01 - Despesas com Salários e Pró-labore</option>
+                <option value="4.1.3.05 - Despesas com Aluguel e Condomínio">4.1.3.05 - Despesas com Aluguel e Condomínio</option>
+                <option value="4.1.1.02 - Simples Nacional / Tributos Incidentes">4.1.1.02 - Simples Nacional / Tributos Incidentes</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Conta a Crédito (Origem de Recursos) *</label>
+              <select formControlName="creditAccount">
+                <option value="">Selecione a Conta Crédito</option>
+                <option value="3.1.1.01 - Receita de Serviços Prestados">3.1.1.01 - Receita de Serviços Prestados</option>
+                <option value="1.1.1.02 - Bancos Conta Movimento">1.1.1.02 - Bancos Conta Movimento</option>
+                <option value="2.1.2.01 - Salários e Pró-labore a Pagar">2.1.2.01 - Salários e Pró-labore a Pagar</option>
+                <option value="2.1.3.01 - DAS a Recolher">2.1.3.01 - DAS a Recolher</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Histórico Contábil *</label>
+              <input type="text" formControlName="history" placeholder="Descrição clara do fato contábil..." />
+            </div>
+
+            <div class="form-group full-width">
+              <label>Documento de Suporte (NF, Recibo, Boleto)</label>
+              <input type="text" formControlName="documentRef" placeholder="Ex: NFSe 1024" />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-submit">Salvar Lançamento</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

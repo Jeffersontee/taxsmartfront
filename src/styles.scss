@@ -4,6 +4,60 @@ html {
 }
 
 /* ==========================================================================
+   DESIGN SYSTEM & THEME TOKENS (IMPECCABLE CONTRAST & LEGIBILITY)
+   ========================================================================== */
+:root,
+[data-theme="light"],
+.theme-light {
+  --app-bg: #f8fafc;
+  --app-bg-gradient: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
+  --app-surface: #ffffff;
+  --app-surface-subtle: #f8fafc;
+  --app-border: #e2e8f0;
+  --app-border-strong: #cbd5e1;
+  --app-text-primary: #0f172a;
+  --app-text-secondary: #334155;
+  --app-text-muted: #64748b;
+  --app-input-bg: #ffffff;
+  --app-input-border: #cbd5e1;
+  --app-input-text: #0f172a;
+  --app-input-placeholder: #94a3b8;
+  --app-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --app-btn-orange: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  --app-btn-orange-hover: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  --app-sidebar-bg: #ffffff;
+  --app-sidebar-border: #e2e8f0;
+  --app-header-bg: #ffffff;
+  --ion-background-color: #f8fafc;
+  --ion-text-color: #0f172a;
+}
+
+[data-theme="dark"],
+.theme-dark {
+  --app-bg: #090d16;
+  --app-bg-gradient: radial-gradient(circle at 50% 0%, #1a1f35 0%, #090d16 75%);
+  --app-surface: #121826;
+  --app-surface-subtle: #1e293b;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-border-strong: rgba(255, 255, 255, 0.16);
+  --app-text-primary: #f8fafc;
+  --app-text-secondary: #94a3b8;
+  --app-text-muted: #64748b;
+  --app-input-bg: rgba(15, 23, 42, 0.6);
+  --app-input-border: rgba(255, 255, 255, 0.12);
+  --app-input-text: #f8fafc;
+  --app-input-placeholder: #64748b;
+  --app-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --app-btn-orange: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  --app-btn-orange-hover: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  --app-sidebar-bg: #0f172a;
+  --app-sidebar-border: rgba(255, 255, 255, 0.06);
+  --app-header-bg: #0f172a;
+  --ion-background-color: #090d16;
+  --ion-text-color: #f8fafc;
+}
+
+/* ==========================================================================
    GLOBAL FIX PARA CONTEÚDO RASPADO (SCRAPED)
    ========================================================================== */
 .extracted-content * {

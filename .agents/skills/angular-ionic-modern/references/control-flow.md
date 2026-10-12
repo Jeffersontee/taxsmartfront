@@ -1,5 +1,8 @@
 # Reference: Novo Fluxo de Controle Nativo (Control Flow)
 
+> [!WARNING]
+> **Depreciação Crítica:** As diretivas estruturais de atributos (`*ngIf`, `*ngFor`, `*ngSwitch`) estão marcadas como `@deprecated — Use the @if block instead. Intent to remove in v22`. É obrigatório migrar todo o código para os novos blocos de controle nativos do Angular para evitar quebras futuras.
+
 Substitua obrigatoriamente as diretivas estruturais legadas de atributos (`*ngIf`, `*ngFor`, `*ngSwitch`) pela nova sintaxe de blocos nativos.
 
 ## Diretrizes de Refatoração

@@ -83,6 +83,7 @@ export class AppComponent {
     const url = this.currentUrl();
     return (
       url.startsWith('/admin') ||
+      url.startsWith('/client') ||
       url.startsWith('/cliente') ||
       url.startsWith('/login') ||
       url.startsWith('/auth')

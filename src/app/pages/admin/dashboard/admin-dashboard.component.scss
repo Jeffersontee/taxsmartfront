@@ -3,6 +3,7 @@
   max-width: 1400px;
   margin: 0 auto;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--app-text-primary, #f8fafc);
 }
 
 // Welcome Header Banner
@@ -19,17 +20,17 @@
       margin: 0 0 6px 0;
       font-size: 1.625rem;
       font-weight: 800;
-      color: #f8fafc;
+      color: var(--app-text-primary, #f8fafc);
       letter-spacing: -0.02em;
     }
 
     .welcome-subtitle {
       margin: 0;
       font-size: 0.9375rem;
-      color: #94a3b8;
+      color: var(--app-text-secondary, #94a3b8);
 
       strong {
-        color: #fdba74;
+        color: var(--app-primary, #ea580c);
       }
     }
   }
@@ -46,9 +47,9 @@
       height: 40px;
       padding: 0 14px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
+      background: var(--app-surface, rgba(255, 255, 255, 0.05));
+      border: 1px solid var(--app-border, rgba(255, 255, 255, 0.1));
+      color: var(--app-text-secondary, #cbd5e1);
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
@@ -59,8 +60,8 @@
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background: var(--app-surface-subtle, rgba(255, 255, 255, 0.1));
+        color: var(--app-text-primary, #ffffff);
       }
     }
 
@@ -71,7 +72,7 @@
       height: 40px;
       padding: 0 16px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+      background: var(--app-btn-orange, linear-gradient(135deg, #ea580c 0%, #c2410c 100%));
       color: #ffffff;
       text-decoration: none;
       font-size: 0.85rem;
@@ -84,7 +85,7 @@
       }
 
       &:hover {
-        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        background: var(--app-btn-orange-hover, linear-gradient(135deg, #f97316 0%, #ea580c 100%));
         transform: translateY(-2px);
       }
     }
@@ -103,9 +104,14 @@
   .kpi-card {
     margin: 0;
     border-radius: 16px;
-    background: rgba(18, 24, 38, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    background: var(--app-surface, #1e293b);
+    border: 1px solid var(--app-border, rgba(255, 255, 255, 0.06));
+    box-shadow: var(--app-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.05));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
 
     ion-card-content {
       padding: 20px;
@@ -126,22 +132,22 @@
 
       &.icon-purple {
         background: rgba(168, 85, 247, 0.15);
-        color: #c084fc;
+        color: #9333ea;
       }
 
       &.icon-green {
         background: rgba(34, 197, 94, 0.15);
-        color: #4ade80;
+        color: #16a34a;
       }
 
       &.icon-yellow {
         background: rgba(234, 179, 8, 0.15);
-        color: #facc15;
+        color: #d97706;
       }
 
       &.icon-red {
         background: rgba(239, 68, 68, 0.15);
-        color: #f87171;
+        color: #dc2626;
       }
     }
 
@@ -151,8 +157,8 @@
 
       .kpi-label {
         font-size: 0.75rem;
-        font-weight: 600;
-        color: #94a3b8;
+        font-weight: 700;
+        color: var(--app-text-secondary, #64748b);
         text-transform: uppercase;
         letter-spacing: 0.03em;
       }
@@ -160,14 +166,14 @@
       .kpi-value {
         font-size: 1.5rem;
         font-weight: 800;
-        color: #f8fafc;
+        color: var(--app-text-primary, #0f172a);
         line-height: 1.2;
         margin: 2px 0;
       }
 
       .kpi-subtext {
         font-size: 0.75rem;
-        color: #64748b;
+        color: var(--app-text-muted, #64748b);
       }
     }
   }
@@ -175,11 +181,12 @@
 
 // Progress Section Card
 .progress-section-card {
-  background: rgba(18, 24, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--app-surface, #1e293b);
+  border: 1px solid var(--app-border, rgba(255, 255, 255, 0.06));
   border-radius: 16px;
   padding: 16px 20px;
   margin-bottom: 24px;
+  box-shadow: var(--app-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.05));
 
   .progress-header {
     display: flex;
@@ -193,34 +200,34 @@
       gap: 8px;
 
       .bolt-icon {
-        color: #ea580c;
+        color: var(--app-primary, #ea580c);
         font-size: 1.15rem;
       }
 
       .progress-title {
         font-size: 0.875rem;
-        font-weight: 600;
-        color: #cbd5e1;
+        font-weight: 700;
+        color: var(--app-text-primary, #0f172a);
       }
     }
 
     .progress-percent {
       font-size: 0.875rem;
       font-weight: 700;
-      color: #4ade80;
+      color: #16a34a;
     }
   }
 
   .custom-progress-bar {
     width: 100%;
     height: 8px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--app-border, rgba(255, 255, 255, 0.08));
     border-radius: 9999px;
     overflow: hidden;
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #ea580c 0%, #22c55e 100%);
+      background: linear-gradient(90deg, var(--app-primary, #ea580c) 0%, #16a34a 100%);
       border-radius: 9999px;
       transition: width 0.4s ease;
     }
@@ -237,11 +244,12 @@
 }
 
 .section-container {
-  background: rgba(18, 24, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--app-surface, #1e293b);
+  border: 1px solid var(--app-border, rgba(255, 255, 255, 0.06));
   border-radius: 16px;
   padding: 20px;
   height: 100%;
+  box-shadow: var(--app-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.05));
 
   .section-header {
     display: flex;
@@ -249,19 +257,19 @@
     justify-content: space-between;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--app-border, rgba(255, 255, 255, 0.05));
 
     .section-title {
       margin: 0;
       font-size: 1.05rem;
-      font-weight: 700;
-      color: #f8fafc;
+      font-weight: 800;
+      color: var(--app-text-primary, #f8fafc);
       display: flex;
       align-items: center;
       gap: 8px;
 
       ion-icon {
-        color: #ea580c;
+        color: var(--app-primary, #ea580c);
       }
     }
 
@@ -269,21 +277,21 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      color: #fdba74;
+      color: var(--app-primary, #ea580c);
       text-decoration: none;
       font-size: 0.8125rem;
-      font-weight: 600;
+      font-weight: 700;
       transition: color 0.2s ease;
 
       &:hover {
-        color: #ffffff;
+        opacity: 0.8;
       }
     }
 
     .badge-counter {
       font-size: 0.75rem;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.05);
+      color: var(--app-text-muted, #94a3b8);
+      background: var(--app-surface-subtle, rgba(255, 255, 255, 0.05));
       padding: 4px 8px;
       border-radius: 6px;
     }
@@ -299,15 +307,15 @@
   .task-row-card {
     position: relative;
     display: flex;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: var(--app-surface-subtle, rgba(15, 23, 42, 0.6));
+    border: 1px solid var(--app-border, rgba(255, 255, 255, 0.04));
     border-radius: 12px;
     padding: 14px 16px;
     overflow: hidden;
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: rgba(234, 88, 12, 0.3);
+      border-color: var(--app-primary, #ea580c);
       transform: translateX(3px);
     }
 
@@ -319,16 +327,16 @@
       width: 4px;
 
       &[data-status="CONCLUIDO"] {
-        background: #22c55e;
+        background: #16a34a;
       }
       &[data-status="IMPEDIMENTO"] {
-        background: #ef4444;
+        background: #dc2626;
       }
       &[data-status="DESCONSIDERADO"] {
         background: #64748b;
       }
       &[data-status="ABERTA"] {
-        background: #eab308;
+        background: #d97706;
       }
     }
 
@@ -344,7 +352,8 @@
 
         .task-title {
           font-size: 0.9375rem;
-          color: #f8fafc;
+          font-weight: 700;
+          color: var(--app-text-primary, #f8fafc);
         }
 
         .status-badge {
@@ -358,7 +367,7 @@
       .task-desc {
         margin: 0 0 8px 0;
         font-size: 0.8125rem;
-        color: #94a3b8;
+        color: var(--app-text-secondary, #94a3b8);
         line-height: 1.4;
       }
 
@@ -370,22 +379,22 @@
         font-size: 0.75rem;
 
         .company-tag {
-          color: #fdba74;
-          font-weight: 600;
+          color: var(--app-primary, #ea580c);
+          font-weight: 700;
           background: rgba(234, 88, 12, 0.1);
           padding: 2px 8px;
           border-radius: 4px;
         }
 
         .category-tag {
-          color: #cbd5e1;
-          background: rgba(255, 255, 255, 0.05);
+          color: var(--app-text-secondary, #cbd5e1);
+          background: var(--app-border, rgba(255, 255, 255, 0.05));
           padding: 2px 8px;
           border-radius: 4px;
         }
 
         .due-tag {
-          color: #64748b;
+          color: var(--app-text-muted, #64748b);
         }
       }
     }
@@ -402,14 +411,14 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: var(--app-surface-subtle, rgba(15, 23, 42, 0.6));
+    border: 1px solid var(--app-border, rgba(255, 255, 255, 0.04));
     border-radius: 12px;
     padding: 12px 14px;
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: rgba(255, 255, 255, 0.1);
+      border-color: var(--app-primary, #ea580c);
       transform: translateX(3px);
     }
 
@@ -417,9 +426,9 @@
       width: 42px;
       height: 42px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #ea580c;
+      background: var(--app-surface, #1e293b);
+      border: 1px solid var(--app-border, rgba(255, 255, 255, 0.1));
+      color: var(--app-primary, #ea580c);
       font-weight: 800;
       font-size: 0.95rem;
       display: flex;
@@ -435,13 +444,14 @@
 
       .company-name {
         font-size: 0.9rem;
-        color: #f8fafc;
+        font-weight: 700;
+        color: var(--app-text-primary, #f8fafc);
         margin-bottom: 2px;
       }
 
       .company-cnpj {
         font-size: 0.75rem;
-        color: #94a3b8;
+        color: var(--app-text-muted, #94a3b8);
         margin-bottom: 4px;
       }
 
@@ -453,15 +463,16 @@
         .regime-badge {
           font-size: 0.6875rem;
           font-weight: 700;
-          color: #38bdf8;
-          background: rgba(56, 189, 248, 0.1);
+          color: var(--app-secondary, #00d2ff);
+          background: rgba(0, 210, 255, 0.12);
+          border: 1px solid rgba(0, 210, 255, 0.25);
           padding: 2px 6px;
           border-radius: 4px;
         }
 
         .city-tag {
           font-size: 0.7rem;
-          color: #64748b;
+          color: var(--app-text-muted, #64748b);
         }
       }
     }
@@ -471,12 +482,12 @@
 .empty-state-box {
   text-align: center;
   padding: 32px 16px;
-  color: #64748b;
+  color: var(--app-text-muted, #64748b);
 
   ion-icon {
     font-size: 2.5rem;
     margin-bottom: 8px;
-    color: #475569;
+    color: var(--app-text-muted, #475569);
   }
 
   p {

@@ -2,6 +2,7 @@ import { Injectable, Renderer2, RendererFactory2, signal } from '@angular/core';
 
 export interface IAppearanceConfig {
   primary_color?: string;
+  secondary_color?: string;
   theme?: 'light' | 'dark';
   logo_url?: string;
   background_image?: string;
@@ -58,11 +59,11 @@ export class ThemeService {
     const b = parseInt(cleanHex.substring(4, 6), 16);
 
     const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 160 ? '#000000' : '#ffffff';
+    return yiq >= 160 ? '#0f172a' : '#ffffff';
   }
 
   /**
-   * Aplica a cor primária globalmente e configurações de modo escuro / claro.
+   * Aplica cores primária, secundária e tema globalmente
    */
   applyTheme(appearance: IAppearanceConfig): void {
     if (!appearance) return;
@@ -70,59 +71,77 @@ export class ThemeService {
     this.currentAppearance.set(appearance);
     localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(appearance));
 
-    const isDark = appearance.theme !== 'light';
+    const isLight = appearance.theme === 'light';
+    const root = document.documentElement;
+    const body = document.body;
 
-    if (isDark) {
-      document.documentElement.classList.add('ion-palette-dark');
-      document.body.classList.add('ion-palette-dark');
-      document.documentElement.classList.remove('ion-palette-light');
-      document.body.classList.remove('ion-palette-light');
+    if (isLight) {
+      root.setAttribute('data-theme', 'light');
+      body.setAttribute('data-theme', 'light');
+      root.classList.add('theme-light', 'ion-palette-light');
+      body.classList.add('theme-light', 'ion-palette-light');
+      root.classList.remove('theme-dark', 'ion-palette-dark');
+      body.classList.remove('theme-dark', 'ion-palette-dark');
     } else {
-      document.documentElement.classList.remove('ion-palette-dark');
-      document.body.classList.remove('ion-palette-dark');
-      document.documentElement.classList.add('ion-palette-light');
-      document.body.classList.add('ion-palette-light');
+      root.setAttribute('data-theme', 'dark');
+      body.setAttribute('data-theme', 'dark');
+      root.classList.add('theme-dark', 'ion-palette-dark');
+      body.classList.add('theme-dark', 'ion-palette-dark');
+      root.classList.remove('theme-light', 'ion-palette-light');
+      body.classList.remove('theme-light', 'ion-palette-light');
     }
 
-    const primaryColor = appearance.primary_color || '#00d2ff';
-    const rgb = this.hexToRgb(primaryColor);
-
-    if (rgb) {
-      document.documentElement.style.setProperty('--ion-color-primary', primaryColor);
-      document.documentElement.style.setProperty('--ion-color-primary-rgb', rgb);
-      document.body.style.setProperty('--ion-color-primary', primaryColor);
-      document.body.style.setProperty('--ion-color-primary-rgb', rgb);
+    // Cor Primária
+    const primaryColor = appearance.primary_color || '#ea580c';
+    const primaryRgb = this.hexToRgb(primaryColor);
+    if (primaryRgb) {
+      root.style.setProperty('--ion-color-primary', primaryColor);
+      root.style.setProperty('--ion-color-primary-rgb', primaryRgb);
+      root.style.setProperty('--app-primary', primaryColor);
+      root.style.setProperty('--app-primary-rgb', primaryRgb);
+      body.style.setProperty('--ion-color-primary', primaryColor);
+      body.style.setProperty('--ion-color-primary-rgb', primaryRgb);
 
       const contrastHex = this.getContrastColor(primaryColor);
       const contrastRgb = this.hexToRgb(contrastHex);
-
-      document.documentElement.style.setProperty('--ion-color-primary-contrast', contrastHex);
+      root.style.setProperty('--ion-color-primary-contrast', contrastHex);
       if (contrastRgb) {
-        document.documentElement.style.setProperty('--ion-color-primary-contrast-rgb', contrastRgb);
+        root.style.setProperty('--ion-color-primary-contrast-rgb', contrastRgb);
       }
-      document.body.style.setProperty('--ion-color-primary-contrast', contrastHex);
+      body.style.setProperty('--ion-color-primary-contrast', contrastHex);
       if (contrastRgb) {
-        document.body.style.setProperty('--ion-color-primary-contrast-rgb', contrastRgb);
+        body.style.setProperty('--ion-color-primary-contrast-rgb', contrastRgb);
       }
     }
 
+    // Cor Secundária
+    const secondaryColor = appearance.secondary_color || '#00d2ff';
+    const secondaryRgb = this.hexToRgb(secondaryColor);
+    if (secondaryRgb) {
+      root.style.setProperty('--ion-color-secondary', secondaryColor);
+      root.style.setProperty('--ion-color-secondary-rgb', secondaryRgb);
+      root.style.setProperty('--app-secondary', secondaryColor);
+      root.style.setProperty('--app-secondary-rgb', secondaryRgb);
+      body.style.setProperty('--ion-color-secondary', secondaryColor);
+      body.style.setProperty('--ion-color-secondary-rgb', secondaryRgb);
+    }
+
     if (appearance.background_image) {
-      document.documentElement.style.setProperty('--app-custom-bg', `url("${appearance.background_image}")`);
+      root.style.setProperty('--app-custom-bg', `url("${appearance.background_image}")`);
     } else {
-      document.documentElement.style.removeProperty('--app-custom-bg');
+      root.style.removeProperty('--app-custom-bg');
     }
   }
 
   resetTheme(): void {
     localStorage.removeItem(THEME_STORAGE_KEY);
-    this.currentAppearance.set({
-      primary_color: '#00d2ff',
-      theme: 'dark',
-    });
-    this.applyTheme({
-      primary_color: '#00d2ff',
-      theme: 'dark',
-    });
+    const defaultConfig: IAppearanceConfig = {
+      primary_color: '#ea580c',
+      secondary_color: '#00d2ff',
+      theme: 'light',
+    };
+    this.currentAppearance.set(defaultConfig);
+    this.applyTheme(defaultConfig);
   }
 
   private getStoredAppearance(): IAppearanceConfig {
@@ -131,13 +150,15 @@ export class ThemeService {
       return data
         ? JSON.parse(data)
         : {
-            primary_color: '#00d2ff',
-            theme: 'dark',
+            primary_color: '#ea580c',
+            secondary_color: '#00d2ff',
+            theme: 'light',
           };
     } catch {
       return {
-        primary_color: '#00d2ff',
-        theme: 'dark',
+        primary_color: '#ea580c',
+        secondary_color: '#00d2ff',
+        theme: 'light',
       };
     }
   }

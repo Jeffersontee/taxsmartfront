@@ -1,11 +1,16 @@
 import { Routes } from '@angular/router';
-import { authGuard, accountantGuard } from './guards/auth.guard';
+import { authGuard, staffGuard, clientGuard, superAdminGuard, moduleGuard } from './guards/auth.guard';
+import { SystemModule } from './models/user.model';
 
 export const routes: Routes = [
+  // Landing Page Principal
   {
     path: '',
-    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
+    loadComponent: () =>
+      import('./pages/public/home/home.component').then((m) => m.HomeComponent),
   },
+
+  // Autenticação
   {
     path: 'login',
     loadComponent: () =>
@@ -17,10 +22,12 @@ export const routes: Routes = [
       import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
   },
 
-  // Área Administrativa / Contábil
+  // =========================================================================
+  // Área Administrativa do Escritório Contábil (Staff)
+  // =========================================================================
   {
     path: 'admin',
-    canActivate: [authGuard, accountantGuard],
+    canActivate: [authGuard, staffGuard],
     loadComponent: () =>
       import('./pages/admin/admin-layout/admin-layout.component').then(
         (m) => m.AdminLayoutComponent
@@ -40,20 +47,39 @@ export const routes: Routes = [
       },
       {
         path: 'timeline',
+        canActivate: [moduleGuard(SystemModule.TIMELINE_TASKS)],
         loadComponent: () =>
-          import('./pages/tasks/timeline/timeline.component').then(
+          import('./pages/admin/timeline/timeline.component').then(
             (m) => m.TimelineComponent
           ),
       },
       {
+        path: 'empresas',
+        canActivate: [moduleGuard(SystemModule.COMPANIES)],
+        loadComponent: () =>
+          import('./pages/admin/companies/admin-companies.component').then(
+            (m) => m.AdminCompaniesComponent
+          ),
+      },
+      {
         path: 'fiscal',
+        canActivate: [moduleGuard(SystemModule.FISCAL)],
         loadComponent: () =>
           import('./pages/admin/fiscal/admin-fiscal.component').then(
             (m) => m.AdminFiscalComponent
           ),
       },
       {
+        path: 'contabil',
+        canActivate: [moduleGuard(SystemModule.ACCOUNTING)],
+        loadComponent: () =>
+          import('./pages/admin/accounting/admin-accounting.component').then(
+            (m) => m.AdminAccountingComponent
+          ),
+      },
+      {
         path: 'folha',
+        canActivate: [moduleGuard(SystemModule.PAYROLL)],
         loadComponent: () =>
           import('./pages/admin/payroll/admin-payroll.component').then(
             (m) => m.AdminPayrollComponent
@@ -61,6 +87,7 @@ export const routes: Routes = [
       },
       {
         path: 'appearance',
+        canActivate: [superAdminGuard],
         loadComponent: () =>
           import('./pages/admin/settings/appearance/appearance.component').then(
             (m) => m.AppearanceComponent
@@ -68,6 +95,7 @@ export const routes: Routes = [
       },
       {
         path: 'settings/appearance',
+        canActivate: [superAdminGuard],
         loadComponent: () =>
           import('./pages/admin/settings/appearance/appearance.component').then(
             (m) => m.AppearanceComponent
@@ -76,12 +104,14 @@ export const routes: Routes = [
     ],
   },
 
-  // Área do Cliente / Empresário
+  // =========================================================================
+  // Área do Cliente / Empresário (Client Portal)
+  // =========================================================================
   {
-    path: 'cliente',
-    canActivate: [authGuard],
+    path: 'client',
+    canActivate: [authGuard, clientGuard],
     loadComponent: () =>
-      import('./pages/cliente/cliente-layout/cliente-layout.component').then(
+      import('./pages/client/cliente-layout/cliente-layout.component').then(
         (m) => m.ClienteLayoutComponent
       ),
     children: [
@@ -93,98 +123,135 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./pages/cliente/dashboard/cliente-dashboard.component').then(
+          import('./pages/client/dashboard/cliente-dashboard.component').then(
             (m) => m.ClienteDashboardComponent
           ),
       },
     ],
   },
-
+  // Alias de retrocompatibilidade para /cliente
   {
-    path: 'quem-somos',
+    path: 'cliente',
+    redirectTo: 'client',
+    pathMatch: 'prefix',
+  },
+
+  // =========================================================================
+  // Páginas Públicas / Institucionais (Landing Page & Marketing)
+  // =========================================================================
+  {
+    path: 'about-us',
     loadComponent: () =>
-      import('./pages/quem-somos/quem-somos.component').then((m) => m.QuemSomosComponent),
+      import('./pages/public/about-us/quem-somos.component').then((m) => m.QuemSomosComponent),
   },
   {
-    path: 'nossos-valores',
+    path: 'quem-somos',
+    redirectTo: 'about-us',
+    pathMatch: 'full',
+  },
+  {
+    path: 'values',
     loadComponent: () =>
-      import('./pages/nossos-valores/nossos-valores.component').then(
+      import('./pages/public/values/nossos-valores.component').then(
         (m) => m.NossosValoresComponent
       ),
   },
   {
-    path: 'ramos-de-atividades',
+    path: 'nossos-valores',
+    redirectTo: 'values',
+    pathMatch: 'full',
+  },
+  {
+    path: 'segments',
     loadComponent: () =>
-      import('./pages/ramos-de-atividades/ramos-de-atividades.component').then(
+      import('./pages/public/segments/ramos-de-atividades.component').then(
         (m) => m.RamosDeAtividadesComponent
       ),
   },
   {
-    path: 'servicos',
+    path: 'ramos-de-atividades',
+    redirectTo: 'segments',
+    pathMatch: 'full',
+  },
+  {
+    path: 'services',
     loadComponent: () =>
-      import('./pages/servicos/servicos.component').then((m) => m.ServicosComponent),
+      import('./pages/public/services/servicos.component').then((m) => m.ServicosComponent),
+  },
+  {
+    path: 'servicos',
+    redirectTo: 'services',
+    pathMatch: 'full',
   },
   {
     path: 'fiscal',
-    loadComponent: () => import('./pages/fiscal/fiscal.component').then((m) => m.FiscalComponent),
+    loadComponent: () =>
+      import('./pages/public/services-fiscal/fiscal.component').then((m) => m.FiscalComponent),
   },
   {
     path: 'contabil',
     loadComponent: () =>
-      import('./pages/contabilidade/contabilidade.component').then((m) => m.ContabilidadeComponent),
+      import('./pages/public/services-accounting/contabilidade.component').then(
+        (m) => m.ContabilidadeComponent
+      ),
+  },
+  {
+    path: 'contabilidade',
+    redirectTo: 'contabil',
+    pathMatch: 'full',
   },
   {
     path: 'departamento-pessoal',
     loadComponent: () =>
-      import('./pages/departamento-pessoal/departamento-pessoal.component').then(
+      import('./pages/public/services-payroll/departamento-pessoal.component').then(
         (m) => m.DepartamentoPessoalComponent
       ),
   },
   {
     path: 'legalizacao',
     loadComponent: () =>
-      import('./pages/legalizacao/legalizacao.component').then((m) => m.LegalizacaoComponent),
+      import('./pages/public/services-legal/legalizacao.component').then((m) => m.LegalizacaoComponent),
   },
   {
     path: 'consultoria',
     loadComponent: () =>
-      import('./pages/consultoria/consultoria.component').then((m) => m.ConsultoriaComponent),
-  },
-  {
-    path: 'contabilidade',
-    loadComponent: () =>
-      import('./pages/contabilidade/contabilidade.component').then((m) => m.ContabilidadeComponent),
+      import('./pages/public/services-consulting/consultoria.component').then((m) => m.ConsultoriaComponent),
   },
   {
     path: 'servicos-tributario',
     loadComponent: () =>
-      import('./pages/servicos-tributario/servicos-tributario.component').then(
+      import('./pages/public/services-tax/servicos-tributario.component').then(
         (m) => m.ServicosTributarioComponent
       ),
   },
   {
     path: 'consultoria-trabalhista',
     loadComponent: () =>
-      import('./pages/consultoria-trabalhista/consultoria-trabalhista.component').then(
+      import('./pages/public/services-labor/consultoria-trabalhista.component').then(
         (m) => m.ConsultoriaTrabalhistaComponent
       ),
   },
   {
     path: 'planejamento-financeiro',
     loadComponent: () =>
-      import('./pages/planejamento-financeiro/planejamento-financeiro.component').then(
+      import('./pages/public/financial-planning/planejamento-financeiro.component').then(
         (m) => m.PlanejamentoFinanceiroComponent
       ),
   },
   {
-    path: 'contato',
+    path: 'contact',
     loadComponent: () =>
-      import('./pages/contato/contato.component').then((m) => m.ContatoComponent),
+      import('./pages/public/contact/contato.component').then((m) => m.ContatoComponent),
+  },
+  {
+    path: 'contato',
+    redirectTo: 'contact',
+    pathMatch: 'full',
   },
   {
     path: 'timeline',
     loadComponent: () =>
-      import('./pages/tasks/timeline/timeline.component').then((m) => m.TimelineComponent),
+      import('./pages/admin/timeline/timeline.component').then((m) => m.TimelineComponent),
   },
   {
     path: '**',
@@ -192,4 +259,3 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 ];
-

@@ -1,6 +1,7 @@
 .login-page-content {
-  --background: #090d16;
+  --background: var(--app-bg, #090d16);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background 0.3s ease;
 }
 
 .login-wrapper {
@@ -10,8 +11,9 @@
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
-  background: radial-gradient(circle at 50% 0%, #1a1f35 0%, #090d16 75%);
+  background: var(--app-bg-gradient, radial-gradient(circle at 50% 0%, #1a1f35 0%, #090d16 75%));
   overflow: hidden;
+  transition: background 0.3s ease;
 }
 
 // Background Glow Orbs
@@ -28,7 +30,7 @@
     top: -100px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, #ea580c 0%, rgba(234, 88, 12, 0) 70%);
+    background: radial-gradient(circle, var(--app-primary, #ea580c) 0%, rgba(234, 88, 12, 0) 70%);
   }
 
   &.orb-bottom {
@@ -36,8 +38,15 @@
     height: 500px;
     bottom: -150px;
     right: -100px;
-    background: radial-gradient(circle, #3b82f6 0%, rgba(59, 130, 246, 0) 70%);
+    background: radial-gradient(circle, var(--app-secondary, #3b82f6) 0%, rgba(59, 130, 246, 0) 70%);
     opacity: 0.15;
+  }
+}
+
+:host-context([data-theme="light"]),
+:host-context(.theme-light) {
+  .glow-orb {
+    opacity: 0.1;
   }
 }
 
@@ -60,10 +69,10 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: #94a3b8;
+    color: var(--app-text-muted, #94a3b8);
     text-decoration: none;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     transition: color 0.2s ease, transform 0.2s ease;
 
     ion-icon {
@@ -71,7 +80,7 @@
     }
 
     &:hover {
-      color: #f8fafc;
+      color: var(--app-text-primary, #f8fafc);
       transform: translateX(-3px);
     }
   }
@@ -84,14 +93,14 @@
     border-radius: 9999px;
     background: rgba(234, 88, 12, 0.1);
     border: 1px solid rgba(234, 88, 12, 0.25);
-    color: #fdba74;
+    color: var(--app-primary, #ea580c);
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.02em;
 
     ion-icon {
       font-size: 0.9rem;
-      color: #ea580c;
+      color: var(--app-primary, #ea580c);
     }
   }
 }
@@ -100,11 +109,12 @@
 .login-card {
   margin: 0;
   border-radius: 20px;
-  background: rgba(18, 24, 38, 0.85);
+  background: var(--app-surface, #121826);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--app-border, rgba(255, 255, 255, 0.08));
+  box-shadow: var(--app-card-shadow, 0 25px 50px -12px rgba(0, 0, 0, 0.6));
+  transition: all 0.3s ease;
 
   ion-card-content {
     padding: 36px 32px;
@@ -123,8 +133,8 @@
     width: 64px;
     height: 64px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--app-surface-subtle, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--app-border, rgba(255, 255, 255, 0.08));
     padding: 8px;
     margin-bottom: 16px;
     box-shadow: 0 10px 20px -5px rgba(234, 88, 12, 0.2);
@@ -139,15 +149,15 @@
   .login-title {
     margin: 0 0 8px 0;
     font-size: 1.5rem;
-    font-weight: 700;
-    color: #f8fafc;
+    font-weight: 800;
+    color: var(--app-text-primary, #f8fafc);
     letter-spacing: -0.02em;
   }
 
   .login-subtitle {
     margin: 0;
     font-size: 0.875rem;
-    color: #94a3b8;
+    color: var(--app-text-secondary, #94a3b8);
     line-height: 1.4;
   }
 }
@@ -194,20 +204,20 @@
 
   .field-label {
     font-size: 0.8125rem;
-    font-weight: 600;
-    color: #cbd5e1;
+    font-weight: 700;
+    color: var(--app-text-primary, #cbd5e1);
     letter-spacing: 0.01em;
   }
 
   .forgot-password-link {
     font-size: 0.75rem;
-    color: #ea580c;
+    color: var(--app-primary, #ea580c);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     transition: color 0.2s ease;
 
     &:hover {
-      color: #fdba74;
+      opacity: 0.8;
       text-decoration: underline;
     }
   }
@@ -216,8 +226,8 @@
     position: relative;
     display: flex;
     align-items: center;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--app-input-bg, rgba(15, 23, 42, 0.6));
+    border: 1px solid var(--app-input-border, rgba(255, 255, 255, 0.1));
     border-radius: 12px;
     padding: 0 14px;
     height: 48px;
@@ -225,7 +235,7 @@
 
     .input-icon {
       font-size: 1.15rem;
-      color: #64748b;
+      color: var(--app-text-muted, #64748b);
       margin-right: 10px;
       flex-shrink: 0;
     }
@@ -235,11 +245,12 @@
       background: transparent;
       border: none;
       outline: none;
-      color: #f8fafc;
+      color: var(--app-input-text, #f8fafc);
       font-size: 0.9375rem;
+      font-weight: 500;
 
       &::placeholder {
-        color: #64748b;
+        color: var(--app-input-placeholder, #64748b);
         font-size: 0.875rem;
       }
 
@@ -252,7 +263,7 @@
     .toggle-password-btn {
       background: transparent;
       border: none;
-      color: #64748b;
+      color: var(--app-text-muted, #64748b);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -267,17 +278,17 @@
       }
 
       &:hover {
-        color: #f8fafc;
+        color: var(--app-text-primary, #f8fafc);
       }
     }
 
     &:focus-within {
-      border-color: #ea580c;
+      border-color: var(--app-primary, #ea580c);
       box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2);
-      background: rgba(15, 23, 42, 0.85);
+      background: var(--app-surface, #ffffff);
 
       .input-icon {
-        color: #ea580c;
+        color: var(--app-primary, #ea580c);
       }
     }
 
@@ -293,13 +304,14 @@
 
   .field-error-text {
     font-size: 0.75rem;
-    color: #f87171;
+    color: #ef4444;
+    font-weight: 600;
     margin-top: 2px;
     padding-left: 4px;
   }
 }
 
-// Submit Button
+// Submit Button (Laranja Corporativo Impecável)
 .submit-button {
   margin-top: 6px;
   height: 50px;
@@ -308,12 +320,12 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  background: var(--app-btn-orange, linear-gradient(135deg, #ea580c 0%, #c2410c 100%));
   color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 10px 20px -5px rgba(234, 88, 12, 0.4);
@@ -324,7 +336,7 @@
   }
 
   &:hover:not(.loading) {
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    background: var(--app-btn-orange-hover, linear-gradient(135deg, #f97316 0%, #ea580c 100%));
     transform: translateY(-2px);
     box-shadow: 0 14px 24px -5px rgba(234, 88, 12, 0.5);
 
@@ -353,24 +365,24 @@
 .card-footer {
   margin-top: 24px;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--app-border, rgba(255, 255, 255, 0.06));
   padding-top: 20px;
 
   .footer-help {
     margin: 0;
     font-size: 0.8125rem;
-    color: #94a3b8;
+    color: var(--app-text-secondary, #94a3b8);
 
     .contact-link {
       display: inline-block;
       margin-left: 4px;
-      color: #fdba74;
+      color: var(--app-primary, #ea580c);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       transition: color 0.2s ease;
 
       &:hover {
-        color: #ffffff;
+        opacity: 0.8;
         text-decoration: underline;
       }
     }
@@ -385,7 +397,7 @@
   p {
     margin: 0;
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--app-text-muted, #64748b);
   }
 }
 
