@@ -1,0 +1,185 @@
+<ion-header class="ion-no-border page-header">
+  <ion-toolbar class="header-toolbar">
+    <div class="header-content">
+      <div class="title-group">
+        <span class="category-badge">SISTEMA & PLATAFORMA</span>
+        <h1 class="page-title">Usuários das Empresas Clientes</h1>
+        <p class="page-subtitle">Controle de acessos, titulares e gestores financeiros vinculados a cada cliente PJ.</p>
+      </div>
+      <div class="header-actions">
+        <ion-button color="primary" class="action-btn" (click)="openCreateModal()" [disabled]="!selectedCompanyId()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Convidar Usuário
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="main-content">
+  <div class="content-container">
+    <!-- Seletor de Empresa e Busca -->
+    <div class="filter-bar">
+      <div class="company-selector">
+        <label class="select-label">Selecione a Empresa:</label>
+        <ion-select
+          interface="popover"
+          [value]="selectedCompanyId()"
+          (ionChange)="onCompanyChange($any($event).detail.value)"
+          class="custom-company-select"
+        >
+          @for (c of companies(); track c._id) {
+            <ion-select-option [value]="c._id">
+              {{ c.tradeName || c.corporateName }} (CNPJ: {{ c.cnpj }})
+            </ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <div class="search-box">
+        <ion-searchbar
+          placeholder="Buscar usuário nesta empresa..."
+          [debounce]="250"
+          (ionInput)="searchTerm.set($any($event).detail.value || '')"
+          class="custom-search"
+        ></ion-searchbar>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <span>Carregando usuários da empresa...</span>
+      </div>
+    } @else {
+      @if (filteredUsers().length === 0) {
+        <div class="empty-state">
+          <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+          <h3>Nenhum usuário cadastrado nesta empresa</h3>
+          <p>Clique no botão "Convidar Usuário" acima para liberar o acesso ao Portal do Cliente.</p>
+        </div>
+      } @else {
+        <div class="users-grid">
+          @for (u of filteredUsers(); track u._id) {
+            <div class="user-card" [class.inactive]="!u.active">
+              <div class="card-top">
+                <div class="user-info">
+                  <div class="avatar-circle">
+                    {{ u.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="details">
+                    <h3 class="name">{{ u.name }}</h3>
+                    <span class="email">
+                      <ion-icon name="mail-outline"></ion-icon>
+                      {{ u.email }}
+                    </span>
+                  </div>
+                </div>
+
+                <ion-badge [color]="u.role === 'CLIENT_ADMIN' ? 'success' : 'tertiary'" class="role-badge">
+                  <ion-icon name="shield-checkmark-outline"></ion-icon>
+                  {{ u.role === 'CLIENT_ADMIN' ? 'Titular / Diretor' : 'Gestor Financeiro' }}
+                </ion-badge>
+              </div>
+
+              <div class="card-meta">
+                <span class="meta-item">
+                  <ion-icon name="business-outline"></ion-icon>
+                  {{ selectedCompanyName() }}
+                </span>
+                @if (u.phone) {
+                  <span class="meta-item">
+                    <ion-icon name="call-outline"></ion-icon>
+                    {{ u.phone }}
+                  </span>
+                }
+                <span class="status-indicator" [class.active]="u.active">
+                  {{ u.active ? '● Ativo' : '○ Inativo' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Modal de Criação de Usuário da Empresa -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header class="ion-no-border modal-header">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Adicionar Usuário para {{ selectedCompanyName() }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" color="medium">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-content">
+        <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="form-container">
+          <div class="form-group">
+            <label class="form-label">Nome Completo *</label>
+            <ion-input
+              formControlName="name"
+              placeholder="Ex: Carlos Eduardo"
+              class="form-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-mail do Usuário *</label>
+            <ion-input
+              type="email"
+              formControlName="email"
+              placeholder="ex: carlos@empresa.com.br"
+              class="form-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Senha Provisória *</label>
+            <ion-input
+              type="password"
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+              class="form-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Perfil de Acesso na Empresa *</label>
+            <ion-select
+              formControlName="role"
+              interface="action-sheet"
+              class="form-select"
+            >
+              @for (r of rolesList; track r.value) {
+                <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefone / WhatsApp (opcional)</label>
+            <ion-input
+              formControlName="phone"
+              placeholder="(11) 98765-4321"
+              class="form-input"
+            ></ion-input>
+          </div>
+
+          <div class="modal-actions">
+            <ion-button fill="outline" color="medium" (click)="closeModal()">Cancelar</ion-button>
+            <ion-button type="submit" color="primary" [disabled]="userForm.invalid">
+              Salvar Acesso
+            </ion-button>
+          </div>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,164 @@
+<ion-header class="ion-no-border page-header">
+  <ion-toolbar class="header-toolbar">
+    <div class="header-content">
+      <div class="title-group">
+        <span class="category-badge">GOVERNANÇA & SEGURANÇA</span>
+        <h1 class="page-title">Trilha de Auditoria do Sistema</h1>
+        <p class="page-subtitle">Rastreamento de uploads, alterações de status, exclusões, permissões e fechamentos de competência.</p>
+      </div>
+
+      <div class="header-actions">
+        <ion-button fill="outline" color="primary" class="action-btn" (click)="loadData()">
+          <ion-icon slot="start" name="time-outline"></ion-icon>
+          Atualizar Trilha
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="main-content">
+  <div class="content-container">
+    <!-- KPIs de Auditoria -->
+    @if (summary(); as s) {
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap primary">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+          <div class="kpi-texts">
+            <span class="kpi-label">TOTAL DE OPERAÇÕES</span>
+            <strong class="kpi-value">{{ s.totalLogs }}</strong>
+            <span class="kpi-hint">Eventos auditados na base</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap danger">
+            <ion-icon name="warning-outline"></ion-icon>
+          </div>
+          <div class="kpi-texts">
+            <span class="kpi-label">AÇÕES CRÍTICAS (24H)</span>
+            <strong class="kpi-value text-danger">{{ s.criticalLast24h }}</strong>
+            <span class="kpi-hint">Deleções e fechamentos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap warning">
+            <ion-icon name="document-text-outline"></ion-icon>
+          </div>
+          <div class="kpi-texts">
+            <span class="kpi-label">ALERTAS REGISTRADOS</span>
+            <strong class="kpi-value text-warning">{{ s.bySeverity['warn'] || 0 }}</strong>
+            <span class="kpi-hint">Impedimentos e pendências</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <ion-searchbar
+          placeholder="Buscar evento por ação, descrição ou usuário..."
+          [debounce]="250"
+          (ionInput)="searchTerm.set($any($event).detail.value || '')"
+          class="custom-search"
+        ></ion-searchbar>
+      </div>
+
+      <div class="filter-selects">
+        <ion-select
+          placeholder="Severidade"
+          interface="popover"
+          [value]="selectedSeverity()"
+          (ionChange)="selectedSeverity.set($any($event).detail.value || ''); onFilterChange()"
+          class="custom-select"
+        >
+          <ion-select-option value="">Todas as Severidades</ion-select-option>
+          <ion-select-option value="info">Informativo (Info)</ion-select-option>
+          <ion-select-option value="warn">Atenção (Warn)</ion-select-option>
+          <ion-select-option value="error">Erros (Error)</ion-select-option>
+          <ion-select-option value="critical">Crítico (Critical)</ion-select-option>
+        </ion-select>
+
+        <ion-select
+          placeholder="Módulo"
+          interface="popover"
+          [value]="selectedModule()"
+          (ionChange)="selectedModule.set($any($event).detail.value || ''); onFilterChange()"
+          class="custom-select"
+        >
+          <ion-select-option value="">Todos os Módulos</ion-select-option>
+          @for (m of modulesList; track m) {
+            <ion-select-option [value]="m">{{ m }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+    </div>
+
+    <!-- Timeline / Lista de Eventos -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <span>Carregando trilha de auditoria...</span>
+      </div>
+    } @else {
+      @if (filteredLogs().length === 0) {
+        <div class="empty-state">
+          <ion-icon name="shield-checkmark-outline" class="empty-icon"></ion-icon>
+          <h3>Nenhum registro de auditoria encontrado</h3>
+          <p>Tente ajustar os filtros selecionados.</p>
+        </div>
+      } @else {
+        <div class="audit-timeline">
+          @for (log of filteredLogs(); track log._id) {
+            <div class="audit-item" [class]="'severity-' + log.severity">
+              <div class="timeline-indicator">
+                <ion-icon [name]="getSeverityBadge(log.severity).icon"></ion-icon>
+              </div>
+
+              <div class="item-content-card">
+                <div class="item-top">
+                  <div class="action-info">
+                    <span class="module-chip">{{ log.module }}</span>
+                    <strong class="action-title">{{ log.action }}</strong>
+                  </div>
+
+                  <div class="meta-right">
+                    <ion-badge [color]="getSeverityBadge(log.severity).color" class="severity-badge">
+                      {{ getSeverityBadge(log.severity).label }}
+                    </ion-badge>
+                    <span class="timestamp">{{ log.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+                  </div>
+                </div>
+
+                @if (log.description) {
+                  <p class="description-text">{{ log.description }}</p>
+                }
+
+                <div class="item-details-row">
+                  <div class="actor-info">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span>
+                      <strong>{{ log.userName || 'Sistema' }}</strong>
+                      @if (log.userEmail) { ({{ log.userEmail }}) }
+                    </span>
+                  </div>
+
+                  @if (log.ipAddress) {
+                    <div class="ip-info">
+                      <ion-icon name="globe-outline"></ion-icon>
+                      <span>IP: {{ log.ipAddress }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

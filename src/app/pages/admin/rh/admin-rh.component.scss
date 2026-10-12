@@ -1,0 +1,330 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.page-header {
+  background: var(--app-surface, #ffffff);
+  border-bottom: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+
+  .header-toolbar {
+    --background: transparent;
+    padding: 18px 24px 12px;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .title-group {
+    .category-badge {
+      font-size: 0.6875rem;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--app-text-primary, #0f172a);
+      margin: 0 0 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--app-text-secondary, #64748b);
+      margin: 0;
+    }
+  }
+
+  .action-btn {
+    --border-radius: 10px;
+    font-weight: 700;
+  }
+}
+
+.main-content {
+  --background: var(--app-bg, #f8fafc);
+}
+
+.content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.top-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+
+  .company-selector {
+    min-width: 320px;
+
+    .select-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--app-text-muted, #64748b);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .custom-select {
+      background: var(--app-surface, #ffffff);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.1));
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: var(--app-text-primary, #0f172a);
+    }
+  }
+
+  .tabs-segment {
+    flex: 1;
+    min-width: 480px;
+
+    .custom-segment {
+      background: var(--app-surface, #ffffff);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+      border-radius: 14px;
+      padding: 4px;
+
+      ion-segment-button {
+        --indicator-color: #2563eb;
+        --color: var(--app-text-secondary, #64748b);
+        --color-checked: #ffffff;
+        font-weight: 700;
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}
+
+.search-bar-wrap {
+  margin-bottom: 24px;
+
+  .custom-search {
+    --background: var(--app-surface, #ffffff);
+    --border-radius: 12px;
+    --box-shadow: none;
+    border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+  }
+}
+
+// Grid de Colaboradores
+.employees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+}
+
+.employee-card {
+  background: var(--app-surface, #ffffff);
+  border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .emp-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+
+    .emp-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .emp-meta {
+      .emp-name {
+        margin: 0 0 2px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--app-text-primary, #0f172a);
+      }
+
+      .emp-role {
+        font-size: 0.8125rem;
+        color: var(--app-text-secondary, #475569);
+        display: block;
+        font-weight: 600;
+      }
+
+      .emp-cpf {
+        font-size: 0.75rem;
+        color: var(--app-text-muted, #94a3b8);
+      }
+    }
+  }
+
+  .emp-middle {
+    background: var(--app-bg, #f8fafc);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    .info-pill {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+
+      .pill-label {
+        color: var(--app-text-muted, #64748b);
+      }
+
+      .pill-val {
+        font-weight: 700;
+        color: var(--app-text-primary, #0f172a);
+      }
+    }
+  }
+
+  .emp-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--app-border, rgba(0, 0, 0, 0.05));
+
+    .status-chip {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .doc-badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+}
+
+// Estados
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 3.5rem;
+    color: var(--app-text-muted, #94a3b8);
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--app-text-primary, #0f172a);
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--app-text-secondary, #64748b);
+    margin: 0;
+  }
+}
+
+// Modal
+ion-modal {
+  --width: 560px;
+  --max-width: 90vw;
+  --border-radius: 16px;
+
+  .modal-toolbar {
+    --background: var(--app-surface, #ffffff);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+  }
+
+  .modal-content {
+    --background: var(--app-surface, #ffffff);
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+
+    .form-group.half {
+      flex: 1;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+
+    .form-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--app-text-secondary, #334155);
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select {
+      background: var(--app-bg, #f8fafc);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.1));
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.9375rem;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 700;
+    }
+  }
+}

@@ -1,0 +1,341 @@
+<ion-header class="ion-no-border page-header">
+  <ion-toolbar class="header-toolbar">
+    <div class="header-content">
+      <div class="title-group">
+        <span class="category-badge">ARMAZENAMENTO & ESTEIRA DE ARQUIVOS</span>
+        <h1 class="page-title">Esteira de Documentos & Fechamento</h1>
+        <p class="page-subtitle">Central de trâmite de arquivos contábeis, validação de XMLs, extratos, ponto e homologações.</p>
+      </div>
+
+      <div class="header-actions">
+        <ion-button
+          color="dark"
+          class="action-btn"
+          (click)="closeCompetence()"
+          [disabled]="isCurrentCompetenceClosed() || !selectedCompanyId()"
+        >
+          <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+          {{ isCurrentCompetenceClosed() ? 'Competência Encerrada' : 'Fechar Competência' }}
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="main-content">
+  <div class="content-container">
+    <!-- Grid Superior: Seletor + Card de Upload com Drag & Drop -->
+    <div class="top-workflow-grid">
+      <!-- Painel de Contexto -->
+      <div class="context-panel">
+        <h2 class="panel-title">Filtros da Carteira</h2>
+
+        <div class="control-group">
+          <label class="control-label">Empresa Selecionada:</label>
+          <ion-select
+            interface="popover"
+            [value]="selectedCompanyId()"
+            (ionChange)="selectedCompanyId.set($any($event).detail.value); onFilterChange()"
+            class="custom-select"
+          >
+            @for (c of companies(); track c._id) {
+              <ion-select-option [value]="c._id">
+                {{ c.tradeName || c.corporateName }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <div class="control-row">
+          <div class="control-group half">
+            <label class="control-label">Competência:</label>
+            <ion-select
+              interface="popover"
+              [value]="selectedCompetence()"
+              (ionChange)="selectedCompetence.set($any($event).detail.value); onFilterChange()"
+              class="custom-select"
+            >
+              @for (comp of competencesList; track comp) {
+                <ion-select-option [value]="comp">{{ comp }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
+          <div class="control-group half">
+            <label class="control-label">Módulo:</label>
+            <ion-select
+              interface="popover"
+              [value]="selectedModule()"
+              (ionChange)="selectedModule.set($any($event).detail.value); onFilterChange()"
+              class="custom-select"
+            >
+              <ion-select-option value="">Todos os Módulos</ion-select-option>
+              @for (m of modulesList; track m.value) {
+                <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="status-box" [class.closed]="isCurrentCompetenceClosed()">
+          <ion-icon [name]="isCurrentCompetenceClosed() ? 'lock-closed-outline' : 'checkmark-circle-outline'"></ion-icon>
+          <div class="status-texts">
+            <strong>{{ isCurrentCompetenceClosed() ? 'Competência Bloqueada' : 'Competência Aberta para Envio' }}</strong>
+            <span>{{ isCurrentCompetenceClosed() ? 'Nenhum novo arquivo pode ser recebido sem reabertura.' : 'Arquivos recebidos entram na fila de conferência.' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card de Upload no Estilo da Imagem do Cliente -->
+      <div class="upload-workflow-card">
+        <div class="card-header-line">
+          <div class="title-with-icon">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            <div>
+              <h3>Envio de Documentos</h3>
+              <span>Envie notas, extratos e arquivos para a esteira</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="drop-zone"
+          [class.drag-over]="isDragging()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+        >
+          <input
+            #fileInput
+            type="file"
+            (change)="onFileSelected($event)"
+            style="display: none"
+            accept=".xml,.pdf,.ofx,.png,.jpeg,.jpg,.xlsx,.csv"
+          />
+
+          <div class="drop-content">
+            <ion-icon name="cloud-upload-outline" class="cloud-icon"></ion-icon>
+            <strong class="drop-title">
+              {{ selectedFile() ? selectedFile()?.name : 'Arraste ou selecione arquivos' }}
+            </strong>
+            <span class="drop-hint">Formatos aceitos: XML, OFX, PDF, PNG, JPG, XLSX</span>
+
+            <ion-button color="primary" class="select-btn">
+              {{ selectedFile() ? 'Trocar Arquivo' : 'SELECIONAR ARQUIVO' }}
+            </ion-button>
+          </div>
+        </div>
+
+        @if (selectedFile()) {
+          <div class="upload-options-row">
+            <div class="opt-col">
+              <label>Destino / Módulo:</label>
+              <ion-select
+                interface="popover"
+                [value]="uploadModule()"
+                (ionChange)="uploadModule.set($any($event).detail.value)"
+                class="mini-select"
+              >
+                @for (m of modulesList; track m.value) {
+                  <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+
+            <div class="opt-btn-col">
+              <ion-button
+                color="success"
+                expand="block"
+                (click)="submitUpload()"
+                [disabled]="isUploading() || isCurrentCompetenceClosed()"
+                class="btn-send-now"
+              >
+                <ion-spinner *ngIf="isUploading()" name="crescent"></ion-spinner>
+                <span *ngIf="!isUploading()">Enviar para a Esteira</span>
+              </ion-button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Tabela / Lista de Documentos da Esteira -->
+    <div class="documents-section">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2>Documentos na Competência ({{ filteredDocuments().length }})</h2>
+          <span>Controle de validação, pendências e fechamento</span>
+        </div>
+
+        <div class="search-wrap">
+          <ion-searchbar
+            placeholder="Buscar por nome do arquivo ou usuário..."
+            [debounce]="250"
+            (ionInput)="searchTerm.set($any($event).detail.value || '')"
+            class="table-search"
+          ></ion-searchbar>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <span>Carregando esteira de documentos...</span>
+        </div>
+      } @else {
+        @if (filteredDocuments().length === 0) {
+          <div class="empty-state">
+            <ion-icon name="folder-open-outline" class="empty-icon"></ion-icon>
+            <h3>Nenhum documento encontrado</h3>
+            <p>Utilize a área de upload acima para enviar o primeiro arquivo desta competência.</p>
+          </div>
+        } @else {
+          <div class="documents-table-card">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ARQUIVO</th>
+                  <th>MÓDULO</th>
+                  <th>TIPO</th>
+                  <th>ENVIADO POR</th>
+                  <th>ESTÁGIO DO PROCESSO</th>
+                  <th class="actions-col">AÇÕES DA ESTEIRA</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (doc of filteredDocuments(); track doc._id) {
+                  <tr [class.is-impediment]="doc.stage === 'IMPEDIMENTO'">
+                    <td class="file-cell">
+                      <div class="file-info-wrap">
+                        <ion-icon name="document-text-outline" class="file-icon"></ion-icon>
+                        <div class="file-names">
+                          <a [href]="doc.fileUrl" target="_blank" class="filename-link" title="Abrir arquivo">
+                            {{ doc.originalFilename }}
+                          </a>
+                          <span class="file-size">{{ formatSize(doc.fileSizeBytes) }} • {{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                          @if (doc.impedimentReason) {
+                            <div class="impediment-reason-alert">
+                              <ion-icon name="warning-outline"></ion-icon>
+                              <span>Motivo: {{ doc.impedimentReason }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span class="module-chip">{{ doc.module }}</span>
+                    </td>
+
+                    <td>
+                      <span class="type-text">{{ doc.documentType }}</span>
+                    </td>
+
+                    <td class="author-cell">
+                      <strong>{{ doc.uploadedBy.userName }}</strong>
+                      <span class="author-role">{{ doc.uploadedBy.userRole }}</span>
+                    </td>
+
+                    <td>
+                      <ion-badge [color]="getStageBadge(doc.stage).color" class="stage-badge">
+                        {{ getStageBadge(doc.stage).label }}
+                      </ion-badge>
+                    </td>
+
+                    <td class="actions-col">
+                      <div class="actions-button-group">
+                        <!-- Avançar para Em Análise -->
+                        @if (doc.stage === 'ENVIADO') {
+                          <ion-button fill="outline" size="small" color="primary" (click)="changeStage(doc, 'EM_ANALISE')">
+                            Iniciar Análise
+                          </ion-button>
+                        }
+
+                        <!-- Aprovar -->
+                        @if (doc.stage === 'EM_ANALISE' || doc.stage === 'ENVIADO') {
+                          <ion-button fill="solid" size="small" color="success" (click)="changeStage(doc, 'APROVADO')">
+                            Aprovar
+                          </ion-button>
+
+                          <ion-button fill="outline" size="small" color="danger" (click)="changeStage(doc, 'IMPEDIMENTO')">
+                            Impedimento
+                          </ion-button>
+                        }
+
+                        <!-- Processado -->
+                        @if (doc.stage === 'APROVADO') {
+                          <ion-button fill="solid" size="small" color="tertiary" (click)="changeStage(doc, 'PROCESSADO')">
+                            Processar Lançamento
+                          </ion-button>
+                        }
+
+                        <a [href]="doc.fileUrl" target="_blank" class="icon-action-btn" title="Visualizar/Download">
+                          <ion-icon name="eye-outline"></ion-icon>
+                        </a>
+
+                        <button
+                          type="button"
+                          class="icon-action-btn danger"
+                          (click)="deleteDoc(doc)"
+                          [disabled]="doc.isCompetenceClosed"
+                          title="Excluir Arquivo"
+                        >
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Modal de Justificativa de Impedimento -->
+  <ion-modal [isOpen]="isImpedimentModalOpen()" (didDismiss)="closeImpedimentModal()">
+    <ng-template>
+      <ion-header class="ion-no-border modal-header">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Apontar Impedimento / Pendência</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeImpedimentModal()" color="medium">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-content">
+        <div class="impediment-form">
+          <p class="modal-hint">
+            Informe ao cliente detalhadamente por que este documento foi rejeitado ou demanda retificação (ex: extrato incompleto, falta de assinatura, nota divergente).
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Motivo do Impedimento *</label>
+            <ion-textarea
+              [value]="impedimentReason()"
+              (ionInput)="impedimentReason.set($any($event).detail.value || '')"
+              rows="4"
+              placeholder="Descreva a pendência para que o cliente realize o reenvio..."
+              class="custom-textarea"
+            ></ion-textarea>
+          </div>
+
+          <div class="modal-actions">
+            <ion-button fill="outline" color="medium" (click)="closeImpedimentModal()">
+              Cancelar
+            </ion-button>
+            <ion-button color="danger" (click)="confirmImpediment()" [disabled]="!impedimentReason().trim()">
+              Confirmar Impedimento
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,201 @@
+<ion-header class="ion-no-border page-header">
+  <ion-toolbar class="header-toolbar">
+    <div class="header-content">
+      <div class="title-group">
+        <span class="category-badge">GESTÃO DE PESSOAS</span>
+        <h1 class="page-title">Módulo RH — Recursos Humanos</h1>
+        <p class="page-subtitle">Quadro funcional, admissões, controle de férias, saúde ocupacional (ASO) e benefícios.</p>
+      </div>
+
+      <div class="header-actions">
+        <ion-button color="primary" class="action-btn" (click)="openCreateModal()" [disabled]="!selectedCompanyId()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Nova Admissão
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="main-content">
+  <div class="content-container">
+    <!-- Seletor de Empresa e Abas de RH -->
+    <div class="top-row">
+      <div class="company-selector">
+        <label class="select-label">Empresa Selecionada:</label>
+        <ion-select
+          interface="popover"
+          [value]="selectedCompanyId()"
+          (ionChange)="onCompanyChange($any($event).detail.value)"
+          class="custom-select"
+        >
+          @for (c of companies(); track c._id) {
+            <ion-select-option [value]="c._id">
+              {{ c.tradeName || c.corporateName }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <div class="tabs-segment">
+        <ion-segment
+          [value]="currentTab()"
+          (ionChange)="currentTab.set($any($event).detail.value)"
+          class="custom-segment"
+        >
+          <ion-segment-button value="colaboradores">
+            <ion-icon name="people-outline"></ion-icon>
+            <ion-label>Quadro de Pessoal</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="admissoes">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <ion-label>Admissões & CTPS</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="ferias">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <ion-label>Férias & Ausências</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="aso">
+            <ion-icon name="medkit-outline"></ion-icon>
+            <ion-label>ASO & Saúde</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </div>
+
+    <!-- Filtro de Busca -->
+    <div class="search-bar-wrap">
+      <ion-searchbar
+        placeholder="Buscar por nome do colaborador, cargo, departamento ou CPF..."
+        [debounce]="250"
+        (ionInput)="searchTerm.set($any($event).detail.value || '')"
+        class="custom-search"
+      ></ion-searchbar>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <span>Carregando dados do RH...</span>
+      </div>
+    } @else {
+      @if (filteredEmployees().length === 0) {
+        <div class="empty-state">
+          <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+          <h3>Nenhum colaborador registrado</h3>
+          <p>Cadastre uma admissão ou vincule colaboradores a esta empresa.</p>
+        </div>
+      } @else {
+        <!-- Grid de Colaboradores -->
+        <div class="employees-grid">
+          @for (emp of filteredEmployees(); track emp._id) {
+            <div class="employee-card">
+              <div class="emp-top">
+                <div class="emp-avatar">
+                  {{ emp.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="emp-meta">
+                  <h3 class="emp-name">{{ emp.name }}</h3>
+                  <span class="emp-role">{{ emp.role }} • {{ emp.department || 'Geral' }}</span>
+                  <span class="emp-cpf">CPF: {{ emp.cpf }}</span>
+                </div>
+              </div>
+
+              <div class="emp-middle">
+                <div class="info-pill">
+                  <span class="pill-label">Regime:</span>
+                  <span class="pill-val">{{ emp.type }}</span>
+                </div>
+                <div class="info-pill">
+                  <span class="pill-label">Salário Base:</span>
+                  <span class="pill-val">R$ {{ emp.base_salary | number: '1.2-2' }}</span>
+                </div>
+                <div class="info-pill">
+                  <span class="pill-label">Admissão:</span>
+                  <span class="pill-val">{{ emp.admission_date | date: 'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+
+              <div class="emp-footer">
+                <span class="status-chip active">● Ativo no eSocial</span>
+                <ion-badge color="primary" class="doc-badge">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  Doc. Conforme
+                </ion-badge>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Modal de Nova Admissão -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header class="ion-no-border modal-header">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Nova Admissão para {{ selectedCompanyName() }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" color="medium">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-content">
+        <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()" class="form-container">
+          <div class="form-group">
+            <label class="form-label">Nome Completo *</label>
+            <ion-input formControlName="name" placeholder="Ex: Lucas Ferreira Silva" class="form-input"></ion-input>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label class="form-label">CPF *</label>
+              <ion-input formControlName="cpf" placeholder="000.000.000-00" class="form-input"></ion-input>
+            </div>
+            <div class="form-group half">
+              <label class="form-label">Data de Admissão *</label>
+              <ion-input type="date" formControlName="admission_date" class="form-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label class="form-label">Cargo / Função *</label>
+              <ion-input formControlName="role" placeholder="Ex: Analista Financeiro" class="form-input"></ion-input>
+            </div>
+            <div class="form-group half">
+              <label class="form-label">Departamento *</label>
+              <ion-input formControlName="department" placeholder="Ex: Administrativo" class="form-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label class="form-label">Tipo de Contrato *</label>
+              <ion-select formControlName="type" interface="popover" class="form-select">
+                @for (ct of contractTypes; track ct.value) {
+                  <ion-select-option [value]="ct.value">{{ ct.label }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="form-group half">
+              <label class="form-label">Salário Base (R$) *</label>
+              <ion-input type="number" formControlName="base_salary" placeholder="2500.00" class="form-input"></ion-input>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <ion-button fill="outline" color="medium" (click)="closeModal()">Cancelar</ion-button>
+            <ion-button type="submit" color="primary" [disabled]="employeeForm.invalid">
+              Registrar Admissão
+            </ion-button>
+          </div>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

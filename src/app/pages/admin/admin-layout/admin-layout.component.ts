@@ -40,6 +40,12 @@ import {
   chevronForwardOutline,
   chevronBackOutline,
   constructOutline,
+  personAddOutline,
+  folderOpenOutline,
+  receiptOutline,
+  peopleCircleOutline,
+  lockClosedOutline,
+  helpCircleOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { UserRole } from '../../../models/user.model';
@@ -93,7 +99,7 @@ export class AdminLayoutComponent {
       case UserRole.FISCAL_ANALYST:
         return 'Analista Fiscal';
       case UserRole.PAYROLL_ANALYST:
-        return 'Analista de DP';
+        return 'Analista de DP/RH';
       case UserRole.CLIENT_ADMIN:
         return 'Titular / Diretor';
       case UserRole.CLIENT_FINANCIAL:
@@ -121,8 +127,15 @@ export class AdminLayoutComponent {
       chevronForwardOutline,
       chevronBackOutline,
       constructOutline,
+      personAddOutline,
+      folderOpenOutline,
+      receiptOutline,
+      peopleCircleOutline,
+      lockClosedOutline,
+      helpCircleOutline,
     });
   }
+
 
   toggleCollapse(): void {
     this.isCollapsed.update((val) => {

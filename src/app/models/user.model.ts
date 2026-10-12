@@ -53,6 +53,7 @@ export interface User {
   allowedModules?: SystemModule[];
   phone?: string;
   active?: boolean;
+  isActive?: boolean;
   lastLoginAt?: string;
   createdAt?: string;
 }

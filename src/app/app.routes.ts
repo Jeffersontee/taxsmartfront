@@ -86,6 +86,51 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'dp',
+        canActivate: [moduleGuard(SystemModule.PAYROLL)],
+        loadComponent: () =>
+          import('./pages/admin/payroll/admin-payroll.component').then(
+            (m) => m.AdminPayrollComponent
+          ),
+      },
+      {
+        path: 'rh',
+        canActivate: [moduleGuard(SystemModule.PAYROLL)],
+        loadComponent: () =>
+          import('./pages/admin/rh/admin-rh.component').then(
+            (m) => m.AdminRhComponent
+          ),
+      },
+      {
+        path: 'documentos',
+        loadComponent: () =>
+          import('./pages/admin/documents/admin-documents.component').then(
+            (m) => m.AdminDocumentsComponent
+          ),
+      },
+      {
+        path: 'staff',
+        canActivate: [superAdminGuard],
+        loadComponent: () =>
+          import('./pages/admin/staff/admin-staff.component').then(
+            (m) => m.AdminStaffComponent
+          ),
+      },
+      {
+        path: 'usuarios-clientes',
+        loadComponent: () =>
+          import('./pages/admin/company-users/admin-company-users.component').then(
+            (m) => m.AdminCompanyUsersComponent
+          ),
+      },
+      {
+        path: 'auditoria',
+        loadComponent: () =>
+          import('./pages/admin/audit/admin-audit.component').then(
+            (m) => m.AdminAuditComponent
+          ),
+      },
+      {
         path: 'appearance',
         canActivate: [superAdminGuard],
         loadComponent: () =>

@@ -89,11 +89,11 @@
             class="nav-item"
             button
             (click)="onNavClick()"
-            title="Empresas & Clientes"
+            title="Empresas"
           >
             <ion-icon slot="start" name="business-outline"></ion-icon>
             @if (!isCollapsed()) {
-              <ion-label>Empresas & Clientes</ion-label>
+              <ion-label>Empresas</ion-label>
             }
           </ion-item>
         }
@@ -132,24 +132,96 @@
 
         @if (authService.canAccessPayroll()) {
           <ion-item
-            routerLink="/admin/folha"
+            routerLink="/admin/dp"
             routerLinkActive="active-item"
             class="nav-item"
             button
             (click)="onNavClick()"
-            title="Folha & DP"
+            title="Módulo DP (Folha & Encargos)"
           >
-            <ion-icon slot="start" name="people-outline"></ion-icon>
+            <ion-icon slot="start" name="receipt-outline"></ion-icon>
             @if (!isCollapsed()) {
-              <ion-label>Folha & DP</ion-label>
+              <ion-label>Módulo DP</ion-label>
+            }
+          </ion-item>
+
+          <ion-item
+            routerLink="/admin/rh"
+            routerLinkActive="active-item"
+            class="nav-item"
+            button
+            (click)="onNavClick()"
+            title="Módulo RH (Pessoas & Benefícios)"
+          >
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Módulo RH</ion-label>
             }
           </ion-item>
         }
 
+        <ion-item
+          routerLink="/admin/documentos"
+          routerLinkActive="active-item"
+          class="nav-item"
+          button
+          (click)="onNavClick()"
+          title="Esteira de Documentos & Fechamento"
+        >
+          <ion-icon slot="start" name="folder-open-outline"></ion-icon>
+          @if (!isCollapsed()) {
+            <ion-label>Documentos</ion-label>
+          }
+        </ion-item>
+
         @if (authService.canManageSettings()) {
           @if (!isCollapsed()) {
-            <ion-list-header class="menu-category-header">SISTEMA & PLATAFORMA</ion-list-header>
+            <ion-list-header class="menu-category-header">SISTEMA</ion-list-header>
+          }
 
+          <ion-item
+            routerLink="/admin/staff"
+            routerLinkActive="active-item"
+            class="nav-item"
+            button
+            (click)="onNavClick()"
+            title="Gestão de Staff do Escritório"
+          >
+            <ion-icon slot="start" name="people-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Equipe Staff</ion-label>
+            }
+          </ion-item>
+
+          <ion-item
+            routerLink="/admin/usuarios-clientes"
+            routerLinkActive="active-item"
+            class="nav-item"
+            button
+            (click)="onNavClick()"
+            title="Gestão de Usuários das Empresas Clientes"
+          >
+            <ion-icon slot="start" name="people-circle-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Usuários Clientes</ion-label>
+            }
+          </ion-item>
+
+          <ion-item
+            routerLink="/admin/auditoria"
+            routerLinkActive="active-item"
+            class="nav-item"
+            button
+            (click)="onNavClick()"
+            title="Trilha de Auditoria & Segurança"
+          >
+            <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Auditoria</ion-label>
+            }
+          </ion-item>
+
+          @if (!isCollapsed()) {
             <ion-item (click)="toggleSettings()" class="nav-item has-submenu" button [detail]="false" title="Configurações">
               <ion-icon slot="start" name="settings-outline"></ion-icon>
               <ion-label>Configurações</ion-label>
