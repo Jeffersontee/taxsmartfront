@@ -39,6 +39,8 @@ import {
 import { DocumentService, IDocumentItem } from '../../../services/document/document.service';
 import { CompanyService } from '../../../services/company/company.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { environment } from '../../../../environments/environment';
+import { Strings } from '../../../enum/strings';
 
 @Component({
   selector: 'app-admin-documents',
@@ -70,12 +72,14 @@ export class AdminDocumentsComponent implements OnInit {
   authService = inject(AuthService);
   private toastCtrl = inject(ToastController);
 
+  private readonly baseUrl = environment.apiBaseUrl || Strings.API_BASE_URL;
+
   companies = this.companyService.companies;
   documents = this.documentService.documents;
   isLoading = this.documentService.isLoading;
   isUploading = this.documentService.isUploading;
 
-  // Filtros
+  // Filtros (' ' = Todas as Empresas da carteira)
   selectedCompanyId = signal<string>('');
   selectedCompetence = signal<string>('10/2026');
   selectedModule = signal<string>('');
@@ -154,11 +158,8 @@ export class AdminDocumentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.companyService.loadCompanies().subscribe({
-      next: (res) => {
-        if (res.data && res.data.length > 0) {
-          this.selectedCompanyId.set(res.data[0]._id);
-          this.loadDocs();
-        }
+      next: () => {
+        this.loadDocs();
       },
     });
   }
@@ -176,6 +177,16 @@ export class AdminDocumentsComponent implements OnInit {
 
   onFilterChange(): void {
     this.loadDocs();
+  }
+
+  getFileUrl(url: string): string {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const cleanBase = this.baseUrl.replace(/\/api\/v1\/?$/, '');
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return `${cleanBase}${cleanPath}`;
   }
 
   // Drag & Drop
@@ -206,11 +217,21 @@ export class AdminDocumentsComponent implements OnInit {
 
   submitUpload(): void {
     const file = this.selectedFile();
-    if (!file || !this.selectedCompanyId()) return;
+    if (!file) return;
+
+    let targetCompId = this.selectedCompanyId();
+    if (!targetCompId) {
+      const comps = this.companies();
+      if (comps.length > 0) {
+        targetCompId = comps[0]._id;
+      } else {
+        return;
+      }
+    }
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('companyId', this.selectedCompanyId());
+    formData.append('companyId', targetCompId);
     formData.append('competence', this.selectedCompetence());
     formData.append('module', this.uploadModule());
     formData.append('documentType', this.uploadDocType());
@@ -218,6 +239,7 @@ export class AdminDocumentsComponent implements OnInit {
     this.documentService.uploadDocument(formData).subscribe({
       next: async () => {
         this.selectedFile.set(null);
+        this.loadDocs();
         const toast = await this.toastCtrl.create({
           message: 'Arquivo enviado com sucesso para a esteira contábil!',
           duration: 3000,

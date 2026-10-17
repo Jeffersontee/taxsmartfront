@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'br.com.taxsmart.app',
+  appId: 'br.com.livecodesystem.taxsmartcontabilidade',
   appName: 'TaxSmart Contabilidade',
   webDir: 'dist/taxsmartfront/browser',
   server: {

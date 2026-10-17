@@ -37,10 +37,17 @@ import {
   businessOutline,
   downloadOutline,
   qrCodeOutline,
+  folderOpenOutline,
+  eyeOutline,
 } from 'ionicons/icons';
 import { FiscalService } from '../../../services/fiscal/fiscal.service';
 import { CompanyService } from '../../../services/company/company.service';
+import { DocumentService, IDocumentItem } from '../../../services/document/document.service';
+import { environment } from '../../../../environments/environment';
+import { Strings } from '../../../enum/strings';
 import { IInvoice, ITaxSimulation, ITaxGuide, TaxGuideStatus } from '../../../models/fiscal.model';
+
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-fiscal',
@@ -48,6 +55,7 @@ import { IInvoice, ITaxSimulation, ITaxGuide, TaxGuideStatus } from '../../../mo
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     IonGrid,
     IonRow,
     IonCol,
@@ -73,10 +81,13 @@ import { IInvoice, ITaxSimulation, ITaxGuide, TaxGuideStatus } from '../../../mo
 export class AdminFiscalComponent implements OnInit {
   fiscalService = inject(FiscalService);
   companyService = inject(CompanyService);
+  documentService = inject(DocumentService);
+  private readonly baseUrl = environment.apiBaseUrl || Strings.API_BASE_URL;
 
-  activeTab = signal<'invoices' | 'calculation' | 'guides'>('invoices');
+  activeTab = signal<'invoices' | 'documents' | 'calculation' | 'guides'>('invoices');
   selectedCompetence = signal<string>('10/2026');
   selectedCompanyId = signal<string>('');
+  fiscalDocuments = signal<IDocumentItem[]>([]);
   toastMessage = signal<string>('');
   showToast = signal<boolean>(false);
 
@@ -96,6 +107,8 @@ export class AdminFiscalComponent implements OnInit {
       businessOutline,
       downloadOutline,
       qrCodeOutline,
+      folderOpenOutline,
+      eyeOutline,
     });
   }
 
@@ -128,6 +141,26 @@ export class AdminFiscalComponent implements OnInit {
     this.fiscalService.loadInvoices({ companyId: compId, competence: comp }).subscribe();
     this.fiscalService.loadGuides({ companyId: compId, competence: comp }).subscribe();
     this.runSimulation();
+
+    if (compId) {
+      this.documentService
+        .loadDocuments({ companyId: compId, competence: comp, module: 'FISCAL' })
+        .subscribe({
+          next: (res) => {
+            if (res.data) {
+              this.fiscalDocuments.set(res.data.documents);
+            }
+          },
+        });
+    }
+  }
+
+  getFileUrl(url: string): string {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const cleanBase = this.baseUrl.replace(/\/api\/v1\/?$/, '');
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return `${cleanBase}${cleanPath}`;
   }
 
   runSimulation(): void {

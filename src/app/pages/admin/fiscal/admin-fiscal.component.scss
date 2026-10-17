@@ -683,4 +683,177 @@
       margin: 0;
     }
   }
+
+  .fiscal-documents-panel {
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    border-radius: 16px;
+    padding: 24px;
+
+    .panel-header-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--app-text-primary);
+        margin: 0 0 4px;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: var(--app-text-muted);
+        margin: 0;
+      }
+
+      .btn-goto-esteira {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(var(--app-primary-rgb), 0.1);
+        color: var(--app-primary);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--app-primary);
+          color: #ffffff;
+        }
+      }
+    }
+
+    .fiscal-documents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+
+      .fiscal-doc-item {
+        background: var(--app-surface-subtle, #f8fafc);
+        border: 1px solid var(--app-border, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          border-color: var(--app-primary);
+        }
+
+        .doc-card-top {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+
+          .doc-icon-wrap {
+            font-size: 1.6rem;
+            color: #2563eb;
+            flex-shrink: 0;
+            background: rgba(37, 99, 235, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .doc-info {
+            flex: 1;
+            min-width: 0;
+
+            .doc-title {
+              font-size: 0.95rem;
+              font-weight: 700;
+              color: var(--app-text-primary);
+              margin: 0 0 6px;
+              word-break: break-all;
+            }
+
+            .doc-meta-tags {
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 6px;
+              margin-bottom: 4px;
+
+              .type-badge {
+                font-size: 0.7rem;
+                font-weight: 700;
+                background: #e2e8f0;
+                color: #334155;
+                padding: 2px 6px;
+                border-radius: 4px;
+              }
+
+              .stage-badge {
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 4px;
+
+                &.enviado {
+                  background: #fef3c7;
+                  color: #92400e;
+                }
+                &.em_analise {
+                  background: #dbeafe;
+                  color: #1e40af;
+                }
+                &.aprovado {
+                  background: #d1fae5;
+                  color: #065f46;
+                }
+                &.impedimento {
+                  background: #fee2e2;
+                  color: #991b1b;
+                }
+              }
+
+              .meta-date {
+                font-size: 0.72rem;
+                color: var(--app-text-muted);
+              }
+            }
+
+            .doc-author {
+              font-size: 0.75rem;
+              color: var(--app-text-muted);
+            }
+          }
+        }
+
+        .doc-actions {
+          display: flex;
+          justify-content: flex-end;
+          border-top: 1px solid var(--app-border, #e2e8f0);
+          padding-top: 10px;
+
+          .btn-view-doc {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
 }

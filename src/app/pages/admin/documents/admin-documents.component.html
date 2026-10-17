@@ -38,6 +38,7 @@
             (ionChange)="selectedCompanyId.set($any($event).detail.value); onFilterChange()"
             class="custom-select"
           >
+            <ion-select-option value="">Todas as Empresas (Carteira Geral)</ion-select-option>
             @for (c of companies(); track c._id) {
               <ion-select-option [value]="c._id">
                 {{ c.tradeName || c.corporateName }}
@@ -210,9 +211,12 @@
                       <div class="file-info-wrap">
                         <ion-icon name="document-text-outline" class="file-icon"></ion-icon>
                         <div class="file-names">
-                          <a [href]="doc.fileUrl" target="_blank" class="filename-link" title="Abrir arquivo">
+                          <a [href]="getFileUrl(doc.fileUrl)" target="_blank" class="filename-link" title="Abrir arquivo">
                             {{ doc.originalFilename }}
                           </a>
+                          @if (!selectedCompanyId() && doc.companyName) {
+                            <span class="company-badge-inline">🏢 {{ doc.companyName }}</span>
+                          }
                           <span class="file-size">{{ formatSize(doc.fileSizeBytes) }} • {{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
                           @if (doc.impedimentReason) {
                             <div class="impediment-reason-alert">
@@ -270,7 +274,7 @@
                           </ion-button>
                         }
 
-                        <a [href]="doc.fileUrl" target="_blank" class="icon-action-btn" title="Visualizar/Download">
+                        <a [href]="getFileUrl(doc.fileUrl)" target="_blank" class="icon-action-btn" title="Visualizar/Download">
                           <ion-icon name="eye-outline"></ion-icon>
                         </a>
 

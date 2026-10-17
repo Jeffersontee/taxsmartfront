@@ -79,18 +79,24 @@ export class ClienteDashboardComponent implements OnInit {
 
   // Computeds
   companyName = computed(() => {
+    const sel = this.companyService.selectedCompany();
+    if (sel) return sel.tradeName || sel.corporateName;
     const user = this.authService.currentUser();
     const company = typeof user?.companyId === 'object' ? (user.companyId as UserCompany) : null;
     return company?.corporateName || company?.tradeName || company?.name || 'Sua Empresa';
   });
 
   companyCnpj = computed(() => {
+    const sel = this.companyService.selectedCompany();
+    if (sel) return sel.cnpj;
     const user = this.authService.currentUser();
     const company = typeof user?.companyId === 'object' ? (user.companyId as UserCompany) : null;
     return company?.cnpj || 'CNPJ não informado';
   });
 
   companyTaxRegime = computed(() => {
+    const sel = this.companyService.selectedCompany();
+    if (sel) return sel.taxRegime;
     const user = this.authService.currentUser();
     const company = typeof user?.companyId === 'object' ? (user.companyId as UserCompany) : null;
     return company?.taxRegime || company?.tax_regime || 'Simples Nacional';
@@ -137,7 +143,11 @@ export class ClienteDashboardComponent implements OnInit {
       })
       .subscribe();
 
-    this.companyService.loadCompanies().subscribe();
+    this.companyService.loadCompanies().subscribe((res) => {
+      if (res.data && res.data.length > 0 && !this.companyService.selectedCompany()) {
+        this.companyService.selectedCompany.set(res.data[0]);
+      }
+    });
   }
 
   copyPixCode(pixCode: string | undefined): void {

@@ -429,6 +429,55 @@
       align-items: center;
       gap: 10px;
 
+      .topbar-company-selector {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+        color: #94a3b8;
+
+        ion-icon {
+          color: #00d2ff;
+          font-size: 1.1rem;
+        }
+
+        .topbar-select {
+          --padding-start: 4px;
+          --padding-end: 4px;
+          --padding-top: 2px;
+          --padding-bottom: 2px;
+          color: #f8fafc;
+          font-size: 0.8rem;
+          font-weight: 600;
+          max-width: 180px;
+        }
+      }
+
+      .topbar-competence-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 210, 255, 0.08);
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        padding: 5px 12px;
+        border-radius: 20px;
+        color: #94a3b8;
+        font-size: 0.75rem;
+
+        ion-icon {
+          color: #00d2ff;
+          font-size: 1rem;
+        }
+
+        strong {
+          color: #00d2ff;
+          font-weight: 700;
+        }
+      }
+
       .notif-btn {
         position: relative;
         --color: #a0aec0;

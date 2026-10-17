@@ -50,6 +50,16 @@
 
     <button
       class="tab-btn"
+      [class.active]="activeTab() === 'documents'"
+      (click)="onTabChange('documents')"
+    >
+      <ion-icon name="folder-open-outline"></ion-icon>
+      Documentos & XMLs Recebidos
+      <span class="tab-badge">{{ fiscalDocuments().length }}</span>
+    </button>
+
+    <button
+      class="tab-btn"
       [class.active]="activeTab() === 'calculation'"
       (click)="onTabChange('calculation')"
     >
@@ -299,6 +309,57 @@
           <p>Realize a apuração na aba <strong>"Apuração de Tributos"</strong> para gerar a guia de recolhimento.</p>
         </div>
       }
+    </div>
+  }
+
+  <!-- CONTEÚDO DA ABA 4: DOCUMENTOS & XMLS RECEBIDOS DA ESTEIRA FISCAL -->
+  @if (activeTab() === 'documents' && !fiscalService.isLoading()) {
+    <div class="tab-content">
+      <div class="fiscal-documents-panel">
+        <div class="panel-header-action">
+          <div>
+            <h3>Arquivos & XMLs da Competência (Esteira Fiscal)</h3>
+            <p>Documentos enviados para esta empresa vinculados ao módulo Fiscal nesta competência.</p>
+          </div>
+          <a routerLink="/admin/documentos" class="btn-goto-esteira">
+            <ion-icon name="folder-open-outline"></ion-icon>
+            Ir para Esteira Completa
+          </a>
+        </div>
+
+        @if (fiscalDocuments().length === 0) {
+          <div class="empty-card">
+            <ion-icon name="folder-open-outline"></ion-icon>
+            <h3>Nenhum arquivo ou XML recebido para esta empresa nesta competência.</h3>
+            <p>Envie novos arquivos fiscais através da <a routerLink="/admin/documentos">Esteira de Documentos</a>.</p>
+          </div>
+        } @else {
+          <div class="fiscal-documents-grid">
+            @for (doc of fiscalDocuments(); track doc._id) {
+              <div class="fiscal-doc-item">
+                <div class="doc-icon-wrap">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                </div>
+                <div class="doc-info">
+                  <h4 class="doc-title">{{ doc.originalFilename }}</h4>
+                  <div class="doc-meta-tags">
+                    <span class="type-badge">{{ doc.documentType }}</span>
+                    <span class="stage-badge" [class]="doc.stage.toLowerCase()">{{ doc.stage }}</span>
+                    <span class="meta-date">{{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <span class="doc-author">Enviado por: {{ doc.uploadedBy.userName }} ({{ doc.uploadedBy.userRole }})</span>
+                </div>
+                <div class="doc-actions">
+                  <a [href]="getFileUrl(doc.fileUrl)" target="_blank" class="btn-view-doc">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    Visualizar
+                  </a>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
   }
 

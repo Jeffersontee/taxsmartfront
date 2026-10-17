@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@capacitor/android": "^8.5.3",
     "@capacitor/cli": "^8.5.3",
     "@capacitor/core": "^8.5.3",
     "@ionic/angular": "^8.8.14",

@@ -388,6 +388,18 @@
           }
         }
 
+        .company-badge-inline {
+          display: inline-block;
+          font-size: 0.72rem;
+          font-weight: 600;
+          color: #475569;
+          background: #f1f5f9;
+          padding: 2px 6px;
+          border-radius: 4px;
+          margin: 2px 0;
+          width: fit-content;
+        }
+
         .file-size {
           font-size: 0.75rem;
           color: var(--app-text-muted, #94a3b8);

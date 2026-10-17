@@ -47,7 +47,7 @@
         }
       </div>
 
-      <!-- Links de Navegação -->
+      <!-- Links de Navegação Dinâmicos por Módulos -->
       <ion-list lines="none" class="nav-list">
         @if (!isCollapsed()) {
           <ion-list-header>
@@ -56,7 +56,7 @@
         }
 
         <ion-item
-          routerLink="/cliente/dashboard"
+          routerLink="/client/dashboard"
           routerLinkActive="active-item"
           [routerLinkActiveOptions]="{ exact: true }"
           detail="false"
@@ -75,7 +75,7 @@
           routerLinkActive="active-item"
           detail="false"
           class="nav-item"
-          title="Linha do Tempo"
+          title="Linha do Tempo de Obrigações"
           (click)="onNavClick()"
         >
           <ion-icon slot="start" name="time-outline"></ion-icon>
@@ -84,43 +84,97 @@
           }
         </ion-item>
 
+        <!-- MÓDULO FISCAL -->
+        @if (hasModule('FISCAL')) {
+          @if (!isCollapsed()) {
+            <ion-list-header class="mt-section">
+              <ion-label>MÓDULO FISCAL & TRIBUTOS</ion-label>
+            </ion-list-header>
+          }
+
+          <ion-item
+            routerLink="/client/dashboard"
+            detail="false"
+            class="nav-item"
+            title="Minhas Guias & Impostos (DAS/DARF)"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="wallet-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Guias & Tributos</ion-label>
+            }
+          </ion-item>
+
+          <ion-item
+            routerLink="/client/dashboard"
+            detail="false"
+            class="nav-item"
+            title="Notas Fiscais e XMLs da Competência"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="document-text-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Documentos Fiscais</ion-label>
+            }
+          </ion-item>
+        }
+
+        <!-- MÓDULO CONTÁBIL -->
+        @if (hasModule('ACCOUNTING')) {
+          @if (!isCollapsed()) {
+            <ion-list-header class="mt-section">
+              <ion-label>MÓDULO CONTÁBIL</ion-label>
+            </ion-list-header>
+          }
+
+          <ion-item
+            routerLink="/client/dashboard"
+            detail="false"
+            class="nav-item"
+            title="Extratos Bancários OFX e Despesas"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="cash-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Extratos & Contábil</ion-label>
+            }
+          </ion-item>
+        }
+
+        <!-- MÓDULO FOLHA / DP -->
+        @if (hasModule('PAYROLL') || hasModule('DP')) {
+          @if (!isCollapsed()) {
+            <ion-list-header class="mt-section">
+              <ion-label>FOLHA DE PAGAMENTO & DP</ion-label>
+            </ion-list-header>
+          }
+
+          <ion-item
+            routerLink="/client/dashboard"
+            detail="false"
+            class="nav-item"
+            title="Holerites e Pró-Labore"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="people-outline"></ion-icon>
+            @if (!isCollapsed()) {
+              <ion-label>Holerites & Pessoal</ion-label>
+            }
+          </ion-item>
+        }
+
+        <!-- ESTEIRA DE DOCUMENTOS -->
         @if (!isCollapsed()) {
           <ion-list-header class="mt-section">
-            <ion-label>FINANCEIRO & TRIBUTOS</ion-label>
+            <ion-label>ESTEIRA DE ARQUIVOS</ion-label>
           </ion-list-header>
         }
 
         <ion-item
-          routerLink="/cliente/dashboard"
+          routerLink="/client/dashboard"
           detail="false"
           class="nav-item"
-          title="Guias & Tributos"
-          (click)="onNavClick()"
-        >
-          <ion-icon slot="start" name="wallet-outline"></ion-icon>
-          @if (!isCollapsed()) {
-            <ion-label>Guias & Tributos</ion-label>
-          }
-        </ion-item>
-
-        <ion-item
-          routerLink="/cliente/dashboard"
-          detail="false"
-          class="nav-item"
-          title="Documentos Fiscais"
-          (click)="onNavClick()"
-        >
-          <ion-icon slot="start" name="document-text-outline"></ion-icon>
-          @if (!isCollapsed()) {
-            <ion-label>Documentos Fiscais</ion-label>
-          }
-        </ion-item>
-
-        <ion-item
-          routerLink="/cliente/dashboard"
-          detail="false"
-          class="nav-item"
-          title="Enviar Documentos"
+          title="Enviar Arquivos para a Contabilidade"
           (click)="onNavClick()"
         >
           <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
@@ -180,6 +234,31 @@
         </ion-title>
 
         <ion-buttons slot="end" class="topbar-actions">
+          <!-- Seletor de Empresa no Topbar se houver mais de uma -->
+          @if (companies().length > 1) {
+            <div class="topbar-company-selector">
+              <ion-icon name="business-outline"></ion-icon>
+              <ion-select
+                interface="popover"
+                [value]="selectedCompany()?._id"
+                (ionChange)="onCompanyChange($any($event).detail.value)"
+                class="topbar-select"
+              >
+                @for (c of companies(); track c._id) {
+                  <ion-select-option [value]="c._id">
+                    {{ c.tradeName || c.corporateName }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </div>
+          }
+
+          <!-- Indicador de Competência -->
+          <div class="topbar-competence-pill">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Comp: <strong>{{ activeCompetence() }}</strong></span>
+          </div>
+
           <ion-button fill="clear" class="notif-btn">
             <ion-icon name="notifications-outline"></ion-icon>
             <span class="notif-dot"></span>

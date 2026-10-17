@@ -37,6 +37,8 @@ export interface ICompany {
   };
   partners: IPartner[];
   active: boolean;
+  size?: 'MEI' | 'ME' | 'EPP' | 'MEDIA_GRANDE' | string;
+  allowedModules?: string[];
   notes?: string;
   createdAt: string;
   updatedAt: string;
