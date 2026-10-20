@@ -2,14 +2,13 @@
   display: block;
   height: 100vh;
   width: 100vw;
-  background-color: #070d18;
+  background-color: var(--app-bg, #f8fafc);
 }
 
-// Split Pane e Sidebar
 .client-split-pane {
   --side-width: 260px;
   --side-max-width: 280px;
-  background-color: #070d18;
+  background-color: var(--app-bg, #f8fafc);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.is-collapsed {
@@ -20,17 +19,48 @@
 }
 
 .client-sidebar {
-  --background: #0b1524;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  --background: var(--app-sidebar-bg, #ffffff);
+  --width: 280px;
+  --max-width: 85vw;
+  border-right: 1px solid var(--app-sidebar-border, #e2e8f0);
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000 !important;
+
+  // Garantia absoluta contra congelamento no Mobile:
+  // Se o menu estiver aberto (show-menu ou mobile-open), a gaveta DEVE estar visível em translateX(0)
+  &.show-menu,
+  &.mobile-open {
+    display: block !important;
+    visibility: visible !important;
+    z-index: 9999 !important;
+
+    ::part(container),
+    .menu-inner {
+      transform: translateX(0) !important;
+      visibility: visible !important;
+      display: flex !important;
+      box-shadow: 6px 0 30px rgba(0, 0, 0, 0.28) !important;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    ::part(backdrop),
+    ion-backdrop {
+      display: block !important;
+      opacity: 0.45 !important;
+      pointer-events: auto !important;
+    }
+  }
 
   .sidebar-header-toolbar {
-    --background: #070e1a;
-    --border-color: rgba(255, 255, 255, 0.06);
-    --padding-top: 14px;
-    --padding-bottom: 12px;
+    --background: var(--app-sidebar-bg, #ffffff);
+    --border-color: var(--app-sidebar-border, #e2e8f0);
+    --padding-top: 0;
+    --padding-bottom: 0;
     --padding-start: 16px;
     --padding-end: 16px;
+    --min-height: 64px;
+    height: 64px;
+    border-bottom: 1px solid var(--app-sidebar-border, #e2e8f0);
   }
 
   .sidebar-header-row {
@@ -38,7 +68,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    min-height: 40px;
+    height: 100%;
   }
 
   .brand-container {
@@ -51,12 +81,11 @@
       width: 38px;
       height: 38px;
       border-radius: 10px;
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(58, 123, 213, 0.25));
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.12), rgba(0, 210, 255, 0.12));
+      border: 1px solid rgba(234, 88, 12, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
       flex-shrink: 0;
 
       .brand-logo {
@@ -74,28 +103,27 @@
       .brand-name {
         font-size: 1.15rem;
         font-weight: 800;
-        color: #ffffff;
+        color: var(--app-text-primary, #0f172a);
         letter-spacing: -0.3px;
       }
 
       .brand-subtitle {
         font-size: 0.7rem;
-        font-weight: 600;
-        color: #00d2ff;
+        font-weight: 700;
+        color: #ea580c;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
     }
   }
 
-  // Botão de Toggle Moderno (inspirado no Forbis Senior - seta azul)
   .collapse-toggle-btn {
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: rgba(37, 99, 235, 0.08);
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    color: #2563eb;
+    background: rgba(234, 88, 12, 0.08);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    color: #ea580c;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,39 +133,36 @@
     flex-shrink: 0;
 
     &:hover {
-      background: rgba(37, 99, 235, 0.18);
-      color: #3b82f6;
+      background: rgba(234, 88, 12, 0.18);
+      color: #c2410c;
       transform: scale(1.05);
     }
-
     &:active {
       transform: scale(0.95);
     }
   }
 
   .sidebar-content {
-    --background: #0b1524;
+    --background: var(--app-sidebar-bg, #ffffff);
     padding: 12px 8px;
   }
 
-  // Card do usuário
   .user-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--app-surface-subtle, #f8fafc);
+    border: 1px solid var(--app-border, #e2e8f0);
     border-radius: 14px;
     padding: 12px;
     margin: 12px 10px 18px;
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: all 0.2s ease;
 
     .user-avatar-circle {
       width: 40px;
       height: 40px;
       min-width: 40px;
-      background: rgba(0, 210, 255, 0.15);
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      background: rgba(234, 88, 12, 0.12);
+      border: 1px solid rgba(234, 88, 12, 0.25);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -145,8 +170,8 @@
       flex-shrink: 0;
 
       ion-icon {
-        font-size: 28px;
-        color: #00d2ff;
+        font-size: 26px;
+        color: #ea580c;
       }
     }
 
@@ -157,9 +182,9 @@
 
       .user-name {
         margin: 0;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--app-text-primary, #0f172a);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -167,7 +192,7 @@
 
       .user-email {
         font-size: 0.72rem;
-        color: #8fa0b5;
+        color: var(--app-text-muted, #64748b);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -180,18 +205,10 @@
         padding: 2px 8px;
         border-radius: 6px;
         align-self: flex-start;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-
-        ion-icon {
-          font-size: 11px;
-        }
       }
     }
   }
 
-  // Links de navegação
   .nav-list {
     background: transparent;
     padding: 0 6px;
@@ -200,7 +217,7 @@
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.8px;
-      color: #5d7189;
+      color: var(--app-text-muted, #64748b);
       padding-left: 14px;
       margin-bottom: 4px;
 
@@ -211,11 +228,10 @@
 
     .nav-item {
       --background: transparent;
-      --color: #a0aec0;
+      --color: var(--app-text-secondary, #334155);
       --min-height: 44px;
       --padding-start: 12px;
       --padding-end: 12px;
-      --inner-padding-end: 8px;
       border-radius: 10px;
       margin-bottom: 4px;
       font-size: 0.88rem;
@@ -224,39 +240,38 @@
       cursor: pointer;
 
       ion-icon {
-        color: #718096;
+        color: var(--app-text-muted, #64748b);
         font-size: 1.18rem;
         margin-right: 12px;
         transition: color 0.2s ease;
       }
 
       &:hover {
-        --background: rgba(255, 255, 255, 0.04);
-        --color: #ffffff;
+        --background: var(--app-surface-subtle, #f1f5f9);
+        --color: var(--app-text-primary, #0f172a);
 
         ion-icon {
-          color: #00d2ff;
+          color: #ea580c;
         }
       }
 
       &.active-item {
-        --background: linear-gradient(90deg, rgba(0, 210, 255, 0.15), rgba(58, 123, 213, 0.1));
-        --color: #00d2ff;
+        --background: rgba(234, 88, 12, 0.08);
+        --color: #ea580c;
         font-weight: 700;
-        border-left: 3px solid #00d2ff;
+        border-left: 3px solid #ea580c;
 
         ion-icon {
-          color: #00d2ff;
+          color: #ea580c;
         }
       }
     }
   }
 
-  // Rodapé da Sidebar
   .sidebar-footer {
     padding: 14px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: #070e1a;
+    border-top: 1px solid var(--app-sidebar-border, #e2e8f0);
+    background: var(--app-sidebar-bg, #ffffff);
 
     .logout-action-btn {
       width: 100%;
@@ -274,139 +289,142 @@
       cursor: pointer;
       transition: all 0.2s ease;
 
-      ion-icon {
-        font-size: 1.15rem;
-      }
-
       &:hover {
         background: rgba(239, 68, 68, 0.16);
-        color: #f87171;
-        transform: translateY(-1px);
+        color: #dc2626;
       }
     }
   }
 
-  // =========================================================================
-  // ESTADO RECOLHIDO (IS-COLLAPSED / MINI SIDEBAR DESKTOP)
-  // =========================================================================
   &.is-collapsed {
     .sidebar-header-toolbar {
-      --padding-start: 8px;
-      --padding-end: 8px;
+      --padding-start: 0;
+      --padding-end: 0;
     }
 
     .sidebar-header-row {
       justify-content: center;
     }
 
+    .collapse-toggle-btn {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
     .user-card {
-      margin: 12px auto;
-      padding: 8px;
-      width: 48px;
-      height: 48px;
+      margin: 14px auto;
+      padding: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
       justify-content: center;
 
       .user-avatar-circle {
-        font-size: 1.75rem;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
       }
     }
 
     .nav-list {
-      padding: 0;
+      padding: 0 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
 
       .nav-item {
-        width: 48px;
-        height: 48px;
-        --min-height: 48px;
-        margin: 6px auto;
-        padding: 0;
-        --padding-start: 0px !important;
-        --padding-end: 0px !important;
-        --inner-padding-start: 0px !important;
-        --inner-padding-end: 0px !important;
-        border-radius: 12px;
-        border-left: none;
-
-        &::part(native) {
-          padding: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-          align-items: center !important;
-        }
-
-        &::part(inner) {
-          display: none !important;
-        }
-
-        ion-icon[slot="start"],
-        ion-icon {
-          margin: 0 !important;
-          margin-inline-end: 0 !important;
-          margin-right: 0 !important;
-          font-size: 1.35rem !important;
-          color: #718096;
-          display: block !important;
-        }
-
-        &.active-item {
-          --background: rgba(0, 210, 255, 0.16) !important;
-          border: 1px solid rgba(0, 210, 255, 0.35) !important;
-
-          ion-icon[slot="start"],
-          ion-icon {
-            color: #00d2ff !important;
-          }
-        }
-
-        &:hover {
-          transform: scale(1.05);
-
-          ion-icon[slot="start"],
-          ion-icon {
-            color: #00d2ff !important;
-          }
-        }
-      }
-    }
-
-    .sidebar-footer {
-      padding: 12px 8px;
-
-      .logout-action-btn {
-        width: 48px;
-        height: 48px;
-        margin: 0 auto;
-        padding: 0;
-        border-radius: 12px;
+        width: 42px;
+        height: 42px;
+        margin: 4px auto;
+        --padding-start: 0;
+        --padding-end: 0;
+        --inner-padding-end: 0;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
 
         ion-icon {
           margin: 0 auto !important;
-          font-size: 1.3rem;
+          font-size: 1.3rem !important;
         }
+
+        &.active-item {
+          --background: rgba(234, 88, 12, 0.12) !important;
+          border-left: none;
+          border: 1px solid rgba(234, 88, 12, 0.35) !important;
+        }
+      }
+    }
+
+    .sidebar-footer {
+      padding: 12px 6px;
+
+      .logout-action-btn {
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        margin: 0 auto;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
 }
 
-// Topbar Principal
 .main-topbar {
   .topbar-toolbar {
-    --background: #0a1322;
-    --border-color: rgba(255, 255, 255, 0.06);
-    padding: 4px 12px;
+    --background: var(--app-header-bg, #ffffff);
+    --border-color: var(--app-border, #e2e8f0);
+    --min-height: 64px;
+    height: 64px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--app-border, #e2e8f0);
+
+    // Botão Hambúrguer Estilizado TaxSmart
+    .taxsmart-hamburger-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.14), rgba(234, 88, 12, 0.05));
+      border: 1px solid rgba(234, 88, 12, 0.3);
+      color: #ea580c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.12);
+
+      ion-icon {
+        font-size: 1.5rem;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, #ea580c, #c2410c);
+        color: #ffffff;
+        border-color: #ea580c;
+        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
 
     .topbar-title {
       font-size: 1.05rem;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--app-text-primary, #0f172a);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -414,7 +432,7 @@
       .portal-badge {
         font-size: 0.65rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+        background: linear-gradient(135deg, #ea580c, #c2410c);
         color: #ffffff;
         padding: 3px 8px;
         border-radius: 12px;
@@ -433,23 +451,21 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--app-surface-subtle, #f8fafc);
+        border: 1px solid var(--app-border, #e2e8f0);
         padding: 2px 8px;
         border-radius: 12px;
-        color: #94a3b8;
+        color: var(--app-text-secondary, #334155);
 
         ion-icon {
-          color: #00d2ff;
+          color: #ea580c;
           font-size: 1.1rem;
         }
 
         .topbar-select {
           --padding-start: 4px;
           --padding-end: 4px;
-          --padding-top: 2px;
-          --padding-bottom: 2px;
-          color: #f8fafc;
+          color: var(--app-text-primary, #0f172a);
           font-size: 0.8rem;
           font-weight: 600;
           max-width: 180px;
@@ -461,31 +477,28 @@
         align-items: center;
         gap: 6px;
         background: rgba(0, 210, 255, 0.08);
-        border: 1px solid rgba(0, 210, 255, 0.2);
+        border: 1px solid rgba(0, 210, 255, 0.25);
         padding: 5px 12px;
         border-radius: 20px;
-        color: #94a3b8;
+        color: var(--app-text-secondary, #334155);
         font-size: 0.75rem;
 
         ion-icon {
-          color: #00d2ff;
+          color: #0088cc;
           font-size: 1rem;
         }
-
         strong {
-          color: #00d2ff;
+          color: #0088cc;
           font-weight: 700;
         }
       }
 
       .notif-btn {
         position: relative;
-        --color: #a0aec0;
-
+        --color: var(--app-text-secondary, #64748b);
         ion-icon {
           font-size: 1.3rem;
         }
-
         .notif-dot {
           position: absolute;
           top: 8px;
@@ -493,8 +506,8 @@
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: #00d2ff;
-          box-shadow: 0 0 8px #00d2ff;
+          background: #ea580c;
+          box-shadow: 0 0 6px #ea580c;
         }
       }
 
@@ -502,14 +515,14 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--app-surface-subtle, #f8fafc);
+        border: 1px solid var(--app-border, #e2e8f0);
         padding: 4px 12px 4px 6px;
         border-radius: 20px;
 
         .avatar-mini {
           font-size: 1.5rem;
-          color: #00d2ff;
+          color: #ea580c;
           display: flex;
           align-items: center;
         }
@@ -521,7 +534,7 @@
           .user-mini-name {
             font-size: 0.8rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--app-text-primary, #0f172a);
             line-height: 1.1;
           }
 
@@ -536,27 +549,67 @@
   }
 }
 
-// Conteúdo Principal
 .main-content-area {
-  --background: #070d18;
+  --background: var(--app-bg, #f8fafc);
 }
 
-// Mobile Responsiveness Adjustments
-@media (max-width: 768px) {
-  .client-sidebar {
-    .collapse-toggle-btn {
-      display: none; // No mobile o menu já abre como overlay/drawer inteiro
+@media (max-width: 1024px) {
+  .main-topbar {
+    .header-user-pill .user-meta {
+      display: none !important;
     }
   }
+}
 
+@media (max-width: 820px) {
   .main-topbar {
     .portal-badge {
       display: none !important;
     }
+    .header-user-pill {
+      display: none !important;
+    }
+  }
+}
 
+@media (max-width: 768px) {
+  .client-sidebar {
+    --width: 280px !important;
+    --max-width: 85vw !important;
+    z-index: 9999 !important;
+
+    .collapse-toggle-btn:not(.mobile-close-btn) {
+      display: none !important;
+    }
+    .mobile-close-btn {
+      display: flex !important;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+  }
+
+  .main-topbar {
+    .portal-badge,
     .user-meta {
       display: none !important;
     }
   }
 }
 
+@media (max-width: 576px) {
+  .main-topbar {
+    .topbar-company-selector {
+      display: none !important;
+    }
+    .topbar-competence-pill span {
+      display: none !important;
+    }
+    .topbar-competence-pill {
+      padding: 5px 8px !important;
+    }
+    .topbar-title {
+      font-size: 0.95rem !important;
+    }
+  }
+}

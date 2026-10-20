@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Strings } from '../../enum/strings';
-import { User, UserRole, SystemModule, STAFF_ROLES, CLIENT_ROLES, AuthResponseData, ApiResponse } from '../../models/user.model';
+import { User, UserRole, UserType, SystemModule, STAFF_ROLES, COMPANY_ROLES, AuthResponseData, ApiResponse } from '../../models/user.model';
 
 const TOKEN_KEY = 'taxsmart_auth_token';
 const USER_KEY = 'taxsmart_auth_user';
@@ -37,13 +37,32 @@ export class AuthService {
     const role = this.currentUser()?.role;
     return !!role && STAFF_ROLES.includes(role);
   });
-  isClient = computed(() => {
+  isCompany = computed(() => {
     const role = this.currentUser()?.role;
-    return !!role && CLIENT_ROLES.includes(role);
+    return !!role && COMPANY_ROLES.includes(role);
   });
-  isClientAdmin = computed(() => this.currentUser()?.role === UserRole.CLIENT_ADMIN);
-  isClientFinancial = computed(() => this.currentUser()?.role === UserRole.CLIENT_FINANCIAL);
-  isClientEmployee = computed(() => this.currentUser()?.role === UserRole.CLIENT_EMPLOYEE);
+  isCompanyAdmin = computed(
+    () =>
+      this.currentUser()?.role === UserRole.COMPANY_ADMIN ||
+      this.currentUser()?.role === UserRole.OWNER ||
+      this.currentUser()?.role === UserRole.PARTNER
+  );
+  canManageCompanyUsers = computed(
+    () =>
+      this.currentUser()?.role === UserRole.COMPANY_ADMIN ||
+      this.currentUser()?.role === UserRole.OWNER
+  );
+  isPartner = computed(
+    () =>
+      this.currentUser()?.role === UserRole.PARTNER ||
+      this.currentUser()?.type === UserType.PARTNER
+  );
+  isCompanyFinancial = computed(
+    () => this.currentUser()?.role === UserRole.COMPANY_FINANCIAL
+  );
+  isCompanyEmployee = computed(
+    () => this.currentUser()?.role === UserRole.COMPANY_EMPLOYEE
+  );
 
   // Computeds reativos de liberação de módulos
   canAccessFiscal = computed(() => {
@@ -185,7 +204,7 @@ export class AuthService {
     if (this.isStaff()) {
       this.router.navigate(['/admin/dashboard']);
     } else {
-      this.router.navigate(['/client/dashboard']);
+      this.router.navigate(['/company/dashboard']);
     }
   }
 

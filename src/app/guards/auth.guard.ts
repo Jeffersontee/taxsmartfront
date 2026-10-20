@@ -29,7 +29,7 @@ export const staffGuard: CanActivateFn = () => {
     return true;
   }
 
-  router.navigate(['/client/dashboard']);
+  router.navigate(['/company/dashboard']);
   return false;
 };
 
@@ -52,17 +52,32 @@ export const superAdminGuard: CanActivateFn = () => {
 };
 
 /**
- * Permite acesso a usuários clientes da plataforma.
+ * Permite acesso a usuários da empresa (portal /company).
  */
-export const clientGuard: CanActivateFn = () => {
+export const companyGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.isClient()) {
+  if (authService.isAuthenticated() && authService.isCompany()) {
     return true;
   }
 
   router.navigate(['/admin/dashboard']);
+  return false;
+};
+
+/**
+ * Permite acesso exclusivo a Gestores da Empresa (Titular OWNER ou Administrador COMPANY_ADMIN).
+ */
+export const companyAdminGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated() && authService.canManageCompanyUsers()) {
+    return true;
+  }
+
+  router.navigate(['/company/dashboard']);
   return false;
 };
 
@@ -79,7 +94,7 @@ export const moduleGuard = (module: SystemModule): CanActivateFn => {
     }
 
     // Redireciona para o dashboard caso não tenha permissão no módulo
-    const fallbackUrl = authService.isStaff() ? '/admin/dashboard' : '/client/dashboard';
+    const fallbackUrl = authService.isStaff() ? '/admin/dashboard' : '/company/dashboard';
     router.navigate([fallbackUrl]);
     return false;
   };

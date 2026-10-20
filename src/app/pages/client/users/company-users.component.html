@@ -1,0 +1,252 @@
+<div class="company-users-container">
+  <!-- Cabeçalho de Contexto da Empresa -->
+  <header class="page-header">
+    <div class="header-titles">
+      <div class="brand-badge">
+        <ion-icon name="business-outline"></ion-icon>
+        <span>{{ currentCompany()?.tradeName || currentCompany()?.corporateName || 'Minha Empresa' }}</span>
+        @if (currentCompany()?.taxRegime) {
+          <ion-badge color="primary" class="regime-badge">{{ currentCompany()?.taxRegime }}</ion-badge>
+        }
+      </div>
+      <h1 class="page-title">Usuários & Acessos da Empresa</h1>
+      <p class="page-subtitle">
+        Controle quem tem acesso ao portal, definindo permissões estratégicas para sócios, financeiro e colaboradores.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <ion-button (click)="loadUsers()" fill="outline" color="medium" class="refresh-btn">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="openCreateModal()" color="primary" class="add-user-btn">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        Convidar Membro
+      </ion-button>
+    </div>
+  </header>
+
+  <!-- Alertas de Erro / Sucesso -->
+  @if (errorMessage()) {
+    <div class="status-alert error">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Barra de Pesquisa e Filtros -->
+  <div class="filter-card">
+    <div class="search-box">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <input
+        type="text"
+        placeholder="Buscar membro por nome, e-mail ou cargo..."
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="counter-badge">
+      Total de Acessos: <strong>{{ filteredUsers().length }}</strong>
+    </div>
+  </div>
+
+  <!-- Estado de Carregamento -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Carregando membros da equipe...</p>
+    </div>
+  } @else if (filteredUsers().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state-card">
+      <div class="empty-icon-wrap">
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+      <h3>Nenhum membro encontrado</h3>
+      <p>Você pode adicionar novos colaboradores, o setor financeiro ou sócios para acessar este painel.</p>
+      <ion-button (click)="openCreateModal()" color="primary" size="small">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        Cadastrar Primeiro Membro
+      </ion-button>
+    </div>
+  } @else {
+    <!-- Grade de Cards de Usuários -->
+    <div class="users-grid">
+      @for (user of filteredUsers(); track user._id) {
+        <div class="user-card" [class.is-inactive]="user.active === false">
+          <div class="card-top-row">
+            <div class="user-avatar">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <div class="user-meta">
+              <div class="user-name-row">
+                <h3 class="user-name">{{ user.name }}</h3>
+                <span class="status-pill" [class.active]="user.active !== false">
+                  {{ user.active !== false ? 'Ativo' : 'Inativo' }}
+                </span>
+              </div>
+              <span class="user-email">
+                <ion-icon name="mail-outline"></ion-icon>
+                {{ user.email }}
+              </span>
+              @if (user.phone) {
+                <span class="user-phone">
+                  <ion-icon name="call-outline"></ion-icon>
+                  {{ user.phone }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="card-bottom-row">
+            <div class="role-info">
+              <span class="role-label-tag">Perfil de Acesso</span>
+              <ion-badge [color]="getRoleBadgeColor(user.role)" class="user-role-badge">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
+                {{ getRoleBadgeLabel(user.role) }}
+              </ion-badge>
+            </div>
+
+            <div class="card-actions">
+              <button
+                type="button"
+                class="status-toggle-btn"
+                [class.activate]="user.active === false"
+                (click)="toggleUserStatus(user)"
+                [title]="user.active !== false ? 'Desativar acesso' : 'Reativar acesso'"
+              >
+                <ion-icon [name]="user.active !== false ? 'close-circle-outline' : 'checkmark-circle-outline'"></ion-icon>
+                <span>{{ user.active !== false ? 'Desativar' : 'Ativar' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal de Criação / Convite de Membro -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="custom-user-modal">
+    <ng-template>
+      <div class="modal-wrapper">
+        <header class="modal-header">
+          <div class="header-info">
+            <ion-icon name="person-add-outline" class="modal-title-icon"></ion-icon>
+            <div>
+              <h2>Novo Acesso à Empresa</h2>
+              <p>Cadastre um novo usuário para visualizar ou operar este portal.</p>
+            </div>
+          </div>
+          <button type="button" class="close-modal-btn" (click)="closeModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorMessage()) {
+            <div class="status-alert error mb-4">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          @if (isCompanyMei()) {
+            <div class="status-alert info mb-4">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>Esta empresa é MEI (Microempreendedor Individual). Por lei, MEIs não possuem sócios cotistas.</span>
+            </div>
+          }
+
+          <form [formGroup]="userForm" (ngSubmit)="onSubmitUser()" class="user-form">
+            <div class="form-group">
+              <label class="form-label">Nome Completo *</label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Ex: João da Silva"
+                class="form-control"
+              />
+              @if (userForm.get('name')?.touched && userForm.get('name')?.invalid) {
+                <span class="field-error">Informe o nome completo (mínimo 3 caracteres).</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">E-mail Profissional *</label>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="Ex: joao@minhaempresa.com.br"
+                class="form-control"
+              />
+              @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
+                <span class="field-error">Informe um e-mail válido.</span>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">Senha Inicial *</label>
+                <input
+                  type="password"
+                  formControlName="password"
+                  placeholder="Mínimo 6 dígitos"
+                  class="form-control"
+                />
+                @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+                  <span class="field-error">Senha obrigatória com no mínimo 6 caracteres.</span>
+                }
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label">Telefone / WhatsApp</label>
+                <input
+                  type="text"
+                  formControlName="phone"
+                  placeholder="(11) 99999-9999"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Papel / Nível de Acesso *</label>
+              <select formControlName="role" class="form-control select-control">
+                @for (role of rolesList; track role.value) {
+                  <option
+                    [value]="role.value"
+                    [disabled]="isCompanyMei() && role.value === 'PARTNER'"
+                  >
+                    {{ role.label }} {{ (isCompanyMei() && role.value === 'PARTNER') ? '(Indisponível para MEI)' : '' }}
+                  </option>
+                }
+              </select>
+              <span class="helper-text">
+                O Financeiro tem acesso a guias e notas. Sócios acompanham relatórios. Colaboradores veem apenas seus holerites.
+              </span>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" (click)="closeModal()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-submit" [disabled]="isLoading() || userForm.invalid">
+                @if (isLoading()) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                  Salvando...
+                } @else {
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  Conceder Acesso
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+</div>

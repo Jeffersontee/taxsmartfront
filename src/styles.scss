@@ -189,3 +189,30 @@ ion-grid[fixed],
   top: -2px;
 }
 
+/* ==========================================================================
+   FIX DEFINITIVO ION-MENU DRAWER & BACKDROP NO MOBILE (< 768px)
+   ========================================================================== */
+ion-menu.client-sidebar,
+ion-menu.admin-sidebar {
+  &.show-menu,
+  &.mobile-open {
+    display: block !important;
+    visibility: visible !important;
+    z-index: 9999 !important;
+
+    &::part(container) {
+      transform: translateX(0) !important;
+      visibility: visible !important;
+      display: flex !important;
+      box-shadow: 6px 0 30px rgba(0, 0, 0, 0.28) !important;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    &::part(backdrop) {
+      display: block !important;
+      opacity: 0.45 !important;
+      pointer-events: auto !important;
+    }
+  }
+}
+

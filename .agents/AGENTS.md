@@ -24,3 +24,9 @@
    - Linha do tempo das obrigações mensais da sua empresa.
    - Central de Documentos & Guias para download com código de barras/PIX Copia e Cola.
    - Solicitação de serviços, envio de documentos (fotos de notas/recibos) e alertas push.
+
+## 3. Modelagem Ativa & Zero Retrocompatibilidade
+- O frontend e o backend estão em fase ativa de modelagem e arquitetura inicial.
+- **Não manter retrocompatibilidade** com enums, aliases ou papéis legados (`CLIENT_ADMIN`, `CLIENT_FINANCIAL`, `CLIENT_EMPLOYEE`, `CLIENT`, etc.).
+- Utilizar exclusivamente os novos padrões de papéis (`COMPANY_ADMIN`, `COMPANY_FINANCIAL`, `COMPANY_EMPLOYEE`, `OWNER`) e rotas limpas (`/company/...`).
+

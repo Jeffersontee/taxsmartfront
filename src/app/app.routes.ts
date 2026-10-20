@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, staffGuard, clientGuard, superAdminGuard, moduleGuard } from './guards/auth.guard';
+import { authGuard, staffGuard, companyGuard, superAdminGuard, companyAdminGuard, moduleGuard } from './guards/auth.guard';
 import { SystemModule } from './models/user.model';
 
 export const routes: Routes = [
@@ -117,11 +117,17 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'usuarios-clientes',
+        path: 'users',
+        canActivate: [superAdminGuard],
         loadComponent: () =>
           import('./pages/admin/company-users/admin-company-users.component').then(
             (m) => m.AdminCompanyUsersComponent
           ),
+      },
+      {
+        path: 'usuarios-clientes',
+        redirectTo: 'users',
+        pathMatch: 'full',
       },
       {
         path: 'auditoria',
@@ -150,11 +156,11 @@ export const routes: Routes = [
   },
 
   // =========================================================================
-  // Área do Cliente / Empresário (Client Portal)
+  // Área da Empresa / Empresário (Company Portal - anterior /client)
   // =========================================================================
   {
-    path: 'client',
-    canActivate: [authGuard, clientGuard],
+    path: 'company',
+    canActivate: [authGuard, companyGuard],
     loadComponent: () =>
       import('./pages/client/cliente-layout/cliente-layout.component').then(
         (m) => m.ClienteLayoutComponent
@@ -172,12 +178,46 @@ export const routes: Routes = [
             (m) => m.ClienteDashboardComponent
           ),
       },
+      {
+        path: 'timeline',
+        loadComponent: () =>
+          import('./pages/admin/timeline/timeline.component').then(
+            (m) => m.TimelineComponent
+          ),
+      },
+      {
+        path: 'users',
+        canActivate: [companyAdminGuard],
+        loadComponent: () =>
+          import('./pages/client/users/company-users.component').then(
+            (m) => m.CompanyUsersComponent
+          ),
+      },
+      {
+        path: 'appearance',
+        loadComponent: () =>
+          import('./pages/admin/settings/appearance/appearance.component').then(
+            (m) => m.AppearanceComponent
+          ),
+      },
+      {
+        path: 'settings/appearance',
+        loadComponent: () =>
+          import('./pages/admin/settings/appearance/appearance.component').then(
+            (m) => m.AppearanceComponent
+          ),
+      },
     ],
   },
-  // Alias de retrocompatibilidade para /cliente
+  // Alias de retrocompatibilidade para /client e /cliente
+  {
+    path: 'client',
+    redirectTo: 'company',
+    pathMatch: 'prefix',
+  },
   {
     path: 'cliente',
-    redirectTo: 'client',
+    redirectTo: 'company',
     pathMatch: 'prefix',
   },
 
@@ -295,8 +335,8 @@ export const routes: Routes = [
   },
   {
     path: 'timeline',
-    loadComponent: () =>
-      import('./pages/admin/timeline/timeline.component').then((m) => m.TimelineComponent),
+    redirectTo: 'admin/timeline',
+    pathMatch: 'full',
   },
   {
     path: '**',

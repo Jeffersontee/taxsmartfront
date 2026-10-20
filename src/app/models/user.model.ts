@@ -1,12 +1,24 @@
+export enum UserType {
+  OWNER = 'OWNER',
+  PARTNER = 'PARTNER',
+  COMPANY_FINANCIAL = 'COMPANY_FINANCIAL',
+  EMPLOYEE = 'EMPLOYEE',
+  STAFF = 'STAFF',
+  COMPANY = 'COMPANY',
+}
+
 export enum UserRole {
   SUPER_ADMIN = 'SUPER_ADMIN',
   ACCOUNTANT = 'ACCOUNTANT',
   FISCAL_ANALYST = 'FISCAL_ANALYST',
   PAYROLL_ANALYST = 'PAYROLL_ANALYST',
-  CLIENT_ADMIN = 'CLIENT_ADMIN',
-  CLIENT_FINANCIAL = 'CLIENT_FINANCIAL',
-  CLIENT_EMPLOYEE = 'CLIENT_EMPLOYEE',
-  CLIENT = 'CLIENT', // Mantido para compatibilidade retroativa
+  // Papéis da Empresa (Company)
+  COMPANY_ADMIN = 'COMPANY_ADMIN',
+  COMPANY_FINANCIAL = 'COMPANY_FINANCIAL',
+  COMPANY_EMPLOYEE = 'COMPANY_EMPLOYEE',
+  COMPANY = 'COMPANY',
+  OWNER = 'OWNER',
+  PARTNER = 'PARTNER',
 }
 
 export enum SystemModule {
@@ -25,11 +37,13 @@ export const STAFF_ROLES: UserRole[] = [
   UserRole.PAYROLL_ANALYST,
 ];
 
-export const CLIENT_ROLES: UserRole[] = [
-  UserRole.CLIENT,
-  UserRole.CLIENT_ADMIN,
-  UserRole.CLIENT_FINANCIAL,
-  UserRole.CLIENT_EMPLOYEE,
+export const COMPANY_ROLES: UserRole[] = [
+  UserRole.COMPANY_ADMIN,
+  UserRole.COMPANY_FINANCIAL,
+  UserRole.COMPANY_EMPLOYEE,
+  UserRole.COMPANY,
+  UserRole.OWNER,
+  UserRole.PARTNER,
 ];
 
 export interface UserCompany {
@@ -47,8 +61,10 @@ export interface User {
   _id?: string;
   name: string;
   email: string;
+  type?: UserType | string;
   role: UserRole;
   companyId?: string | UserCompany;
+  company?: UserCompany;
   employeeId?: string;
   allowedModules?: SystemModule[];
   phone?: string;

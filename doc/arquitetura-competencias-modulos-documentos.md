@@ -32,13 +32,13 @@ O porte da empresa determina a complexidade fiscal, os módulos aplicáveis e a 
 
 ---
 
-### 2.2. Perfis de Usuário no Portal do Cliente (`userType: CLIENT`)
+### 2.2. Perfis de Usuário no Portal da Empresa (`userType: COMPANY / OWNER`)
 
 | Role | Perfil | Descrição e Permissões |
 |---|---|---|
-| `CLIENT_ADMIN` | **Sócio / Diretor / Titular** | Acesso total à empresa. Pode adicionar/editar dados da empresa, cadastrar novos usuários da empresa, aprovar admissões/férias, baixar guias e visualizar relatórios fiscais e contábeis. |
-| `CLIENT_FINANCIAL` | **Gestor Financeiro** | Focado nas finanças operacionais. Acesso aos módulos **Fiscal** (DF-e, XMLs, Guias DAS/DARF) e **Contábil** (envio de extratos OFX, recibos de pagamentos e conciliação bancária). |
-| `CLIENT_EMPLOYEE` | **Colaborador / RH Interno** | Acesso estrito ao módulo de **DP/RH**. Acesso ao seu espelho de ponto, download de holerites mensais, informe de rendimentos e solicitação de férias/atestados. |
+| `COMPANY_ADMIN` / `OWNER` | **Sócio / Diretor / Titular** | Acesso total à empresa. Pode adicionar/editar dados da empresa, cadastrar novos usuários da empresa, aprovar admissões/férias, baixar guias e visualizar relatórios fiscais e contábeis. |
+| `COMPANY_FINANCIAL` | **Gestor Financeiro** | Focado nas finanças operacionais. Acesso aos módulos **Fiscal** (DF-e, XMLs, Guias DAS/DARF) e **Contábil** (envio de extratos OFX, recibos de pagamentos e conciliação bancária). |
+| `COMPANY_EMPLOYEE` | **Colaborador / RH Interno** | Acesso estrito ao módulo de **DP/RH**. Acesso ao seu espelho de ponto, download de holerites mensais, informe de rendimentos e solicitação de férias/atestados. |
 
 ---
 

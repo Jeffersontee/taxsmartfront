@@ -77,9 +77,12 @@
                   </div>
                 </div>
 
-                <ion-badge [color]="u.role === 'CLIENT_ADMIN' ? 'success' : 'tertiary'" class="role-badge">
+                <ion-badge
+                  [color]="u.role === 'COMPANY_ADMIN' || u.role === 'OWNER' ? 'success' : (u.role === 'PARTNER' ? 'warning' : (u.role === 'COMPANY_FINANCIAL' ? 'tertiary' : 'medium'))"
+                  class="role-badge"
+                >
                   <ion-icon name="shield-checkmark-outline"></ion-icon>
-                  {{ u.role === 'CLIENT_ADMIN' ? 'Titular / Diretor' : 'Gestor Financeiro' }}
+                  {{ u.role === 'COMPANY_ADMIN' || u.role === 'OWNER' ? 'Titular / Diretor' : (u.role === 'PARTNER' ? 'Sócio' : (u.role === 'COMPANY_FINANCIAL' ? 'Gestor Financeiro' : 'Colaborador')) }}
                 </ion-badge>
               </div>
 
@@ -150,14 +153,39 @@
             ></ion-input>
           </div>
 
+          @if (isMeiCompany()) {
+            <div class="regime-banner mei">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>Enquadramento <strong>MEI</strong>: Titular único (sem sócios adicionais).</span>
+            </div>
+          } @else if (selectedCompany()) {
+            <div class="regime-banner society">
+              <ion-icon name="business-outline"></ion-icon>
+              <span>Regime <strong>{{ selectedCompany()?.taxRegime }}</strong>: Quadro societário ativo (Titular e Sócios).</span>
+            </div>
+          }
+
           <div class="form-group">
-            <label class="form-label">Perfil de Acesso na Empresa *</label>
+            <label class="form-label">Tipo de Usuário (Type) *</label>
+            <ion-select
+              formControlName="type"
+              interface="action-sheet"
+              class="form-select"
+            >
+              @for (t of availableTypes(); track t.value) {
+                <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Papel / Função na Empresa (Role) *</label>
             <ion-select
               formControlName="role"
               interface="action-sheet"
               class="form-select"
             >
-              @for (r of rolesList; track r.value) {
+              @for (r of availableRoles(); track r.value) {
                 <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
               }
             </ion-select>

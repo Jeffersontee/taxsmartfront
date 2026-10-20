@@ -32,11 +32,12 @@ import {
   closeOutline,
   callOutline,
   lockClosedOutline,
+  informationCircleOutline,
 } from 'ionicons/icons';
 import { CompanyService } from '../../../services/company/company.service';
 import { Strings } from '../../../enum/strings';
 import { environment } from '../../../../environments/environment';
-import { User, UserRole, ApiResponse } from '../../../models/user.model';
+import { User, UserRole, UserType, ApiResponse } from '../../../models/user.model';
 import { ICompany } from '../../../models/company.model';
 
 @Component({
@@ -80,10 +81,45 @@ export class AdminCompanyUsersComponent implements OnInit {
 
   userForm: FormGroup;
 
-  rolesList = [
-    { value: UserRole.CLIENT_ADMIN, label: 'Titular / Diretor (Acesso Total da Empresa)' },
-    { value: UserRole.CLIENT_FINANCIAL, label: 'Gestor Financeiro (Guias, Notas e Tributos)' },
+  typesList = [
+    { value: UserType.OWNER, label: 'Titular / Proprietário (OWNER)' },
+    { value: UserType.PARTNER, label: 'Sócio (PARTNER - LTDA / Sociedades)' },
+    { value: UserType.COMPANY_FINANCIAL, label: 'Financeiro (COMPANY_FINANCIAL)' },
+    { value: UserType.EMPLOYEE, label: 'Colaborador (EMPLOYEE)' },
+    { value: UserType.COMPANY, label: 'Acesso Geral Empresa (COMPANY)' },
   ];
+
+  rolesList = [
+    { value: UserRole.COMPANY_ADMIN, label: 'Administrador da Empresa (Acesso Total)' },
+    { value: UserRole.OWNER, label: 'Titular / Proprietário (Acesso Total)' },
+    { value: UserRole.PARTNER, label: 'Sócio da Empresa (Acesso Total)' },
+    { value: UserRole.COMPANY_FINANCIAL, label: 'Gestor Financeiro (Guias, Notas e Tributos)' },
+    { value: UserRole.COMPANY_EMPLOYEE, label: 'Colaborador (Holerites e Ponto)' },
+  ];
+
+  selectedCompany = computed(() => {
+    const id = this.selectedCompanyId();
+    return this.companies().find((c) => c._id === id);
+  });
+
+  isMeiCompany = computed(() => {
+    const regime = this.selectedCompany()?.taxRegime || (this.selectedCompany() as any)?.tax_regime;
+    return regime === 'MEI';
+  });
+
+  availableTypes = computed(() => {
+    if (this.isMeiCompany()) {
+      return this.typesList.filter((t) => t.value !== UserType.PARTNER);
+    }
+    return this.typesList;
+  });
+
+  availableRoles = computed(() => {
+    if (this.isMeiCompany()) {
+      return this.rolesList.filter((r) => r.value !== UserRole.PARTNER);
+    }
+    return this.rolesList;
+  });
 
   filteredUsers = computed(() => {
     let list = this.users();
@@ -102,8 +138,7 @@ export class AdminCompanyUsersComponent implements OnInit {
   });
 
   selectedCompanyName = computed(() => {
-    const id = this.selectedCompanyId();
-    const comp = this.companies().find((c) => c._id === id);
+    const comp = this.selectedCompany();
     return comp ? comp.tradeName || comp.corporateName : '';
   });
 
@@ -120,13 +155,15 @@ export class AdminCompanyUsersComponent implements OnInit {
       closeOutline,
       callOutline,
       lockClosedOutline,
+      informationCircleOutline,
     });
 
     this.userForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      role: [UserRole.CLIENT_ADMIN, [Validators.required]],
+      type: [UserType.OWNER, [Validators.required]],
+      role: [UserRole.COMPANY_ADMIN, [Validators.required]],
       phone: [''],
     });
   }
@@ -170,7 +207,8 @@ export class AdminCompanyUsersComponent implements OnInit {
 
   openCreateModal(): void {
     this.userForm.reset({
-      role: UserRole.CLIENT_ADMIN,
+      type: UserType.OWNER,
+      role: UserRole.COMPANY_ADMIN,
     });
     this.isModalOpen.set(true);
   }

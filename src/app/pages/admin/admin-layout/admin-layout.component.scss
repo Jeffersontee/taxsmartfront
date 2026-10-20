@@ -14,8 +14,11 @@
 // Sidebar Styles
 .admin-sidebar {
   --background: var(--app-sidebar-bg, #0f172a);
+  --width: 280px;
+  --max-width: 85vw;
   border-right: 1px solid var(--app-sidebar-border, rgba(255, 255, 255, 0.06));
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000 !important;
 
   .sidebar-header-toolbar {
     --background: var(--app-sidebar-bg, #0f172a);
@@ -381,6 +384,40 @@
     padding: 0 12px;
   }
 
+  // Botão Hambúrguer Estilizado TaxSmart
+  .taxsmart-hamburger-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.14), rgba(234, 88, 12, 0.05));
+    border: 1px solid rgba(234, 88, 12, 0.3);
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.12);
+
+    ion-icon {
+      font-size: 1.5rem;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: #ffffff;
+      border-color: #ea580c;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
   .navbar-center-title {
     display: flex;
     align-items: center;
@@ -438,4 +475,39 @@
 
 .admin-page-container {
   --background: var(--app-bg, #090d16);
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    --width: 280px !important;
+    --max-width: 85vw !important;
+    z-index: 1000 !important;
+
+    .collapse-toggle-btn:not(.mobile-close-btn) {
+      display: none !important;
+    }
+
+    .mobile-close-btn {
+      display: flex !important;
+      background: rgba(239, 68, 68, 0.12) !important;
+      border: 1px solid rgba(239, 68, 68, 0.3) !important;
+      color: #ef4444 !important;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.22) !important;
+        color: #dc2626 !important;
+      }
+    }
+  }
+
+  .admin-top-header {
+    .public-site-link {
+      display: none !important;
+    }
+
+    .navbar-center-title .environment-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+    }
+  }
 }
