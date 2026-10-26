@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonContent,
@@ -62,9 +62,22 @@ export class LoginComponent implements OnInit {
   showPassword = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 
-  // Formulário Reativo
+  // Formulário Reativo (Aceita E-mail ou CNPJ)
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    identifier: [
+      '',
+      [
+        Validators.required,
+        (control: AbstractControl) => {
+          const val = String(control.value || '').trim();
+          if (!val) return null;
+          const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+          const digitsOnly = val.replace(/\D/g, '');
+          const isCnpj = digitsOnly.length === 14;
+          return isEmail || isCnpj ? null : { invalidIdentifier: true };
+        },
+      ],
+    ],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
@@ -88,6 +101,29 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  isCnpjInput(): boolean {
+    const val = String(this.loginForm.get('identifier')?.value || '').trim();
+    const digits = val.replace(/\D/g, '');
+    return digits.length > 2 && !val.includes('@');
+  }
+
+  onIdentifierInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = input.value;
+    // Se o usuário estiver digitando números e sem @, aplica máscara leve de CNPJ
+    if (/^\d+$/.test(val.replace(/\D/g, '')) && !val.includes('@')) {
+      const digits = val.replace(/\D/g, '').slice(0, 14);
+      if (digits.length > 11) {
+        let formatted = digits;
+        if (digits.length > 2) formatted = `${digits.slice(0, 2)}.${digits.slice(2)}`;
+        if (digits.length > 5) formatted = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
+        if (digits.length > 8) formatted = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8)}`;
+        if (digits.length > 12) formatted = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+        this.loginForm.get('identifier')?.setValue(formatted, { emitEvent: false });
+      }
+    }
+  }
+
   toggleShowPassword(): void {
     this.showPassword.update((val) => !val);
   }
@@ -106,7 +142,7 @@ export class LoginComponent implements OnInit {
 
     this.authService
       .login({
-        email: rawValues.email.trim(),
+        email: rawValues.identifier.trim(),
         password: rawValues.password,
       })
       .subscribe({

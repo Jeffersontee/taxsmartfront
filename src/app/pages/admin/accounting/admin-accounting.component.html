@@ -78,7 +78,12 @@
 
     <!-- Navegação de Abas -->
     <section class="tab-navigation">
-      <ion-segment [value]="activeTab()" (ionChange)="activeTab.set($any($event).detail.value)">
+      <ion-segment
+        mode="ios"
+        [value]="activeTab()"
+        (ionChange)="activeTab.set($any($event).detail.value)"
+        class="custom-segment"
+      >
         <ion-segment-button value="entries">
           <ion-label>Lançamentos (Diário)</ion-label>
         </ion-segment-button>
@@ -90,6 +95,9 @@
         </ion-segment-button>
         <ion-segment-button value="dre">
           <ion-label>DRE & Balanço</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="documents">
+          <ion-label>Documentos & OFX</ion-label>
         </ion-segment-button>
       </ion-segment>
     </section>
@@ -268,6 +276,21 @@
             <span class="val">{{ formatCurrency(20600) }}</span>
           </div>
         </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 5: Documentos & Extratos OFX -->
+    @if (activeTab() === 'documents') {
+      <section class="documents-tab-section">
+        <app-document-vault
+          [companyId]="selectedCompanyId()"
+          [competence]="selectedCompetence()"
+          module="CONTABIL"
+          title="Cofre de Documentos Contábeis & Extratos OFX"
+          subtitle="Armazene extratos bancários em formato OFX, relatórios contábeis, conciliações e comprovantes da competência selecionada."
+          [allowUpload]="true"
+          [readOnly]="false">
+        </app-document-vault>
       </section>
     }
   </div>

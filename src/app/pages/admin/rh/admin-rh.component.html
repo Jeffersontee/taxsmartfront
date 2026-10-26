@@ -39,6 +39,7 @@
 
       <div class="tabs-segment">
         <ion-segment
+          mode="ios"
           [value]="currentTab()"
           (ionChange)="currentTab.set($any($event).detail.value)"
           class="custom-segment"

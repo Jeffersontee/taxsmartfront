@@ -126,7 +126,8 @@
           </ion-item>
 
           <ion-item
-            routerLink="/company/dashboard"
+            routerLink="/company/documents"
+            routerLinkActive="active-item"
             detail="false"
             class="nav-item"
             title="Notas Fiscais e XMLs da Competência"
@@ -148,7 +149,8 @@
           }
 
           <ion-item
-            routerLink="/company/dashboard"
+            routerLink="/company/documents"
+            routerLinkActive="active-item"
             detail="false"
             class="nav-item"
             title="Extratos Bancários OFX e Despesas"
@@ -170,7 +172,8 @@
           }
 
           <ion-item
-            routerLink="/company/dashboard"
+            routerLink="/company/documents"
+            routerLinkActive="active-item"
             detail="false"
             class="nav-item"
             title="Holerites e Pró-Labore"
@@ -191,15 +194,16 @@
         }
 
         <ion-item
-          routerLink="/company/dashboard"
+          routerLink="/company/documents"
+          routerLinkActive="active-item"
           detail="false"
           class="nav-item"
-          title="Enviar Arquivos para a Contabilidade"
+          title="Cofre de Documentos e Envio para o Escritório"
           (click)="onNavClick()"
         >
-          <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+          <ion-icon slot="start" name="folder-open-outline"></ion-icon>
           @if (!isSidebarCollapsed()) {
-            <ion-label>Enviar Documentos</ion-label>
+            <ion-label>Cofre de Documentos</ion-label>
           }
         </ion-item>
 

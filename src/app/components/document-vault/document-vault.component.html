@@ -1,0 +1,265 @@
+<div class="document-vault-wrapper">
+  
+  <!-- Vault Header -->
+  <header class="vault-header">
+    <div class="header-left">
+      <div class="header-icon-box">
+        <ion-icon name="folder-open-outline"></ion-icon>
+      </div>
+      <div class="header-titles">
+        <h3 class="vault-title">{{ title() }}</h3>
+        <p class="vault-subtitle">{{ subtitle() }}</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="competence-badge">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Competência: <strong>{{ competence() }}</strong></span>
+      </div>
+      <button type="button" class="btn-refresh" (click)="loadDocuments()" title="Atualizar Documentos">
+        <ion-icon name="refresh-outline" [class.spinning]="isLoading()"></ion-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Competence Closed Alert Banner -->
+  @if (isCompetenceClosed()) {
+    <div class="competence-closed-banner">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <div class="banner-text">
+        <strong>Competência Formalmente Encerrada</strong>
+        <span>Os arquivos desta competência foram congelados e validados pelo escritório contábil. Novos envios ou exclusões estão bloqueados.</span>
+      </div>
+    </div>
+  }
+
+  <!-- Drag & Drop Upload Zone (quando permitido) -->
+  @if (allowUpload() && !readOnly() && !isCompetenceClosed()) {
+    <div
+      class="upload-dropzone"
+      [class.is-dragging]="isDragging()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileChange($event)"
+        class="hidden-file-input"
+        accept=".xml,.ofx,.pdf,.png,.jpg,.jpeg,.xlsx,.csv,.txt"
+      />
+      <div class="dropzone-content">
+        <div class="upload-icon-circle">
+          @if (isUploading()) {
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+          } @else {
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+          }
+        </div>
+        <div class="dropzone-text">
+          <h4>Arraste arquivos aqui ou <button type="button" class="btn-browse" (click)="fileInput.click()">selecione no computador</button></h4>
+          <p>Formatos aceitos: XML (NF-e/NFS-e), OFX (Extratos Bancários), PDF, PNG, JPG, XLSX e CSV (até 25MB).</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Filter & Search Bar -->
+  <div class="vault-filter-bar">
+    <div class="search-box">
+      <ion-icon name="filter-outline" class="search-icon"></ion-icon>
+      <input
+        type="text"
+        placeholder="Filtrar por nome do arquivo ou tipo..."
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+        class="filter-input"
+      />
+      @if (searchTerm()) {
+        <button type="button" class="clear-search-btn" (click)="searchTerm.set('')">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <div class="stage-filter-select">
+      <ion-select
+        interface="popover"
+        [value]="selectedStageFilter()"
+        (ionChange)="selectedStageFilter.set($any($event).detail.value)"
+        class="custom-select"
+      >
+        <ion-select-option value="ALL">Todos os Estágios</ion-select-option>
+        <ion-select-option value="ENVIADO">Enviados</ion-select-option>
+        <ion-select-option value="EM_ANALISE">Em Análise</ion-select-option>
+        <ion-select-option value="APROVADO">Aprovados</ion-select-option>
+        <ion-select-option value="IMPEDIMENTO">Com Pendência</ion-select-option>
+        <ion-select-option value="PROCESSADO">Processados</ion-select-option>
+        <ion-select-option value="FECHADO">Fechados</ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+
+  <!-- Documents List / Cards -->
+  <div class="documents-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <span>Carregando cofre de documentos...</span>
+      </div>
+    } @else if (filteredDocuments().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon-circle">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <h4>Nenhum documento encontrado</h4>
+        <p>
+          @if (searchTerm() || selectedStageFilter() !== 'ALL') {
+            Nenhum arquivo corresponde aos filtros aplicados.
+          } @else {
+            Não há documentos enviados para esta competência ({{ competence() }}).
+          }
+        </p>
+      </div>
+    } @else {
+      <div class="documents-grid">
+        @for (doc of filteredDocuments(); track doc._id) {
+          <article class="doc-card" [class.has-impediment]="doc.stage === 'IMPEDIMENTO'">
+            
+            <div class="doc-card-top">
+              <div class="doc-type-icon-box">
+                <span class="file-ext-tag">{{ doc.documentType }}</span>
+              </div>
+              <div class="doc-info-col">
+                <h4 class="doc-filename" [title]="doc.originalFilename" (click)="openPreview(doc)">
+                  {{ doc.originalFilename }}
+                </h4>
+                <div class="doc-meta-row">
+                  <span class="meta-item">{{ formatBytes(doc.fileSizeBytes) }}</span>
+                  <span class="meta-dot">•</span>
+                  <span class="meta-item">{{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              </div>
+
+              <div class="doc-stage-badge">
+                <ion-badge [color]="getStageColor(doc.stage)">
+                  {{ doc.stage }}
+                </ion-badge>
+              </div>
+            </div>
+
+            <!-- Alerta visual se estiver com impedimento -->
+            @if (doc.stage === 'IMPEDIMENTO' && doc.impedimentReason) {
+              <div class="doc-impediment-snippet">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <span><strong>Pendência:</strong> {{ doc.impedimentReason }}</span>
+              </div>
+            }
+
+            <!-- Card Actions -->
+            <div class="doc-card-bottom">
+              <div class="doc-uploader-meta">
+                <span class="uploader-label">Por: {{ doc.uploadedBy.userName }}</span>
+              </div>
+
+              <div class="doc-actions-group">
+                <button type="button" class="btn-action view-btn" (click)="openPreview(doc)" title="Visualizar Documento">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </button>
+                <button type="button" class="btn-action download-btn" (click)="onDownload(doc)" title="Baixar Arquivo">
+                  <ion-icon name="download-outline"></ion-icon>
+                </button>
+
+                <!-- Ações do Staff Contábil -->
+                @if (authService.isStaff() && !readOnly() && !doc.isCompetenceClosed) {
+                  @if (doc.stage !== 'APROVADO') {
+                    <button
+                      type="button"
+                      class="btn-action approve-btn"
+                      (click)="approveDocument(doc)"
+                      title="Aprovar Documento"
+                    >
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+                    </button>
+                  }
+
+                  <button
+                    type="button"
+                    class="btn-action impediment-btn"
+                    (click)="openImpedimentDialog(doc)"
+                    title="Apontar Pendência / Impedimento"
+                  >
+                    <ion-icon name="alert-circle-outline"></ion-icon>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-action delete-btn"
+                    (click)="deleteDocument(doc)"
+                    title="Excluir Documento"
+                  >
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                }
+              </div>
+            </div>
+
+          </article>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Modal de Apontamento de Pendência / Impedimento -->
+  @if (isImpedimentModalOpen()) {
+    <div class="impediment-dialog-backdrop" (click)="closeImpedimentDialog()">
+      <div class="impediment-dialog" (click)="$event.stopPropagation()">
+        <header class="dialog-header">
+          <div class="dialog-title-box">
+            <ion-icon name="alert-circle-outline" class="alert-icon"></ion-icon>
+            <h4>Registrar Pendência no Arquivo</h4>
+          </div>
+          <button type="button" class="close-dialog-btn" (click)="closeImpedimentDialog()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </header>
+
+        <div class="dialog-body">
+          <p class="dialog-instruction">
+            Documento: <strong>{{ selectedImpedimentDoc()?.originalFilename }}</strong>
+          </p>
+          <label class="field-label">Motivo da rejeição ou documento faltante:</label>
+          <textarea
+            rows="4"
+            class="impediment-textarea"
+            placeholder="Ex: Falta o extrato da conta corrente final 1234, ou a nota fiscal está sem o protocolo de autorização da SEFAZ..."
+            [value]="impedimentReason()"
+            (input)="impedimentReason.set($any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <footer class="dialog-footer">
+          <button type="button" class="btn-cancel" (click)="closeImpedimentDialog()">
+            Cancelar
+          </button>
+          <button type="button" class="btn-confirm-impediment" (click)="confirmImpediment()">
+            Confirmar Pendência
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Pré-Visualização Embutido -->
+  @if (selectedPreviewDoc()) {
+    <app-document-preview-modal
+      [document]="selectedPreviewDoc()!"
+      [isOpen]="isPreviewOpen()"
+      (closeModal)="closePreview()"
+      (downloadTriggered)="onDownload($event)"
+    ></app-document-preview-modal>
+  }
+
+</div>

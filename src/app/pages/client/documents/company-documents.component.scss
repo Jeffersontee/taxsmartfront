@@ -1,0 +1,180 @@
+.company-docs-content {
+  --background: #f8fafc;
+  --color: #0f172a;
+}
+
+.company-docs-container {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .company-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+
+        ion-icon {
+          font-size: 0.9rem;
+        }
+      }
+
+      .active-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #10b981;
+        border-radius: 50%;
+        display: inline-block;
+      }
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.925rem;
+      color: #64748b;
+      margin: 0;
+      max-width: 650px;
+      line-height: 1.45;
+    }
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .competence-picker {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+
+      ion-icon {
+        font-size: 1.15rem;
+        color: #475569;
+      }
+
+      .picker-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      ion-select {
+        --padding-start: 4px;
+        --padding-end: 4px;
+        --padding-top: 2px;
+        --padding-bottom: 2px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+    }
+  }
+}
+
+/* Segment Navigation */
+.module-tabs-nav {
+  .custom-segment {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    ion-segment-button {
+      --color: #64748b;
+      --color-checked: #0284c7;
+      --indicator-color: #f0f9ff;
+      --border-radius: 8px;
+      min-height: 44px;
+      font-weight: 600;
+      font-size: 0.875rem;
+
+      ion-icon {
+        font-size: 1.15rem;
+        margin-right: 6px;
+      }
+
+      &.segment-button-checked {
+        font-weight: 700;
+        border: 1px solid #bae6fd;
+      }
+    }
+  }
+}
+
+/* Vault Wrapper */
+.vault-wrapper {
+  background: transparent;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .company-docs-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .page-header {
+    padding: 1.25rem;
+    flex-direction: column;
+
+    .header-controls {
+      width: 100%;
+
+      .competence-picker {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  .module-tabs-nav .custom-segment {
+    overflow-x: auto;
+  }
+}

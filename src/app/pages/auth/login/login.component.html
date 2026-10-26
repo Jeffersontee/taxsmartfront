@@ -45,24 +45,25 @@
           <!-- Form Section -->
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
             
-            <!-- Email Input Field -->
+            <!-- Email ou CNPJ Input Field -->
             <div class="input-group">
-              <label class="field-label">Email Corporativo ou Pessoal</label>
-              <div class="custom-input-box" [class.has-error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-                <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+              <label class="field-label">Email Corporativo ou CNPJ da Empresa</label>
+              <div class="custom-input-box" [class.has-error]="loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid">
+                <ion-icon [name]="isCnpjInput() ? 'business-outline' : 'mail-outline'" class="input-icon"></ion-icon>
                 <input
-                  type="email"
-                  formControlName="email"
-                  placeholder="seu.email@empresa.com.br"
-                  autocomplete="email"
+                  type="text"
+                  formControlName="identifier"
+                  placeholder="email@empresa.com.br ou CNPJ"
+                  autocomplete="username"
                   class="native-input"
+                  (input)="onIdentifierInput($event)"
                 />
               </div>
-              @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
-                <span class="field-error-text">O email é obrigatório.</span>
+              @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.hasError('required')) {
+                <span class="field-error-text">O email ou CNPJ é obrigatório.</span>
               }
-              @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
-                <span class="field-error-text">Informe um formato de email válido.</span>
+              @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.hasError('invalidIdentifier')) {
+                <span class="field-error-text">Informe um email válido ou CNPJ completo com 14 dígitos.</span>
               }
             </div>
 

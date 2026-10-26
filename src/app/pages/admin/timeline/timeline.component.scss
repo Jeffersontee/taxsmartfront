@@ -407,30 +407,74 @@
     }
 
     .impediment-alert-box {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.08);
       border: 1px solid rgba(239, 68, 68, 0.25);
-      border-radius: 8px;
-      padding: 10px 14px;
+      border-radius: 10px;
+      padding: 12px 14px;
       display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 16px;
+      transition: all 0.2s ease-in-out;
 
-      ion-icon {
-        font-size: 20px;
-        color: #ef4444;
-        flex-shrink: 0;
-        margin-top: 1px;
+      &.clickable {
+        cursor: pointer;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.15);
+          border-color: rgba(239, 68, 68, 0.45);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
       }
 
-      .impediment-text {
-        font-size: 0.8rem;
-        color: #ef4444;
+      .impediment-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        flex: 1;
 
-        strong {
-          color: var(--app-text-primary);
-          display: block;
-          margin-bottom: 2px;
+        ion-icon {
+          font-size: 22px;
+          color: #ef4444;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .impediment-text {
+          font-size: 0.82rem;
+          color: #ef4444;
+          line-height: 1.4;
+
+          strong {
+            color: var(--app-text-primary);
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.85rem;
+          }
+        }
+      }
+
+      .impediment-action-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #ef4444;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        transition: background 0.2s;
+
+        ion-icon {
+          font-size: 15px;
+        }
+
+        &:hover {
+          background: #dc2626;
         }
       }
     }
@@ -480,6 +524,24 @@
         --border-radius: 8px;
         font-weight: 700;
         font-size: 0.78rem;
+
+        &.barcode-btn {
+          --color: #0284c7 !important;
+          --border-color: #0284c7 !important;
+          --border-width: 1.5px !important;
+          --background: rgba(2, 132, 199, 0.08) !important;
+          color: #0284c7 !important;
+
+          ion-icon {
+            color: #0284c7 !important;
+          }
+
+          &:hover {
+            --background: rgba(2, 132, 199, 0.18) !important;
+            --border-color: #0369a1 !important;
+            --color: #0369a1 !important;
+          }
+        }
       }
     }
   }

@@ -1,0 +1,90 @@
+<ion-content class="company-docs-content">
+  <div class="company-docs-container">
+    <!-- Header Hero -->
+    <header class="page-header">
+      <div class="header-titles">
+        <div class="badge-row">
+          <span class="company-tag">
+            <ion-icon name="business-outline"></ion-icon>
+            {{ companyName() }}
+          </span>
+          <span class="active-dot"></span>
+        </div>
+        <h1 class="page-title">Cofre de Documentos da Empresa</h1>
+        <p class="page-subtitle">
+          Envie e acesse com total segurança suas notas fiscais, extratos bancários, guias de impostos e recibos contábeis.
+        </p>
+      </div>
+
+      <!-- Filtros de Topo: Competência -->
+      <div class="header-controls">
+        <div class="competence-picker">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="picker-label">Competência:</span>
+          <ion-select
+            [value]="selectedCompetence()"
+            (ionChange)="onCompetenceChange($event.detail.value)"
+            interface="popover"
+            placeholder="Selecione o mês"
+          >
+            @for (c of competences(); track c) {
+              <ion-select-option [value]="c">{{ c }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navegação de Abas por Módulo -->
+    <section class="module-tabs-nav">
+      <ion-segment
+        mode="ios"
+        [value]="activeModule()"
+        (ionChange)="onModuleChange($any($event).detail.value)"
+        class="custom-segment"
+      >
+        @if (canAccessFiscal()) {
+          <ion-segment-button value="FISCAL">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <ion-label>Fiscal & XMLs</ion-label>
+          </ion-segment-button>
+        }
+
+        @if (canAccessAccounting()) {
+          <ion-segment-button value="CONTABIL">
+            <ion-icon name="cash-outline"></ion-icon>
+            <ion-label>Extratos & Contábil</ion-label>
+          </ion-segment-button>
+        }
+
+        @if (canAccessPayroll()) {
+          <ion-segment-button value="DP">
+            <ion-icon name="people-outline"></ion-icon>
+            <ion-label>Holerites & DP</ion-label>
+          </ion-segment-button>
+        }
+
+        @if (canAccessGeneral()) {
+          <ion-segment-button value="GERAL">
+            <ion-icon name="folder-open-outline"></ion-icon>
+            <ion-label>Todos os Arquivos</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+    </section>
+
+    <!-- Componente Reutilizável de Documentos -->
+    <main class="vault-wrapper">
+      <app-document-vault
+        [companyId]="currentCompanyId()"
+        [competence]="selectedCompetence()"
+        [module]="activeModule()"
+        [title]="vaultTitle()"
+        [subtitle]="vaultSubtitle()"
+        [allowUpload]="true"
+        [readOnly]="false"
+      >
+      </app-document-vault>
+    </main>
+  </div>
+</ion-content>

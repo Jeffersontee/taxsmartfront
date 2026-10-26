@@ -32,6 +32,27 @@ export interface IDocumentItem {
   updatedAt: string;
 }
 
+export interface IAuditLogItem {
+  _id: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
+  userRole?: string;
+  companyId?: string;
+  companyCnpj?: string;
+  module: string;
+  action: string;
+  severity: string;
+  description?: string;
+  details?: Record<string, any>;
+  ipAddress?: string;
+  userAgent?: string;
+  endpoint?: string;
+  httpMethod?: string;
+  statusCode?: number;
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -182,5 +203,29 @@ export class DocumentService {
         return throwError(() => error);
       })
     );
+  }
+
+  /**
+   * Registra a auditoria de visualização/leitura do documento em tela
+   */
+  logDocumentView(documentId: string): Observable<ApiResponse<{ documentId: string; viewedAt: string }>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/view`;
+    return this.http.post<ApiResponse<{ documentId: string; viewedAt: string }>>(url, {});
+  }
+
+  /**
+   * Registra a auditoria de download do documento
+   */
+  logDocumentDownload(documentId: string): Observable<ApiResponse<{ documentId: string; downloadedAt: string }>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/download`;
+    return this.http.post<ApiResponse<{ documentId: string; downloadedAt: string }>>(url, {});
+  }
+
+  /**
+   * Obtém o histórico completo de auditoria do documento
+   */
+  getDocumentAuditHistory(documentId: string): Observable<ApiResponse<IAuditLogItem[]>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/audit`;
+    return this.http.get<ApiResponse<IAuditLogItem[]>>(url);
   }
 }

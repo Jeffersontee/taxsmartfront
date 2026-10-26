@@ -216,3 +216,217 @@ ion-menu.admin-sidebar {
   }
 }
 
+/* ==========================================================================
+   GLOBAL ION-SEGMENT & SEGMENT BUTTONS (PILL STYLE & ALTO CONTRASTE)
+   ========================================================================== */
+ion-segment {
+  --background: var(--app-surface-subtle, #f1f5f9) !important;
+  background: var(--app-surface-subtle, #f1f5f9) !important;
+  border: 1px solid var(--app-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 4px;
+
+  ion-segment-button {
+    --color: var(--app-text-secondary, #64748b) !important;
+    --color-checked: #ffffff !important;
+    --indicator-color: var(--app-primary, #ea580c) !important;
+    --indicator-box-shadow: 0 4px 12px rgba(var(--app-primary-rgb, 234, 88, 12), 0.35) !important;
+    font-weight: 700;
+    min-height: 38px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+
+    // Garante que o botão ativo tenha fundo primário sólido e texto branco com alto contraste em todos os modos
+    &.segment-button-checked {
+      --color-checked: #ffffff !important;
+      --color: #ffffff !important;
+      color: #ffffff !important;
+      background: var(--app-primary, #ea580c) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 12px rgba(var(--app-primary-rgb, 234, 88, 12), 0.35) !important;
+
+      ion-label {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+      }
+      ion-icon {
+        color: #ffffff !important;
+      }
+    }
+
+    &::part(indicator-background) {
+      background: var(--app-primary, #ea580c) !important;
+      border-radius: 8px !important;
+      height: 100% !important;
+    }
+
+    &::part(indicator) {
+      border-radius: 8px !important;
+      height: 100% !important;
+    }
+
+    ion-label {
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* ==========================================================================
+   GLOBAL BARCODE / BOLETO BUTTON (ALTO CONTRASTE E VISIBILIDADE)
+   ========================================================================== */
+ion-button.barcode-btn,
+.barcode-btn {
+  --color: #0284c7 !important;
+  --border-color: #0284c7 !important;
+  --border-width: 1.5px !important;
+  --background: rgba(2, 132, 199, 0.08) !important;
+  --background-hover: rgba(2, 132, 199, 0.16) !important;
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+
+  ion-icon {
+    color: #0284c7 !important;
+  }
+
+  &:hover {
+    --background: rgba(2, 132, 199, 0.18) !important;
+    --border-color: #0369a1 !important;
+    --color: #0369a1 !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE SAFE AREA INSETS ARCHITECTURE (DRY - SINGLE SOURCE OF TRUTH)
+   Respeita Barra Superior (Hora, Rede, Bateria, Notch) e Inferior (Botões Virtuais, Gestos)
+   Ativo EXCLUSIVAMENTE em Telas Mobile (<= 768px / Mobile Web / Capacitor Android / iOS)
+   ========================================================================== */
+@media (max-width: 768px) {
+  :root {
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* 1. TOPO: Cabeçalho do Site Público (Home e Subpáginas Públicas) */
+  #main-page ion-header,
+  .top-nav,
+  .custom-toolbar {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    min-height: calc(75px + env(safe-area-inset-top, 0px)) !important;
+    height: auto !important;
+    box-sizing: content-box !important;
+  }
+
+  /* 2. TOPO: Cabeçalhos dos Portais (Admin e Empresa / Cliente) */
+  .admin-top-header,
+  .main-topbar {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    background: var(--app-surface, #0f172a) !important;
+
+    .admin-navbar-toolbar,
+    .topbar-toolbar {
+      --min-height: 56px !important;
+      min-height: 56px !important;
+      height: auto !important;
+      padding-top: 2px !important;
+    }
+  }
+
+  /* 3. TELA DE LOGIN (/login): Espaçamento Superior e Inferior Seguro */
+  .login-page-content {
+    .login-wrapper {
+      padding-top: calc(20px + env(safe-area-inset-top, 0px)) !important;
+      padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+      padding-left: calc(16px + env(safe-area-inset-left, 0px)) !important;
+      padding-right: calc(16px + env(safe-area-inset-right, 0px)) !important;
+      min-height: 100dvh !important;
+      height: 100% !important;
+      align-items: flex-start !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .login-header {
+      margin-top: 4px !important;
+      margin-bottom: 16px !important;
+    }
+
+    .copyright-bar {
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+
+  /* 4. MENUS LATERAIS MOBILE (ion-menu / Gavetas de Navegação) */
+  ion-menu {
+    ion-header,
+    .sidebar-header-toolbar {
+      padding-top: env(safe-area-inset-top, 0px) !important;
+    }
+
+    .sidebar-footer {
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    ion-content {
+      --padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+
+  /* 5. BASE: Containers de Conteúdo das Páginas (Respeito aos Botões Virtuais Android / Barra iOS) */
+  .admin-page-container,
+  .main-content-area,
+  .accounting-container,
+  .payroll-container,
+  .documents-container,
+  .timeline-container,
+  .cliente-dashboard-container,
+  .staff-container,
+  .companies-container,
+  .users-container,
+  .rh-container,
+  .settings-container {
+    padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-left: calc(14px + env(safe-area-inset-left, 0px)) !important;
+    padding-right: calc(14px + env(safe-area-inset-right, 0px)) !important;
+  }
+
+  /* Scroll interno do Ionic garantindo folga na base */
+  ion-content::part(scroll) {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* 6. BASE: Rodapés Fixos Globais (ion-footer) e Botões de Ação na Base */
+  ion-footer {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    padding-left: env(safe-area-inset-left, 0px) !important;
+    padding-right: env(safe-area-inset-right, 0px) !important;
+  }
+
+  /* 7. MODAIS & SHEETS: Proteção de Safe Area */
+  ion-modal {
+    &::part(content) {
+      padding-top: env(safe-area-inset-top, 0px) !important;
+      padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    }
+
+    .modal-actions,
+    .modal-footer {
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+  }
+
+  /* 8. RODAPÉ DO SITE PÚBLICO (Home, Serviços, Contato) */
+  .footer-section,
+  .public-footer {
+    padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-left: calc(16px + env(safe-area-inset-left, 0px)) !important;
+    padding-right: calc(16px + env(safe-area-inset-right, 0px)) !important;
+  }
+}
+
+
+
+

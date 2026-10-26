@@ -104,6 +104,15 @@
         <ion-icon name="document-text-outline"></ion-icon>
         <span>Holerites & Recibos ({{ payslips().length }})</span>
       </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'documents'"
+        (click)="onTabChange('documents')"
+      >
+        <ion-icon name="folder-open-outline"></ion-icon>
+        <span>Documentos & Ponto</span>
+      </button>
     </div>
 
     <!-- Conteúdo da Aba 1: Colaboradores -->
@@ -295,6 +304,21 @@
             </div>
           }
         </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 4: Documentos & Ponto DP -->
+    @if (activeTab() === 'documents') {
+      <section class="tab-panel documents-vault-panel">
+        <app-document-vault
+          [companyId]="selectedCompanyId()"
+          [competence]="selectedCompetence()"
+          module="DP"
+          title="Cofre de Documentos do Departamento Pessoal (DP)"
+          subtitle="Armazene e gerencie holerites assinados, espelhos de ponto, recibos de férias/13º e guias previdenciárias da competência."
+          [allowUpload]="true"
+          [readOnly]="false">
+        </app-document-vault>
       </section>
     }
   </div>

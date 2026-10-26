@@ -13,7 +13,7 @@
     </div>
 
     <div class="hero-actions">
-      <ion-button fill="outline" color="light" class="refresh-btn" (click)="loadClientData()">
+      <ion-button fill="solid" color="primary" class="refresh-btn" (click)="loadClientData()">
         <ion-icon slot="start" name="refresh-outline"></ion-icon>
         Atualizar
       </ion-button>
@@ -158,8 +158,8 @@
                         <ion-icon slot="start" name="copy-outline"></ion-icon>
                         PIX Copia & Cola
                       </ion-button>
-                      <ion-button size="small" fill="outline" color="light" class="barcode-btn" (click)="copyBarcode(task.barcode)">
-                        <ion-icon slot="start" name="download-outline"></ion-icon>
+                      <ion-button size="small" fill="outline" class="barcode-btn" (click)="copyBarcode(task.barcode)">
+                        <ion-icon slot="start" name="barcode-outline"></ion-icon>
                         Boleto / Guia
                       </ion-button>
                     </div>

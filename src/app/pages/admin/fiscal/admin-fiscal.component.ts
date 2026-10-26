@@ -48,6 +48,7 @@ import { Strings } from '../../../enum/strings';
 import { IInvoice, ITaxSimulation, ITaxGuide, TaxGuideStatus } from '../../../models/fiscal.model';
 
 import { RouterLink } from '@angular/router';
+import { DocumentVaultComponent } from '../../../components/document-vault/document-vault.component';
 
 @Component({
   selector: 'app-admin-fiscal',
@@ -74,6 +75,7 @@ import { RouterLink } from '@angular/router';
     IonSelectOption,
     IonItem,
     IonToast,
+    DocumentVaultComponent,
   ],
   templateUrl: './admin-fiscal.component.html',
   styleUrl: './admin-fiscal.component.scss',

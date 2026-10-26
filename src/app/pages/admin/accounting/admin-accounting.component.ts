@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -46,6 +47,8 @@ import {
 } from 'ionicons/icons';
 import { CompanyService } from '../../../services/company/company.service';
 import { ICompany } from '../../../models/company.model';
+
+import { DocumentVaultComponent } from '../../../components/document-vault/document-vault.component';
 
 export interface IChartOfAccount {
   code: string;
@@ -98,17 +101,19 @@ export interface IJournalEntry {
     IonGrid,
     IonRow,
     IonCol,
+    DocumentVaultComponent,
   ],
 })
 export class AdminAccountingComponent implements OnInit {
   private companyService = inject(CompanyService);
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
 
   // Signals
   companies = signal<ICompany[]>([]);
   selectedCompanyId = signal<string>('');
   selectedCompetence = signal<string>('10/2026');
-  activeTab = signal<'entries' | 'chart' | 'trial_balance' | 'dre'>('entries');
+  activeTab = signal<'entries' | 'chart' | 'trial_balance' | 'dre' | 'documents'>('entries');
   isModalOpen = signal<boolean>(false);
   isLoading = signal<boolean>(false);
 
@@ -198,6 +203,18 @@ export class AdminAccountingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      if (params['companyId']) {
+        this.selectedCompanyId.set(params['companyId']);
+        this.activeTab.set('documents');
+      }
+      if (params['competence']) {
+        this.selectedCompetence.set(params['competence']);
+      }
+      if (params['tab']) {
+        this.activeTab.set(params['tab']);
+      }
+    });
     this.loadCompanies();
   }
 

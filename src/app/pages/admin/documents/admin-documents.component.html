@@ -70,8 +70,8 @@
               (ionChange)="selectedModule.set($any($event).detail.value); onFilterChange()"
               class="custom-select"
             >
-              <ion-select-option value="">Todos os Módulos</ion-select-option>
-              @for (m of modulesList; track m.value) {
+              <ion-select-option value="">Todos os Módulos Autorizados</ion-select-option>
+              @for (m of accessibleModules(); track m.value) {
                 <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
               }
             </ion-select>
@@ -130,15 +130,32 @@
 
         @if (selectedFile()) {
           <div class="upload-options-row">
-            <div class="opt-col">
-              <label>Destino / Módulo:</label>
+            <div class="opt-col company-col">
+              <label>Empresa Destinatária: *</label>
+              <ion-select
+                interface="popover"
+                [value]="uploadCompanyId() || selectedCompanyId()"
+                (ionChange)="uploadCompanyId.set($any($event).detail.value)"
+                class="mini-select"
+                placeholder="Selecione a empresa..."
+              >
+                @for (c of companies(); track c._id) {
+                  <ion-select-option [value]="c._id">
+                    {{ c.tradeName || c.corporateName }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </div>
+
+            <div class="opt-col module-col">
+              <label>Destino / Módulo: *</label>
               <ion-select
                 interface="popover"
                 [value]="uploadModule()"
                 (ionChange)="uploadModule.set($any($event).detail.value)"
                 class="mini-select"
               >
-                @for (m of modulesList; track m.value) {
+                @for (m of accessibleModules(); track m.value) {
                   <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
                 }
               </ion-select>
@@ -149,7 +166,7 @@
                 color="success"
                 expand="block"
                 (click)="submitUpload()"
-                [disabled]="isUploading() || isCurrentCompetenceClosed()"
+                [disabled]="isUploading() || isCurrentCompetenceClosed() || !(uploadCompanyId() || selectedCompanyId())"
                 class="btn-send-now"
               >
                 <ion-spinner *ngIf="isUploading()" name="crescent"></ion-spinner>

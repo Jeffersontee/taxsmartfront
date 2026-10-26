@@ -63,7 +63,7 @@
         </ion-select>
       </div>
 
-      <ion-button fill="outline" color="light" class="refresh-action-btn" (click)="fetchData()">
+      <ion-button fill="solid" color="primary" class="refresh-action-btn" (click)="fetchData()">
         <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
       </ion-button>
     </div>
@@ -113,7 +113,7 @@
     <ion-segment
       [value]="taskService.selectedStatusFilter()"
       (ionChange)="onFilterChange($event)"
-      mode="md"
+      mode="ios"
       class="custom-segment"
     >
       <ion-segment-button value="ALL">
@@ -180,11 +180,17 @@
 
           <!-- Seção de Impedimento (se houver) -->
           @if (task.status === TaskStatus.IMPEDIMENTO && task.impedimentReason) {
-            <div class="impediment-alert-box">
-              <ion-icon name="alert-circle-outline"></ion-icon>
-              <div class="impediment-text">
-                <strong>Motivo do Impedimento:</strong>
-                <span>{{ task.impedimentReason }}</span>
+            <div class="impediment-alert-box clickable" (click)="resolveImpediment(task)" title="Clique para anexar o documento pendente">
+              <div class="impediment-info">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <div class="impediment-text">
+                  <strong>Motivo do Impedimento:</strong>
+                  <span>{{ task.impedimentReason }}</span>
+                </div>
+              </div>
+              <div class="impediment-action-tag">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+                <span>Anexar Arquivo</span>
               </div>
             </div>
           }
@@ -209,6 +215,34 @@
 
           <!-- Ações Disponíveis -->
           <div class="card-actions-row">
+            <!-- Ação de Resolver Impedimento -->
+            @if (task.status === TaskStatus.IMPEDIMENTO) {
+              <ion-button
+                size="small"
+                fill="solid"
+                color="danger"
+                class="action-btn"
+                (click)="resolveImpediment(task)"
+              >
+                <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+                Resolver Impedimento / Anexar Arquivo
+              </ion-button>
+            }
+
+            <!-- Ação de Enviar / Acessar Pasta se Aberta -->
+            @if (task.status === TaskStatus.ABERTA) {
+              <ion-button
+                size="small"
+                fill="outline"
+                color="medium"
+                class="action-btn"
+                (click)="resolveImpediment(task)"
+              >
+                <ion-icon slot="start" name="folder-open-outline"></ion-icon>
+                Acessar Pasta / Enviar Arquivo
+              </ion-button>
+            }
+
             <!-- Ações para Contador -->
             @if (isAccountant()) {
               <ion-button
@@ -239,11 +273,10 @@
               <ion-button
                 size="small"
                 fill="outline"
-                color="light"
-                class="action-btn"
+                class="action-btn barcode-btn"
                 (click)="copyBarcode(task.barcode)"
               >
-                <ion-icon slot="start" name="download-outline"></ion-icon>
+                <ion-icon slot="start" name="barcode-outline"></ion-icon>
                 Código Boleto
               </ion-button>
             }

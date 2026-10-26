@@ -1,0 +1,187 @@
+<div class="modal-backdrop" [class.is-visible]="isOpen()" (click)="onClose()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <header class="modal-header">
+      <div class="header-info">
+        <div class="header-icon-box">
+          @if (isImage()) {
+            <ion-icon name="image-outline"></ion-icon>
+          } @else if (isPdf()) {
+            <ion-icon name="document-text-outline"></ion-icon>
+          } @else {
+            <ion-icon name="code-slash-outline"></ion-icon>
+          }
+        </div>
+        <div class="header-text">
+          <h3 class="document-name" [title]="document().originalFilename">
+            {{ document().originalFilename }}
+          </h3>
+          <div class="document-meta-chips">
+            <span class="meta-pill">Comp: {{ document().competence }}</span>
+            <span class="meta-pill">Módulo: {{ document().module }}</span>
+            <span class="meta-pill">{{ formattedSize() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="action-btn download-btn" (click)="onDownload()" title="Baixar Arquivo Original">
+          <ion-icon name="download-outline"></ion-icon>
+          <span>Download</span>
+        </button>
+        <button type="button" class="action-btn close-btn" (click)="onClose()" title="Fechar Visualização">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Painel de Visualização do Conteúdo -->
+      <section class="viewer-pane">
+        @if (isImage()) {
+          <div class="image-viewer-container">
+            <img [src]="document().fileUrl" [alt]="document().originalFilename" class="preview-image" />
+          </div>
+        } @else if (isPdf()) {
+          <div class="pdf-viewer-container">
+            <iframe [src]="document().fileUrl" class="pdf-frame" title="Visualizador de PDF"></iframe>
+          </div>
+        } @else {
+          <div class="generic-file-container">
+            <div class="file-icon-large">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <h4 class="generic-file-title">{{ document().originalFilename }}</h4>
+            <p class="generic-file-desc">
+              Este tipo de arquivo ({{ document().documentType }}) pode ser baixado com segurança para auditoria ou importação em softwares contábeis.
+            </p>
+            <button type="button" class="btn-primary-download" (click)="onDownload()">
+              <ion-icon name="download-outline"></ion-icon>
+              <span>Baixar Arquivo Completo</span>
+            </button>
+          </div>
+        }
+      </section>
+
+      <!-- Painel Lateral de Trilha e Auditoria -->
+      <aside class="audit-sidebar">
+        <h4 class="sidebar-section-title">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Trilha & Auditoria</span>
+        </h4>
+
+        <!-- Status do Processo -->
+        <div class="audit-card status-card">
+          <span class="audit-label">Estágio Atual:</span>
+          <ion-badge [color]="stageBadgeColor()" class="stage-badge">
+            {{ stageLabel() }}
+          </ion-badge>
+        </div>
+
+        <!-- Alerta de Impedimento se houver -->
+        @if (document().stage === 'IMPEDIMENTO' && document().impedimentReason) {
+          <div class="impediment-alert-box">
+            <div class="alert-title-row">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <strong>Motivo da Pendência:</strong>
+            </div>
+            <p class="alert-desc">{{ document().impedimentReason }}</p>
+          </div>
+        }
+
+        <!-- Detalhes do Envio -->
+        <div class="audit-card">
+          <span class="audit-label">Enviado Por:</span>
+          <div class="audit-user-row">
+            <ion-icon name="person-circle-outline"></ion-icon>
+            <div class="user-info">
+              <strong>{{ document().uploadedBy.userName }}</strong>
+              <span class="user-role">{{ document().uploadedBy.userRole }}</span>
+              <span class="user-email">{{ document().uploadedBy.userEmail }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data e Hora -->
+        <div class="audit-card">
+          <span class="audit-label">Data e Hora do Registro:</span>
+          <div class="audit-time-row">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ document().createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+          </div>
+        </div>
+
+        <!-- Integridade e Hash SHA-256 -->
+        @if (document().hashSha256) {
+          <div class="audit-card hash-card">
+            <span class="audit-label">Integridade SHA-256:</span>
+            <code class="hash-code" [title]="document().hashSha256">
+              {{ document().hashSha256 }}
+            </code>
+          </div>
+        }
+
+        <!-- Informação de Competência Fechada -->
+        @if (document().isCompetenceClosed) {
+          <div class="competence-closed-pill">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Competência Fechada e Bloqueada</span>
+          </div>
+        }
+
+        <!-- Trilha de Eventos Reais do AuditLog -->
+        <div class="audit-history-box">
+          <div class="history-title-row">
+            <span class="audit-label">Trilha de Eventos:</span>
+            @if (isLoadingAudit()) {
+              <ion-spinner name="crescent" class="audit-spinner"></ion-spinner>
+            }
+          </div>
+
+          <div class="audit-events-list">
+            @for (log of auditLogs(); track log._id) {
+              <div class="event-item" [class]="log.action.toLowerCase()">
+                <div class="event-header-row">
+                  <span class="event-action-tag">{{ getActionLabel(log.action) }}</span>
+                  <span class="event-time">{{ log.createdAt | date: 'dd/MM HH:mm' }}</span>
+                </div>
+                <p class="event-description">{{ log.description || log.action }}</p>
+                <div class="event-user-tag">
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                  <span>{{ log.userName || 'Sistema' }} ({{ log.userRole || 'STAFF' }})</span>
+                </div>
+              </div>
+            } @empty {
+              @if (!isLoadingAudit()) {
+                <div class="audit-empty">
+                  <span>Nenhum outro evento registrado.</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Modal Footer -->
+    <footer class="modal-footer">
+      <div class="footer-left">
+        <span class="footer-status-text">
+          TaxSmart Storage Vault • ID: <code>{{ document()._id }}</code>
+        </span>
+      </div>
+      <div class="footer-right">
+        <button type="button" class="btn-secondary" (click)="onClose()">
+          Fechar
+        </button>
+        <button type="button" class="btn-primary" (click)="onDownload()">
+          <ion-icon name="download-outline"></ion-icon>
+          <span>Download</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+</div>

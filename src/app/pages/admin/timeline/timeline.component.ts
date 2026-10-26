@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -47,9 +47,12 @@ import {
   refreshOutline,
   copyOutline,
   downloadOutline,
+  barcodeOutline,
   flashOutline,
   layersOutline,
   shieldCheckmarkOutline,
+  cloudUploadOutline,
+  folderOpenOutline,
 } from 'ionicons/icons';
 import { TaskService } from '../../../services/task/task.service';
 import { CompanyService } from '../../../services/company/company.service';
@@ -96,6 +99,7 @@ export class TimelineComponent implements OnInit {
   authService = inject(AuthService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  private router = inject(Router);
 
   readonly TaskStatus = TaskStatus;
   readonly TaskCategory = TaskCategory;
@@ -134,9 +138,12 @@ export class TimelineComponent implements OnInit {
       refreshOutline,
       copyOutline,
       downloadOutline,
+      barcodeOutline,
       flashOutline,
       layersOutline,
       shieldCheckmarkOutline,
+      cloudUploadOutline,
+      folderOpenOutline,
     });
   }
 
@@ -189,6 +196,45 @@ export class TimelineComponent implements OnInit {
   private showToast(message: string): void {
     this.toastMessage.set(message);
     this.isToastOpen.set(true);
+  }
+
+  resolveImpediment(task: ITask): void {
+    const rawCat = task.category;
+    let targetModule = 'GERAL';
+    if (rawCat === TaskCategory.CONTABIL) targetModule = 'CONTABIL';
+    else if (rawCat === TaskCategory.FISCAL) targetModule = 'FISCAL';
+    else if (rawCat === TaskCategory.FOLHA) targetModule = 'DP';
+
+    const companyIdStr = typeof task.companyId === 'object' ? task.companyId._id : task.companyId;
+
+    if (this.isAccountant()) {
+      if (rawCat === TaskCategory.CONTABIL) {
+        this.router.navigate(['/admin/accounting'], {
+          queryParams: { companyId: companyIdStr, competence: task.competence },
+        });
+        return;
+      }
+      if (rawCat === TaskCategory.FISCAL) {
+        this.router.navigate(['/admin/fiscal'], {
+          queryParams: { companyId: companyIdStr, competence: task.competence },
+        });
+        return;
+      }
+      if (rawCat === TaskCategory.FOLHA) {
+        this.router.navigate(['/admin/folha'], {
+          queryParams: { companyId: companyIdStr, competence: task.competence },
+        });
+        return;
+      }
+    }
+
+    // Portal da Empresa: navega diretamente para o cofre com módulo e competência pré-filtrados
+    this.router.navigate(['/company/documents'], {
+      queryParams: {
+        module: targetModule,
+        competence: task.competence,
+      },
+    });
   }
 
   async openStatusAction(task: ITask): Promise<void> {

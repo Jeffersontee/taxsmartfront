@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -39,6 +39,7 @@ import {
 import { DocumentService, IDocumentItem } from '../../../services/document/document.service';
 import { CompanyService } from '../../../services/company/company.service';
 import { AuthService } from '../../../services/auth/auth.service';
+import { UserRole, SystemModule } from '../../../models/user.model';
 import { environment } from '../../../../environments/environment';
 import { Strings } from '../../../enum/strings';
 
@@ -87,6 +88,7 @@ export class AdminDocumentsComponent implements OnInit {
   searchTerm = signal<string>('');
 
   // Upload
+  uploadCompanyId = signal<string>('');
   selectedFile = signal<File | null>(null);
   uploadModule = signal<string>('FISCAL');
   uploadDocType = signal<string>('NFE_XML');
@@ -105,6 +107,32 @@ export class AdminDocumentsComponent implements OnInit {
     { value: 'DP', label: 'DP (Ponto, Encargos, Holerites)' },
     { value: 'RH', label: 'RH (Admissões, Férias, Rescisões, ASO)' },
   ];
+
+  // Módulos acessíveis para o usuário logado (Staff / Super Admin)
+  accessibleModules = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return this.modulesList;
+    if (this.authService.isSuperAdmin() || user.role === UserRole.ACCOUNTANT) {
+      return this.modulesList;
+    }
+    if (user.role === UserRole.FISCAL_ANALYST) {
+      return this.modulesList.filter((m) => m.value === 'FISCAL' || m.value === 'CONTABIL');
+    }
+    if (user.role === UserRole.PAYROLL_ANALYST) {
+      return this.modulesList.filter((m) => m.value === 'DP' || m.value === 'RH');
+    }
+    if (user.allowedModules && user.allowedModules.length > 0) {
+      const allowed = user.allowedModules as string[];
+      return this.modulesList.filter((m) => {
+        if (m.value === 'FISCAL' && allowed.includes(SystemModule.FISCAL)) return true;
+        if (m.value === 'CONTABIL' && allowed.includes(SystemModule.ACCOUNTING)) return true;
+        if (m.value === 'DP' && allowed.includes(SystemModule.PAYROLL)) return true;
+        if (m.value === 'RH' && (allowed.includes(SystemModule.PAYROLL) || (allowed as any).includes('RH'))) return true;
+        return false;
+      });
+    }
+    return this.modulesList;
+  });
 
   stagesList = [
     { value: 'ENVIADO', label: 'Enviado (Aguardando Análise)', color: 'warning' },
@@ -154,11 +182,24 @@ export class AdminDocumentsComponent implements OnInit {
       documentOutline,
       timeOutline,
     });
+
+    // Garante que o módulo de upload pertença aos módulos autorizados
+    effect(() => {
+      const available = this.accessibleModules();
+      if (available.length > 0 && !available.some((m) => m.value === this.uploadModule())) {
+        untracked(() => {
+          this.uploadModule.set(available[0].value);
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
     this.companyService.loadCompanies().subscribe({
       next: () => {
+        if (this.selectedCompanyId()) {
+          this.uploadCompanyId.set(this.selectedCompanyId());
+        }
         this.loadDocs();
       },
     });
@@ -176,6 +217,9 @@ export class AdminDocumentsComponent implements OnInit {
   }
 
   onFilterChange(): void {
+    if (this.selectedCompanyId()) {
+      this.uploadCompanyId.set(this.selectedCompanyId());
+    }
     this.loadDocs();
   }
 
@@ -205,6 +249,9 @@ export class AdminDocumentsComponent implements OnInit {
     this.isDragging.set(false);
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       this.selectedFile.set(event.dataTransfer.files[0]);
+      if (this.selectedCompanyId() && !this.uploadCompanyId()) {
+        this.uploadCompanyId.set(this.selectedCompanyId());
+      }
     }
   }
 
@@ -212,6 +259,9 @@ export class AdminDocumentsComponent implements OnInit {
     const files = event.target.files;
     if (files && files.length > 0) {
       this.selectedFile.set(files[0]);
+      if (this.selectedCompanyId() && !this.uploadCompanyId()) {
+        this.uploadCompanyId.set(this.selectedCompanyId());
+      }
     }
   }
 
@@ -219,14 +269,17 @@ export class AdminDocumentsComponent implements OnInit {
     const file = this.selectedFile();
     if (!file) return;
 
-    let targetCompId = this.selectedCompanyId();
+    const targetCompId = this.uploadCompanyId() || this.selectedCompanyId();
     if (!targetCompId) {
-      const comps = this.companies();
-      if (comps.length > 0) {
-        targetCompId = comps[0]._id;
-      } else {
-        return;
-      }
+      this.toastCtrl
+        .create({
+          message: 'Por favor, selecione para qual Empresa o arquivo será direcionado.',
+          duration: 3500,
+          color: 'warning',
+          position: 'top',
+        })
+        .then((t) => t.present());
+      return;
     }
 
     const formData = new FormData();
@@ -249,8 +302,9 @@ export class AdminDocumentsComponent implements OnInit {
         toast.present();
       },
       error: async (err) => {
+        const msg = err?.error?.error?.message || err?.error?.message || 'Erro ao enviar documento.';
         const toast = await this.toastCtrl.create({
-          message: err?.error?.error?.message || 'Erro ao enviar documento.',
+          message: msg,
           duration: 4000,
           color: 'danger',
           position: 'top',

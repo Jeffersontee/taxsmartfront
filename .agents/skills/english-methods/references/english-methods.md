@@ -10,11 +10,17 @@ Obrigatoriamente **todos os métodos, funções, variáveis e propriedades** rec
   - ❌ `processarPagamento()`
   - ✅ `processPayment()`
 - **Classes e Componentes:** PascalCase em inglês.
-  - ❌ `class ModalCarrinho`
-  - ✅ `class CartModal`
-- **Variáveis de Estado (Sinal/Booleano):** Prefixar com verbos de estado em inglês (`is`, `has`, `should`).
+  - ❌ `class ModalCarrinho` / `class ClienteLayoutComponent`
+  - ✅ `class CartModalComponent` / `class CompanyLayoutComponent`
+- **Rotas e Links (`routerLink`):** kebab-case em inglês.
+  - ❌ `/empresa/usuarios` ou `/admin/documentos`
+  - ✅ `/company/users` ou `/admin/documents`
+- **Variáveis de Estado (Signal / Booleano):** Prefixar com verbos de estado em inglês (`is`, `has`, `should`).
   - ❌ `public foiEnviado = signal(false);`
   - ✅ `public isSent = signal(false);`
+- **Entradas e Saídas (Inputs/Outputs):** camelCase em inglês.
+  - ❌ `empresaId = input<string>()`
+  - ✅ `companyId = input<string>()`
 
 ## 3. Motivação e Qualidade de Código
 Misturar inglês com português ("Spanglish" ou "Portinglês") no código-fonte gera confusão mental, dificulta buscas e torna o código legado difícil de manter. Uma vez que o Angular, Node, Express, Mongoose e todas as APIs do ecossistema já são em inglês, a adesão ao idioma universal mantém a base de código previsível e padronizada.

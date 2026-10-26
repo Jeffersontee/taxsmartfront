@@ -186,6 +186,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'documents',
+        loadComponent: () =>
+          import('./pages/client/documents/company-documents.component').then(
+            (m) => m.CompanyDocumentsComponent
+          ),
+      },
+      {
         path: 'users',
         canActivate: [companyAdminGuard],
         loadComponent: () =>

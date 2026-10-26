@@ -43,10 +43,12 @@ import {
   closeOutline,
   timeOutline,
   walletOutline,
+  folderOpenOutline,
 } from 'ionicons/icons';
 import { PayrollService } from '../../../services/payroll/payroll.service';
 import { CompanyService } from '../../../services/company/company.service';
 import { Employee, EmployeeType, EmployeeStatus, Payroll, Payslip } from '../../../models/payroll.model';
+import { DocumentVaultComponent } from '../../../components/document-vault/document-vault.component';
 
 @Component({
   selector: 'app-admin-payroll',
@@ -81,6 +83,7 @@ import { Employee, EmployeeType, EmployeeStatus, Payroll, Payslip } from '../../
     IonGrid,
     IonRow,
     IonCol,
+    DocumentVaultComponent,
   ],
 })
 export class AdminPayrollComponent implements OnInit {
@@ -89,7 +92,7 @@ export class AdminPayrollComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   // Signals do Componente
-  activeTab = signal<'employees' | 'calculate' | 'payslips'>('employees');
+  activeTab = signal<'employees' | 'calculate' | 'payslips' | 'documents'>('employees');
   selectedCompanyId = signal<string>('');
   selectedCompetence = signal<string>('10/2026');
   searchTerm = signal<string>('');
@@ -152,6 +155,7 @@ export class AdminPayrollComponent implements OnInit {
       closeOutline,
       timeOutline,
       walletOutline,
+      folderOpenOutline,
     });
     this.initForm();
   }
