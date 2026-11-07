@@ -1,16 +1,22 @@
 :host {
   display: block;
-  height: 100%;
+  min-height: 100%;
+  background: #f8fafc;
 }
 
-.page-header {
-  background: var(--app-surface, #ffffff);
-  border-bottom: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+.documents-page-wrapper {
+  padding: 1.25rem 1.5rem;
+  max-width: 1680px;
+  margin: 0 auto;
+}
 
-  .header-toolbar {
-    --background: transparent;
-    padding: 16px 24px 10px;
-  }
+.documents-hero-bar {
+  background: var(--app-surface, #ffffff);
+  border: 1px solid var(--app-border, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
 
   .header-content {
     display: flex;
@@ -21,14 +27,21 @@
   }
 
   .title-group {
+    flex: 1;
+    min-width: 260px;
+
     .category-badge {
       font-size: 0.6875rem;
       font-weight: 800;
       color: #ea580c;
+      background: #fff7ed;
+      border: 1px solid #ffedd5;
+      padding: 3px 10px;
+      border-radius: 20px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       display: inline-block;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .page-title {
@@ -49,12 +62,15 @@
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
 
     .action-btn {
-      --border-radius: 8px;
+      --border-radius: 9px;
       font-weight: 700;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
+      height: 40px;
+      margin: 0;
     }
 
     .loose-blocked-pill {
@@ -64,7 +80,7 @@
       padding: 8px 14px;
       background: #fef2f2;
       border: 1px solid #fecaca;
-      border-radius: 8px;
+      border-radius: 9px;
       color: #b91c1c;
       font-size: 0.8rem;
       font-weight: 700;
@@ -78,14 +94,10 @@
   }
 }
 
-.main-content {
-  --background: #f8fafc;
-}
-
 .content-container {
-  max-width: 1440px;
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
 }
 
 // ==========================================
@@ -741,5 +753,60 @@
       justify-content: flex-end;
       gap: 10px;
     }
+  }
+}
+
+// ==========================================
+// Otimizações Responsivas Mobile (<= 768px)
+// ==========================================
+@media (max-width: 768px) {
+  .documents-page-wrapper {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .documents-hero-bar {
+    padding: 1rem 0.75rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+
+    .header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+
+      .title-group {
+        min-width: 100%;
+
+        .page-title {
+          font-size: 1.25rem;
+        }
+
+        .page-subtitle {
+          font-size: 0.8rem;
+        }
+      }
+
+      .header-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .action-btn {
+          width: 100%;
+          --width: 100%;
+          justify-content: center;
+        }
+
+        .loose-blocked-pill {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .content-container {
+    padding: 0;
   }
 }
