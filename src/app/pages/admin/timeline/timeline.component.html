@@ -451,13 +451,10 @@
                   <ion-icon name="information-circle-outline" class="info-help-icon" title="Contatos que receberão cópias de notificações desta tarefa"></ion-icon>
                 </div>
                 <div class="strip-right-controls">
-                  @if (!task.additionalEmails || task.additionalEmails.length === 0) {
-                    <span class="strip-empty-text">Nenhum e-mail adicional cadastrado</span>
-                  } @else {
-                    <span class="strip-counter-plain">{{ task.additionalEmails.length }} e-mails</span>
-                  }
+                  <span class="strip-counter-plain">{{ (task.additionalEmails || []).length }} e-mails</span>
                   <button type="button" class="btn-orange-action" (click)="$event.stopPropagation(); promptAddAdditionalEmail()">
-                    Cadastre agora
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Cadastrar</span>
                   </button>
                 </div>
               </div>
@@ -471,7 +468,7 @@
                         <span class="email-address">{{ em }}</span>
                       </div>
                     } @empty {
-                      <p class="empty-section-hint">Nenhum e-mail adicional cadastrado. Clique no botão "Cadastre agora" para adicionar.</p>
+                      <p class="empty-section-hint">Nenhum e-mail adicional cadastrado. Clique no botão "Cadastrar" para adicionar.</p>
                     }
                   </div>
                 </div>
@@ -492,7 +489,7 @@
                     <span>Recobrar</span>
                   </button>
                   <span class="strip-counter-plain">
-                    {{ (task.requiredDocuments || []).length }} documentos
+                    {{ (task.requiredDocuments || []).length }} docs
                   </span>
                 </div>
               </div>
