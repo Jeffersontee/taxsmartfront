@@ -128,12 +128,13 @@ export class AdminDocumentsComponent implements OnInit {
   competencesList = ['10/2026', '09/2026', '08/2026', '07/2026', '06/2026'];
 
   departmentsList = [
-    { value: '', label: 'Departamento' },
+    { value: '', label: 'Todos os Departamentos' },
     { value: 'FISCAL', label: 'Fiscal' },
     { value: 'CONTABIL', label: 'Contábil' },
-    { value: 'FOLHA', label: 'Folha / DP' },
-    { value: 'LEGALIZACAO', label: 'Legalização' },
+    { value: 'DP', label: 'Folha / DP' },
     { value: 'RH', label: 'Recursos Humanos' },
+    { value: 'LEGALIZACAO', label: 'Legalização' },
+    { value: 'GERAL', label: 'Geral' },
   ];
 
   modulesList = [
@@ -144,7 +145,7 @@ export class AdminDocumentsComponent implements OnInit {
   ];
 
   documentTypesList = [
-    { value: '', label: 'Tipo de documento' },
+    { value: '', label: 'Todos os Tipos' },
     { value: 'NFTS-e RELATORIO NOTA FISCAL DE SERVICOS ELETRONICOS DE SP', label: 'NFTS-e RELATORIO NOTA FISCAL DE SERVICOS ELETRONICOS DE SP' },
     { value: 'Relatório Unecont', label: 'Relatório Unecont' },
     { value: 'Recibo de Folha Adiantamento - TOTVS', label: 'Recibo de Folha Adiantamento - TOTVS' },
@@ -200,7 +201,9 @@ export class AdminDocumentsComponent implements OnInit {
     const docTypeFilter = this.selectedDocType();
     const deptFilter = this.selectedDepartment();
 
-    if (taskFilter) {
+    if (taskFilter === 'AVULSO') {
+      list = list.filter((d) => !d.taskId || d.attachedTo === 'Avulso');
+    } else if (taskFilter) {
       list = list.filter((d) => {
         const docTaskId = typeof d.taskId === 'object' && d.taskId !== null ? (d.taskId as any)._id : d.taskId;
         return String(docTaskId) === String(taskFilter);
@@ -212,7 +215,13 @@ export class AdminDocumentsComponent implements OnInit {
     }
 
     if (deptFilter) {
-      list = list.filter((d) => (d.module || '').toUpperCase() === deptFilter.toUpperCase());
+      list = list.filter((d) => {
+        const mod = (d.module || '').toUpperCase();
+        if (deptFilter === 'DP' || deptFilter === 'FOLHA') {
+          return mod === 'DP' || mod === 'FOLHA';
+        }
+        return mod === deptFilter.toUpperCase();
+      });
     }
 
     if (term) {
@@ -222,11 +231,19 @@ export class AdminDocumentsComponent implements OnInit {
           (d.documentType || '').toLowerCase().includes(term) ||
           (d.taskTitle || '').toLowerCase().includes(term) ||
           (d.companyName || '').toLowerCase().includes(term) ||
-          (d.uploadedBy?.userName || '').toLowerCase().includes(term)
+          (d.uploadedBy?.userName || '').toLowerCase().includes(term) ||
+          (d.module || '').toLowerCase().includes(term)
       );
     }
 
     return list;
+  });
+
+  canShowUploadButton = computed(() => {
+    // Super Admin e Staff contábil sempre têm acesso ao botão de upload na esteira
+    if (!this.authService.isCompany()) return true;
+    // Para Empresa (Cliente): depende do envio avulso estar habilitado para ela
+    return this.allowLooseDocumentUpload();
   });
 
   isAllSelected = computed(() => {
@@ -292,7 +309,6 @@ export class AdminDocumentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadPolicySettings();
     this.companyService.loadCompanies().subscribe({
       next: (res) => {
         if (!this.selectedCompanyId() && res?.data && res.data.length === 1) {
@@ -301,17 +317,25 @@ export class AdminDocumentsComponent implements OnInit {
         } else if (this.selectedCompanyId()) {
           this.uploadCompanyId.set(this.selectedCompanyId());
         }
+        this.loadPolicySettings();
         this.loadTasksForCompany();
+        this.loadDocs();
+      },
+      error: () => {
+        this.loadPolicySettings();
         this.loadDocs();
       },
     });
   }
 
   loadPolicySettings(): void {
-    const comp = this.companyService.selectedCompany();
-    if (comp && comp.allowLooseDocumentUpload !== undefined) {
-      this.allowLooseDocumentUpload.set(comp.allowLooseDocumentUpload);
-      if (this.authService.isCompany() && !comp.allowLooseDocumentUpload) {
+    const cId = this.selectedCompanyId();
+    const companies = this.companies();
+    const targetComp = companies.find((c) => String(c._id) === String(cId)) || companies[0] || this.companyService.selectedCompany();
+
+    if (targetComp && targetComp.allowLooseDocumentUpload !== undefined) {
+      this.allowLooseDocumentUpload.set(targetComp.allowLooseDocumentUpload);
+      if (this.authService.isCompany() && !targetComp.allowLooseDocumentUpload) {
         this.uploadAttachedTo.set('Tarefa');
       }
       return;
@@ -342,6 +366,7 @@ export class AdminDocumentsComponent implements OnInit {
   }
 
   loadDocs(): void {
+    const isLoose = this.selectedTaskId() === 'AVULSO';
     this.documentService
       .loadDocuments({
         companyId: this.selectedCompanyId() || undefined,
@@ -349,7 +374,8 @@ export class AdminDocumentsComponent implements OnInit {
         module: this.selectedDepartment() || undefined,
         stage: this.selectedStage() || undefined,
         documentType: this.selectedDocType() || undefined,
-        taskId: this.selectedTaskId() || undefined,
+        taskId: isLoose ? undefined : (this.selectedTaskId() || undefined),
+        attachedTo: isLoose ? 'Avulso' : undefined,
         startDate: this.startDate() || undefined,
         endDate: this.endDate() || undefined,
       })
@@ -361,6 +387,7 @@ export class AdminDocumentsComponent implements OnInit {
     this.selectedTaskId.set('');
     this.uploadCompanyId.set(cId);
     this.selectedDocIds.set(new Set<string>());
+    this.loadPolicySettings();
     this.loadTasksForCompany();
     this.loadDocs();
   }
@@ -370,6 +397,7 @@ export class AdminDocumentsComponent implements OnInit {
     this.selectedTaskId.set('');
     this.uploadCompanyId.set('');
     this.selectedDocIds.set(new Set<string>());
+    this.loadPolicySettings();
     this.loadTasksForCompany();
     this.loadDocs();
   }

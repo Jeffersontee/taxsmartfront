@@ -8,25 +8,34 @@
       </div>
 
       <div class="header-actions">
-        <ion-button
-          fill="solid"
-          color="primary"
-          class="action-btn upload-toggle-btn"
-          (click)="isUploadCardOpen.set(!isUploadCardOpen())"
-        >
-          <ion-icon slot="start" [name]="isUploadCardOpen() ? 'close-outline' : 'cloud-upload-outline'"></ion-icon>
-          {{ isUploadCardOpen() ? 'Fechar Upload' : '+ Enviar Documento' }}
-        </ion-button>
+        @if (canShowUploadButton()) {
+          <ion-button
+            fill="solid"
+            color="primary"
+            class="action-btn upload-toggle-btn"
+            (click)="isUploadCardOpen.set(!isUploadCardOpen())"
+          >
+            <ion-icon slot="start" [name]="isUploadCardOpen() ? 'close-outline' : 'cloud-upload-outline'"></ion-icon>
+            {{ isUploadCardOpen() ? 'Fechar Upload' : '+ Enviar Documento' }}
+          </ion-button>
+        } @else {
+          <div class="loose-blocked-pill" title="Envio avulso desativado: arquivos devem ser anexados diretamente nas Tarefas da Linha do Tempo">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <span>Envio Avulso Bloqueado</span>
+          </div>
+        }
 
-        <ion-button
-          color="dark"
-          class="action-btn"
-          (click)="closeCompetence()"
-          [disabled]="isCurrentCompetenceClosed() || !selectedCompanyId()"
-        >
-          <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-          {{ isCurrentCompetenceClosed() ? 'Competência Encerrada' : 'Fechar Competência' }}
-        </ion-button>
+        @if (!authService.isCompany()) {
+          <ion-button
+            color="dark"
+            class="action-btn"
+            (click)="closeCompetence()"
+            [disabled]="isCurrentCompetenceClosed() || !selectedCompanyId()"
+          >
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+            {{ isCurrentCompetenceClosed() ? 'Competência Encerrada' : 'Fechar Competência' }}
+          </ion-button>
+        }
       </div>
     </div>
   </ion-toolbar>
@@ -214,16 +223,17 @@
           }
         </div>
 
-        <!-- 2. Filtro de Tarefa -->
+        <!-- 2. Filtro de Tarefa / Avulso -->
         <div class="filter-item task-filter-item">
           <ion-select
             interface="popover"
             [value]="selectedTaskId()"
             (ionChange)="selectedTaskId.set($any($event).detail.value); onFilterChange()"
             class="gestta-select"
-            placeholder="Tarefa"
+            placeholder="Tarefa / Vínculo"
           >
             <ion-select-option value="">Todas as Tarefas</ion-select-option>
+            <ion-select-option value="AVULSO">Documentos Avulsos (Sem Tarefa)</ion-select-option>
             @for (t of availableTasks(); track t._id) {
               <ion-select-option [value]="t._id">{{ t.title }}</ion-select-option>
             }

@@ -56,6 +56,25 @@
       font-weight: 700;
       font-size: 0.875rem;
     }
+
+    .loose-blocked-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      color: #b91c1c;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+
+      ion-icon {
+        font-size: 1.05rem;
+        color: #dc2626;
+      }
+    }
   }
 }
 
