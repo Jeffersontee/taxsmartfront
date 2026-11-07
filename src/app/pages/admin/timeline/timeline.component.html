@@ -141,11 +141,11 @@
             <strong class="mini-val text-success">{{ taskService.summary()?.concluido || taskService.summary()?.concluidas || 0 }}</strong>
           </div>
           <div class="kpi-mini-item is-primary">
-            <span class="mini-label">Em Andamento</span>
+            <span class="mini-label">Andamento</span>
             <strong class="mini-val text-primary">{{ taskService.summary()?.emAndamento || 0 }}</strong>
           </div>
           <div class="kpi-mini-item is-warning">
-            <span class="mini-label">Em Aberto</span>
+            <span class="mini-label">Abertas</span>
             <strong class="mini-val text-warning">{{ taskService.summary()?.aberta || taskService.summary()?.abertas || 0 }}</strong>
           </div>
           <div class="kpi-mini-item is-danger">
@@ -735,6 +735,7 @@
       <ion-segment
         [value]="taskService.selectedStatusFilter()"
         (ionChange)="onFilterChange($event)"
+        [scrollable]="true"
         mode="ios"
         class="custom-segment"
       >
