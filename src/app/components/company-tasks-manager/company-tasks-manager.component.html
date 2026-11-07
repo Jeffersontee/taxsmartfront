@@ -1,0 +1,820 @@
+<ion-modal [isOpen]="isOpen()" (didDismiss)="close()" (willPresent)="onModalOpen()" class="gestta-client-edition-modal">
+  <ng-template>
+    <div class="gestta-modal-shell">
+      
+      <!-- Topo: Título da Página de Edição e Empresa -->
+      <header class="gestta-modal-top">
+        <div class="top-breadcrumb">
+          <span>Edição de cliente</span>
+          <small>Clientes &gt; Edição de cliente &gt; {{ activeTab() | titlecase }}</small>
+        </div>
+
+        <div class="top-company-title-row">
+          <button type="button" class="btn-back-circle" (click)="close()" title="Voltar para empresas">
+            ←
+          </button>
+          <div class="company-heading">
+            <h2 class="company-full-title">
+              {{ company()?.corporateName || company()?.tradeName }}
+            </h2>
+            <span class="created-sub">
+              Criado em {{ (company()?.createdAt | date: 'dd/MM/yyyy HH:mm') || '05/11/2026 21:53' }}
+            </span>
+          </div>
+          <button type="button" class="btn-close-shell" (click)="close()" aria-label="Fechar">
+            ✕
+          </button>
+        </div>
+
+        <!-- Abas no Estilo Gestta -->
+        <nav class="gestta-tabs-strip">
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'detalhes'"
+            (click)="activeTab.set('detalhes')"
+          >
+            Detalhes
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'responsaveis'"
+            (click)="activeTab.set('responsaveis')"
+          >
+            Responsáveis
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'tarefas'"
+            (click)="activeTab.set('tarefas')"
+          >
+            Tarefas
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'senhas'"
+            (click)="activeTab.set('senhas')"
+          >
+            Senhas
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'cnaes'"
+            (click)="activeTab.set('cnaes')"
+          >
+            CNAEs
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'certidoes'"
+            (click)="activeTab.set('certidoes')"
+          >
+            Certidões e certificados
+          </button>
+          <button
+            type="button"
+            class="tab-link"
+            [class.active]="activeTab() === 'geracao'"
+            (click)="activeTab.set('geracao')"
+          >
+            Geração de tarefas
+          </button>
+        </nav>
+      </header>
+
+      <!-- Conteúdo do Modal por Abas -->
+      <div class="gestta-modal-body">
+        
+        <!-- ===================================================================== -->
+        <!-- ABA 1: DETALHES (Fiel ao Print 3 do Gestta) -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'detalhes') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <!-- Aviso Superior em Vermelho Suave -->
+            <div class="gestta-warning-strip">
+              <span>Atenção: estas informações são utilizadas na identificação dos documentos pelo Gestta. Caso não haja caracteres específicos da empresa para estes campos NÃO inserir outras informações.</span>
+            </div>
+
+            <!-- Bloco 1: Números de identificação -->
+            <section class="gestta-form-section">
+              <h3 class="section-title">Números de identificação</h3>
+              
+              <div class="doc-type-pills">
+                <button type="button" class="doc-pill" [class.selected]="docType() === 'CNPJ'" (click)="docType.set('CNPJ')">CNPJ</button>
+                <button type="button" class="doc-pill" [class.selected]="docType() === 'CPF'" (click)="docType.set('CPF')">CPF</button>
+                <button type="button" class="doc-pill" [class.selected]="docType() === 'CEI'" (click)="docType.set('CEI')">CEI</button>
+                <button type="button" class="doc-pill" [class.selected]="docType() === 'EIN'" (click)="docType.set('EIN')">EIN ou FEI</button>
+                <button type="button" class="doc-pill" [class.selected]="docType() === 'OUTRO'" (click)="docType.set('OUTRO')">Outro</button>
+
+                <label class="domino-check-label">
+                  <input type="checkbox" [checked]="isDominoIntegrated()" (change)="isDominoIntegrated.set(!isDominoIntegrated())" />
+                  <span>✓ Integrado com domínio</span>
+                </label>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-field">
+                  <label>Documento de identificação*</label>
+                  <input type="text" [ngModel]="cnpj()" (ngModelChange)="cnpj.set($event)" class="gestta-input" placeholder="00.000.000/0000-00" />
+                </div>
+                <div class="form-field">
+                  <label>Inscrição estadual</label>
+                  <input type="text" [ngModel]="stateRegistration()" (ngModelChange)="stateRegistration.set($event)" class="gestta-input" placeholder="Isento ou número da IE" />
+                </div>
+                <div class="form-field">
+                  <label>Inscrição Municipal (CCM)</label>
+                  <input type="text" [ngModel]="municipalRegistration()" (ngModelChange)="municipalRegistration.set($event)" class="gestta-input" placeholder="Número do CCM" />
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloco 2: Dados gerais -->
+            <section class="gestta-form-section">
+              <h3 class="section-title">Dados gerais</h3>
+
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Código*</label>
+                  <input type="text" [ngModel]="code()" (ngModelChange)="code.set($event)" class="gestta-input short-input" placeholder="Ex: 648" />
+                </div>
+                <div class="form-field">
+                  <label>Razão Social*</label>
+                  <input type="text" [ngModel]="corporateName()" (ngModelChange)="corporateName.set($event)" class="gestta-input" placeholder="Razão social completa" />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Apelido / Nome Fantasia</label>
+                  <input type="text" [ngModel]="tradeName()" (ngModelChange)="tradeName.set($event)" class="gestta-input" placeholder="Nome comercial" />
+                </div>
+                <div class="form-field">
+                  <label>Regime Federal</label>
+                  <select [ngModel]="taxRegime()" (ngModelChange)="taxRegime.set($event)" class="gestta-select-input">
+                    @for (r of taxRegimesList; track r.value) {
+                      <option [value]="r.value">{{ r.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-field">
+                  <label>Regime Estadual</label>
+                  <input type="text" [ngModel]="regimeEstadual()" (ngModelChange)="regimeEstadual.set($event)" class="gestta-input" />
+                </div>
+                <div class="form-field">
+                  <label>Regime Municipal</label>
+                  <input type="text" [ngModel]="regimeMunicipal()" (ngModelChange)="regimeMunicipal.set($event)" class="gestta-input" />
+                </div>
+                <div class="form-field">
+                  <label>Data de Abertura</label>
+                  <input type="date" [ngModel]="openingDate()" (ngModelChange)="openingDate.set($event)" class="gestta-input" />
+                </div>
+              </div>
+
+              <div class="form-field full-width">
+                <label>Observação</label>
+                <textarea [ngModel]="notes()" (ngModelChange)="notes.set($event)" rows="2" class="gestta-textarea" placeholder="Anotações internas sobre o cliente..."></textarea>
+              </div>
+
+              <!-- Toggles com Chaves Verdes Gestta -->
+              <div class="toggles-row">
+                <div class="toggle-item">
+                  <span class="toggle-label">Notificar cliente</span>
+                  <label class="switch-toggle-label">
+                    <input type="checkbox" [checked]="notifyClient()" (change)="notifyClient.set(!notifyClient())" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <span class="toggle-label">Ativo</span>
+                  <label class="switch-toggle-label">
+                    <input type="checkbox" [checked]="active()" (change)="active.set(!active())" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Política de Envio de Documentos Avulsos desta Empresa -->
+              <div class="policy-client-box">
+                <div class="policy-header">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <div class="policy-info-text">
+                    <strong>Permitir Envio de Documentos Avulsos no Portal desta Empresa</strong>
+                    <p>Por padrão <strong>desativado</strong>. Quando desativado, o cliente deve anexar seus arquivos obrigatoriamente vinculados às Tarefas da Linha do Tempo contábil em /company/documentos.</p>
+                  </div>
+                  <div class="policy-toggle">
+                    <label class="switch-toggle-label">
+                      <input type="checkbox" [checked]="allowLooseDocumentUpload()" (change)="allowLooseDocumentUpload.set(!allowLooseDocumentUpload())" />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="policy-status-chip" [class.is-enabled]="allowLooseDocumentUpload()" [class.is-disabled]="!allowLooseDocumentUpload()">
+                  Status Atual: {{ allowLooseDocumentUpload() ? 'Envio Avulso Permitido' : 'Envio Avulso Bloqueado (Exige Tarefa)' }}
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloco 3: Endereço -->
+            <section class="gestta-form-section">
+              <h3 class="section-title">Endereço</h3>
+              <div class="form-grid-3">
+                <div class="form-field">
+                  <label>CEP</label>
+                  <input type="text" [ngModel]="zipCode()" (ngModelChange)="zipCode.set($event)" class="gestta-input" placeholder="00000-000" />
+                </div>
+                <div class="form-field wide-2">
+                  <label>Logradouro / Rua</label>
+                  <input type="text" [ngModel]="street()" (ngModelChange)="street.set($event)" class="gestta-input" placeholder="Rua, Avenida, etc." />
+                </div>
+              </div>
+              <div class="form-grid-4">
+                <div class="form-field">
+                  <label>Número</label>
+                  <input type="text" [ngModel]="number()" (ngModelChange)="number.set($event)" class="gestta-input" />
+                </div>
+                <div class="form-field">
+                  <label>Complemento</label>
+                  <input type="text" [ngModel]="complement()" (ngModelChange)="complement.set($event)" class="gestta-input" />
+                </div>
+                <div class="form-field">
+                  <label>Bairro</label>
+                  <input type="text" [ngModel]="neighborhood()" (ngModelChange)="neighborhood.set($event)" class="gestta-input" />
+                </div>
+                <div class="form-field">
+                  <label>Cidade / UF</label>
+                  <input type="text" [value]="city() + (state() ? '/' + state() : '')" (input)="city.set($any($event.target).value)" class="gestta-input" />
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloco 4: Informações de Pagamento (Fiel ao Print do Gestta) -->
+            <section class="gestta-form-section">
+              <h3 class="section-title">Informações de Pagamento</h3>
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Pagamento Mensal</label>
+                  <input
+                    type="text"
+                    [ngModel]="monthlyPayment()"
+                    (ngModelChange)="monthlyPayment.set($event)"
+                    class="gestta-input"
+                    placeholder="R$ 0,00"
+                  />
+                </div>
+                <div class="form-field">
+                  <label>Dia de Vencimento</label>
+                  <select
+                    [ngModel]="paymentDueDay()"
+                    (ngModelChange)="paymentDueDay.set($event ? +$event : null)"
+                    class="gestta-select-input"
+                  >
+                    <option [ngValue]="null">Selecione</option>
+                    @for (day of dueDaysList; track day) {
+                      <option [ngValue]="day">Dia {{ day < 10 ? '0' + day : day }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <!-- Barra de Salvamento da Aba Detalhes (Fiel ao Print do Gestta) -->
+            <div class="gestta-footer-actions-bar">
+              <button type="button" class="btn-gestta-save-orange" (click)="saveCompanyDetails()" [disabled]="isSaving()">
+                <ion-icon name="save-outline"></ion-icon>
+                <span>Salvar</span>
+              </button>
+              <button type="button" class="btn-gestta-cancel-gray" (click)="close()">
+                <span>Cancelar</span>
+              </button>
+              <button type="button" class="btn-gestta-delete-red" (click)="deleteCompany()" [disabled]="isSaving()">
+                <span>Excluir</span>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 2: RESPONSÁVEIS (Atribuição do Escritório Contábil) -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'responsaveis') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <div class="gestta-attention-banner">
+              <ion-icon name="warning-outline"></ion-icon>
+              <div>
+                <strong>ATENÇÃO:</strong> Ao inserir um responsável para uma empresa, será alterada a responsabilidade também das tarefas que estão abertas. Esta vinculação sobrepõe a responsabilidade de departamentos vinculada diretamente no cadastro do cliente para essa tarefa.
+              </div>
+            </div>
+
+            <section class="gestta-form-section">
+              <h3 class="section-title">Responsáveis do Escritório Contábil por Departamento</h3>
+              <p class="section-hint">Atribua os membros da equipe contábil responsáveis pelo atendimento e execução das rotinas desta empresa.</p>
+
+              <div class="responsibles-grid">
+                <div class="resp-card">
+                  <div class="resp-header">
+                    <ion-icon name="document-text-outline" class="dept-icon fiscal"></ion-icon>
+                    <div>
+                      <strong>Departamento Fiscal</strong>
+                      <span>Apuração de impostos, guias DAS, DARF, SPED e NF-e</span>
+                    </div>
+                  </div>
+                  <select [ngModel]="fiscalResponsibleId()" (ngModelChange)="fiscalResponsibleId.set($event)" class="gestta-select-input">
+                    <option value="">Nenhum analista atribuído</option>
+                    @for (staff of staffService.staffMembers(); track staff._id) {
+                      <option [value]="staff._id">{{ staff.name }} ({{ staff.role }})</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="resp-card">
+                  <div class="resp-header">
+                    <ion-icon name="business-outline" class="dept-icon contabil"></ion-icon>
+                    <div>
+                      <strong>Departamento Contábil</strong>
+                      <span>Partidas dobradas, conciliação OFX, balancete e DRE</span>
+                    </div>
+                  </div>
+                  <select [ngModel]="accountingResponsibleId()" (ngModelChange)="accountingResponsibleId.set($event)" class="gestta-select-input">
+                    <option value="">Nenhum analista atribuído</option>
+                    @for (staff of staffService.staffMembers(); track staff._id) {
+                      <option [value]="staff._id">{{ staff.name }} ({{ staff.role }})</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="resp-card">
+                  <div class="resp-header">
+                    <ion-icon name="person-outline" class="dept-icon folha"></ion-icon>
+                    <div>
+                      <strong>Folha de Pagamento / DP</strong>
+                      <span>Holerites, pró-labore, eSocial, DCTFWeb e FGTS Digital</span>
+                    </div>
+                  </div>
+                  <select [ngModel]="payrollResponsibleId()" (ngModelChange)="payrollResponsibleId.set($event)" class="gestta-select-input">
+                    <option value="">Nenhum analista atribuído</option>
+                    @for (staff of staffService.staffMembers(); track staff._id) {
+                      <option [value]="staff._id">{{ staff.name }} ({{ staff.role }})</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="resp-card">
+                  <div class="resp-header">
+                    <ion-icon name="shield-checkmark-outline" class="dept-icon legal"></ion-icon>
+                    <div>
+                      <strong>Legalização & Societário</strong>
+                      <span>Contrato social, alterações, certidões e alvarás</span>
+                    </div>
+                  </div>
+                  <select [ngModel]="legalResponsibleId()" (ngModelChange)="legalResponsibleId.set($event)" class="gestta-select-input">
+                    <option value="">Nenhum analista atribuído</option>
+                    @for (staff of staffService.staffMembers(); track staff._id) {
+                      <option [value]="staff._id">{{ staff.name }} ({{ staff.role }})</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="tab-save-bar">
+                <button type="button" class="btn-gestta-save" (click)="saveCompanyResponsibles()" [disabled]="isSaving()">
+                  <ion-icon name="save-outline"></ion-icon>
+                  <span>Salvar Responsáveis da Empresa</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 3: TAREFAS (Dual Listbox Fiel ao Gestta) -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'tarefas') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <!-- Accordion 1: Copiar tarefas de outro cliente para este como modelo -->
+            <div class="gestta-accordion-card">
+              <div class="accordion-header is-clickable" (click)="toggleCopyFrom()">
+                <span class="arrow-indicator">{{ isCopyFromOpen() ? '▼' : '►' }}</span>
+                <span class="accordion-title">Copiar tarefas de outro cliente para este como modelo</span>
+              </div>
+
+              @if (isCopyFromOpen()) {
+                <div class="accordion-content animate-fade-in">
+                  <div class="copy-form-row">
+                    <div class="copy-field">
+                      <label>Cliente*</label>
+                      <select [ngModel]="copyFromCompanyId()" (ngModelChange)="copyFromCompanyId.set($event)" class="gestta-select-input">
+                        <option value="" disabled>Selecione a empresa modelo...</option>
+                        @for (comp of companyService.companies(); track comp._id) {
+                          @if (comp._id !== company()?._id) {
+                            <option [value]="comp._id">{{ comp.tradeName || comp.corporateName }}</option>
+                          }
+                        }
+                      </select>
+                    </div>
+
+                    <div class="copy-field">
+                      <label>Departamento*</label>
+                      <select [ngModel]="copyFromDept()" (ngModelChange)="copyFromDept.set($event)" class="gestta-select-input">
+                        @for (dept of departmentsList; track dept) {
+                          <option [value]="dept">{{ dept }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <button type="button" class="btn-gestta-orange" (click)="submitCopyFrom()" [disabled]="isSaving()">
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Accordion 2: Copiar tarefas deste cliente para outros como modelo -->
+            <div class="gestta-accordion-card">
+              <div class="accordion-header is-clickable" (click)="toggleCopyTo()">
+                <span class="arrow-indicator">{{ isCopyToOpen() ? '▼' : '►' }}</span>
+                <span class="accordion-title">Copiar tarefas deste cliente para outros como modelo</span>
+              </div>
+
+              @if (isCopyToOpen()) {
+                <div class="accordion-content animate-fade-in">
+                  <div class="copy-form-row">
+                    <div class="copy-field wide-field">
+                      <label>Clientes</label>
+                      <select
+                        multiple
+                        [ngModel]="copyToCompanyIds()"
+                        (ngModelChange)="copyToCompanyIds.set($event)"
+                        class="gestta-select-input multi-select"
+                      >
+                        @for (comp of companyService.companies(); track comp._id) {
+                          @if (comp._id !== company()?._id) {
+                            <option [value]="comp._id">{{ comp.tradeName || comp.corporateName }}</option>
+                          }
+                        }
+                      </select>
+                    </div>
+
+                    <div class="copy-field">
+                      <label>Departamento*</label>
+                      <select [ngModel]="copyToDept()" (ngModelChange)="copyToDept.set($event)" class="gestta-select-input">
+                        @for (dept of departmentsList; track dept) {
+                          <option [value]="dept">{{ dept }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <button type="button" class="btn-gestta-orange" (click)="submitCopyTo()" [disabled]="isSaving()">
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Faixa Amarela de Atenção Gestta -->
+            <div class="gestta-attention-banner">
+              <ion-icon name="warning-outline"></ion-icon>
+              <div>
+                <strong>ATENÇÃO:</strong> Ao inserir um responsável para uma empresa, será alterada a responsabilidade também das tarefas que estão abertas. Esta vinculação sobrepõe a responsabilidade de departamentos vinculada diretamente no cadastro do cliente para essa tarefa.
+              </div>
+            </div>
+
+            <!-- PAINEL DUAL LISTBOX (50% / 50%) -->
+            <div class="gestta-dual-panel-grid">
+              
+              <!-- COLUNA ESQUERDA: Tarefas no Sistema -->
+              <div class="dual-panel-card left-panel">
+                <div class="panel-header-row">
+                  <h3 class="panel-title">
+                    Tarefas no sistema ({{ filteredSystemTasks().length }})
+                  </h3>
+                  <div class="panel-search-box">
+                    <input
+                      type="text"
+                      [value]="searchSystem()"
+                      (input)="searchSystem.set($any($event.target).value)"
+                      placeholder="Buscar"
+                      class="gestta-search-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="panel-actions-toolbar">
+                  <label class="checkbox-label" title="Selecionar todas do sistema">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedSystemIds().size === filteredSystemTasks().length && filteredSystemTasks().length > 0"
+                      (change)="toggleSelectAllSystem()"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    class="btn-gestta-add-action"
+                    (click)="addSelectedToCompany()"
+                    [disabled]="selectedSystemIds().size === 0 || isSaving()"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+
+                <div class="panel-scroll-list">
+                  @if (isLoading()) {
+                    <div class="loading-wrap">
+                      <ion-spinner name="crescent"></ion-spinner>
+                    </div>
+                  } @else if (filteredSystemTasks().length === 0) {
+                    <div class="empty-list-notice">
+                      Nenhuma tarefa disponível para adicionar ou todos os templates já vinculados.
+                    </div>
+                  } @else {
+                    @for (task of filteredSystemTasks(); track task.templateId || task._id) {
+                      <div class="task-list-item" [class.is-checked]="isSystemSelected(task.templateId || task._id)">
+                        <label class="item-checkbox-wrap">
+                          <input
+                            type="checkbox"
+                            [checked]="isSystemSelected(task.templateId || task._id)"
+                            (change)="toggleSelectSystem(task.templateId || task._id)"
+                          />
+                        </label>
+                        <div class="item-text-info">
+                          <strong class="item-name">{{ task.name }}</strong>
+                          <span class="item-dept">{{ task.department || 'Geral' }}</span>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+
+              <!-- COLUNA DIREITA: Tarefas do Cliente -->
+              <div class="dual-panel-card right-panel">
+                <div class="panel-header-row">
+                  <h3 class="panel-title">
+                    Tarefas do cliente ({{ filteredCompanyTasks().length }})
+                  </h3>
+                  <div class="panel-search-box">
+                    <input
+                      type="text"
+                      [value]="searchCompany()"
+                      (input)="searchCompany.set($any($event.target).value)"
+                      placeholder="Buscar"
+                      class="gestta-search-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="panel-actions-toolbar">
+                  <label class="checkbox-label" title="Selecionar todas do cliente">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedCompanyIds().size === filteredCompanyTasks().length && filteredCompanyTasks().length > 0"
+                      (change)="toggleSelectAllCompany()"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    class="btn-gestta-delete-action"
+                    (click)="removeSelectedFromCompany()"
+                    [disabled]="selectedCompanyIds().size === 0 || isSaving()"
+                  >
+                    Excluir
+                  </button>
+
+                  <div class="batch-resp-wrap">
+                    <select
+                      [ngModel]="batchResponsibleId()"
+                      (ngModelChange)="applyBatchResponsible($event)"
+                      [disabled]="selectedCompanyIds().size === 0 || isSaving()"
+                      class="gestta-select-input resp-select"
+                    >
+                      <option value="" disabled>Responsável em lote...</option>
+                      @for (staff of staffService.staffMembers(); track staff._id) {
+                        <option [value]="staff._id">{{ staff.name }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="panel-scroll-list">
+                  @if (isLoading()) {
+                    <div class="loading-wrap">
+                      <ion-spinner name="crescent"></ion-spinner>
+                    </div>
+                  } @else if (filteredCompanyTasks().length === 0) {
+                    <div class="empty-list-notice">
+                      Nenhuma tarefa vinculada a este cliente. Selecione tarefas à esquerda e clique em "Adicionar".
+                    </div>
+                  } @else {
+                    @for (task of filteredCompanyTasks(); track task.templateId) {
+                      <div class="task-list-item right-item" [class.is-checked]="isCompanySelected(task.templateId)">
+                        <div class="item-left-block">
+                          <label class="item-checkbox-wrap">
+                            <input
+                              type="checkbox"
+                              [checked]="isCompanySelected(task.templateId)"
+                              (change)="toggleSelectCompany(task.templateId)"
+                            />
+                          </label>
+                          <div class="item-text-info">
+                            <strong class="item-name">{{ task.name }}</strong>
+                            <span class="item-dept">{{ task.department || 'Geral' }}</span>
+                            
+                            <label class="approval-toggle-label">
+                              <input
+                                type="checkbox"
+                                [checked]="task.requiresApproval"
+                                (change)="onToggleApproval(task, $any($event.target).checked)"
+                              />
+                              <span class="approval-toggle-text">Aprovação necessária</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="item-right-block">
+                          <select
+                            [ngModel]="task.responsibleId"
+                            (ngModelChange)="onResponsibleChange(task, $event)"
+                            class="gestta-select-input row-resp-select"
+                          >
+                            <option value="">Sem Responsável</option>
+                            @for (staff of staffService.staffMembers(); track staff._id) {
+                              <option [value]="staff._id">{{ staff.name }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Barra Inferior de Geração Operacional de Tarefas Mensais -->
+            <div class="generation-footer-strip">
+              <div class="gen-left">
+                <ion-icon name="flash-outline"></ion-icon>
+                <div>
+                  <strong>Geração Operacional de Tarefas Mensais</strong>
+                  <p>Gera automaticamente as rotinas ativas na Linha do Tempo com a casca de documentos e checklists.</p>
+                </div>
+              </div>
+
+              <div class="gen-actions">
+                <div class="competence-field">
+                  <label>Competência:</label>
+                  <input
+                    type="text"
+                    [value]="generationCompetence()"
+                    (input)="generationCompetence.set($any($event.target).value)"
+                    placeholder="MM/AAAA"
+                    class="competence-input"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn-gestta-generate"
+                  (click)="generateCompetenceTasks()"
+                  [disabled]="isSaving() || companyTasks().length === 0"
+                >
+                  <ion-icon name="refresh-outline" [class.spinning]="isSaving()"></ion-icon>
+                  <span>Gerar Tarefas da Empresa</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 4: SENHAS & ACESSOS -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'senhas') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <section class="gestta-form-section">
+              <h3 class="section-title">Cofre de Senhas e Portais do Cliente</h3>
+              <p class="section-hint">Armazenamento criptografado de credenciais para apuração e transmissão de obrigações.</p>
+              
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Código de Acesso e-CAC (Receita Federal)</label>
+                  <input type="password" value="••••••••••••" class="gestta-input" readonly />
+                </div>
+                <div class="form-field">
+                  <label>Senha Posto Fiscal Eletrônico (Sefaz)</label>
+                  <input type="password" value="••••••••" class="gestta-input" readonly />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Senha Prefeitura (Emissão NFS-e)</label>
+                  <input type="password" value="••••••••" class="gestta-input" readonly />
+                </div>
+                <div class="form-field">
+                  <label>Conectividade Social / FGTS</label>
+                  <input type="password" value="••••••••" class="gestta-input" readonly />
+                </div>
+              </div>
+            </section>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 5: CNAEs -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'cnaes') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <section class="gestta-form-section">
+              <h3 class="section-title">Classificação Nacional de Atividades Econômicas (CNAE)</h3>
+              
+              <div class="cnae-card primary-cnae">
+                <div class="cnae-badge">CNAE Principal</div>
+                <strong class="cnae-code">{{ company()?.cnaePrincipal }}</strong>
+                <p class="cnae-desc">Atividade econômica preponderante cadastrada no CNPJ da empresa.</p>
+              </div>
+
+              @if (company()?.cnaesSecundarios && company()?.cnaesSecundarios!.length > 0) {
+                <h4 class="sub-title">CNAEs Secundários</h4>
+                <div class="cnaes-list">
+                  @for (cnae of company()?.cnaesSecundarios; track cnae) {
+                    <div class="cnae-item-chip">
+                      <ion-icon name="ribbon-outline"></ion-icon>
+                      <span>{{ cnae }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 6: CERTIDÕES E CERTIFICADOS -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'certidoes') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <section class="gestta-form-section">
+              <h3 class="section-title">Certificado Digital & Certidões Negativas (CND)</h3>
+              
+              <div class="certificate-box">
+                <div class="cert-icon-wrap">
+                  <ion-icon name="shield-checkmark-outline"></ion-icon>
+                </div>
+                <div class="cert-info">
+                  <strong>Certificado Digital ICP-Brasil A1</strong>
+                  <span>Emitido para: {{ company()?.corporateName }}</span>
+                  <span class="validity-badge valid">Status: Válido (Expira em 10/2027)</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        }
+
+        <!-- ===================================================================== -->
+        <!-- ABA 7: GERAÇÃO DE TAREFAS -->
+        <!-- ===================================================================== -->
+        @if (activeTab() === 'geracao') {
+          <div class="gestta-tab-pane animate-fade-in">
+            <section class="gestta-form-section">
+              <h3 class="section-title">Disparo em Lote de Tarefas Mensais</h3>
+              <p class="section-hint">Gere instantaneamente o lote de obrigações da competência com base nas tarefas vinculadas ao cliente.</p>
+
+              <div class="gen-competence-card">
+                <div class="competence-field">
+                  <label>Selecione a Competência:</label>
+                  <input
+                    type="text"
+                    [value]="generationCompetence()"
+                    (input)="generationCompetence.set($any($event.target).value)"
+                    placeholder="10/2026"
+                    class="gestta-input"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn-gestta-generate"
+                  (click)="generateCompetenceTasks()"
+                  [disabled]="isSaving() || companyTasks().length === 0"
+                >
+                  <ion-icon name="refresh-outline" [class.spinning]="isSaving()"></ion-icon>
+                  <span>Disparar Geração da Competência</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        }
+
+      </div>
+
+    </div>
+  </ng-template>
+</ion-modal>

@@ -216,6 +216,61 @@
       }
     }
   }
+
+  .user-modules-preview {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--app-border, rgba(0, 0, 0, 0.06));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .modules-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--app-text-muted, #64748b);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .modules-chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .mini-module-badge {
+      font-size: 0.675rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+
+      &[data-mod="FISCAL"] {
+        background: rgba(234, 88, 12, 0.1);
+        color: #c2410c;
+        border-color: rgba(234, 88, 12, 0.2);
+      }
+      &[data-mod="ACCOUNTING"] {
+        background: rgba(2, 132, 199, 0.1);
+        color: #0369a1;
+        border-color: rgba(2, 132, 199, 0.2);
+      }
+      &[data-mod="PAYROLL"] {
+        background: rgba(124, 58, 237, 0.1);
+        color: #6d28d9;
+        border-color: rgba(124, 58, 237, 0.2);
+      }
+      &[data-mod="DOCUMENTS"] {
+        background: rgba(16, 185, 129, 0.1);
+        color: #047857;
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+    }
+  }
 }
 
 // Estados
@@ -265,18 +320,18 @@ ion-modal {
   }
 
   .form-container {
-    padding: 20px;
+    padding: 24px 28px;
   }
 
   .regime-banner {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 0.8125rem;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.825rem;
     font-weight: 500;
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 
     ion-icon {
       font-size: 1.25rem;
@@ -297,23 +352,197 @@ ion-modal {
   }
 
   .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 
     .form-label {
       display: block;
-      font-size: 0.8125rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      color: var(--app-text-secondary, #334155);
-      margin-bottom: 6px;
+      color: var(--app-text-primary, #1e293b);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
     }
 
     .form-input,
     .form-select {
       background: var(--app-bg, #f8fafc);
-      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.1));
-      border-radius: 10px;
-      padding: 4px 12px;
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.12));
+      border-radius: 12px;
+      --padding-start: 14px;
+      --padding-end: 14px;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      min-height: 48px;
       font-size: 0.9375rem;
+      --highlight-color-focused: transparent;
+      --border-color: transparent;
+      transition: all 0.2s ease;
+
+      &:focus-within {
+        border-color: #ea580c;
+        box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+        background: #ffffff;
+      }
+    }
+
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .password-input {
+        flex: 1;
+        --padding-end: 46px;
+      }
+
+      .toggle-eye-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--app-text-muted, #64748b);
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        z-index: 5;
+
+        &:hover {
+          color: var(--app-text-primary, #0f172a);
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+
+  .form-section {
+    margin-top: 26px;
+    margin-bottom: 22px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--app-border, rgba(0, 0, 0, 0.12));
+
+    .section-title-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 1.4rem;
+        color: #ea580c;
+        margin-top: 2px;
+      }
+
+      .section-subtitle {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--app-text-primary, #0f172a);
+        margin: 0 0 3px 0;
+      }
+
+      .section-desc {
+        font-size: 0.775rem;
+        color: var(--app-text-secondary, #64748b);
+        margin: 0;
+      }
+    }
+  }
+
+  .modules-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+
+    .module-check-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--app-bg, #f8fafc);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(234, 88, 12, 0.4);
+      }
+
+      &.is-checked {
+        background: rgba(234, 88, 12, 0.06);
+        border-color: #ea580c;
+
+        .check-box-indicator {
+          background: #ea580c;
+          border-color: #ea580c;
+          color: #ffffff;
+        }
+
+        .check-texts strong {
+          color: #ea580c;
+        }
+      }
+
+      .check-box-indicator {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border: 2px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+
+        ion-icon {
+          font-size: 0.85rem;
+          font-weight: 800;
+        }
+      }
+
+      .check-texts {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.825rem;
+          color: var(--app-text-primary, #1e293b);
+          line-height: 1.2;
+        }
+
+        span {
+          font-size: 0.7rem;
+          color: var(--app-text-secondary, #64748b);
+          margin-top: 2px;
+          line-height: 1.2;
+        }
+      }
+    }
+  }
+
+  .card-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--app-border, rgba(0, 0, 0, 0.08));
+
+    ion-button {
+      --border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
     }
   }
 

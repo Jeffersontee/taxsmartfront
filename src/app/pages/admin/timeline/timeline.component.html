@@ -4,16 +4,40 @@
     <div class="hero-left">
       <div class="hero-badge">
         <ion-icon name="layers-outline"></ion-icon>
-        <span>Linha do Tempo de Obrigações</span>
+        <span>Gestão Operacional de Obrigações</span>
       </div>
-      <h1 class="hero-title">Gestão de Rotinas Fiscais & Contábeis</h1>
+      <h1 class="hero-title">Painel de Tarefas & Linha do Tempo</h1>
       <p class="hero-subtitle">
-        Acompanhe o cronograma, entregas de guias e status operacionais por competência
+        Controle de rotinas fiscais, fechamento contábil, checklists e trâmite de documentos
       </p>
     </div>
 
-    <!-- Filtros Superiores em Linha -->
+    <!-- Controles em Linha: Filtros, Seletor de Modo e Botão Nova Tarefa -->
     <div class="hero-controls">
+      <!-- Seletor de Modo de Exibição -->
+      <div class="view-mode-toggle">
+        <button
+          type="button"
+          class="mode-btn"
+          [class.active]="viewMode() === 'gestta'"
+          (click)="viewMode.set('gestta')"
+          title="Modo Painel de Tarefas (3 Colunas)"
+        >
+          <ion-icon name="grid-outline"></ion-icon>
+          <span>Painel 3 Colunas</span>
+        </button>
+        <button
+          type="button"
+          class="mode-btn"
+          [class.active]="viewMode() === 'feed'"
+          (click)="viewMode.set('feed')"
+          title="Modo Linha do Tempo"
+        >
+          <ion-icon name="list-outline"></ion-icon>
+          <span>Linha do Tempo</span>
+        </button>
+      </div>
+
       <!-- Seletor de Competência -->
       <div class="control-box">
         <label class="control-label">Competência</label>
@@ -63,236 +87,751 @@
         </ion-select>
       </div>
 
-      <ion-button fill="solid" color="primary" class="refresh-action-btn" (click)="fetchData()">
-        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-      </ion-button>
+      <!-- Botão Criar Tarefa em Destaque -->
+      @if (isAccountant()) {
+        <button type="button" class="btn-create-task" (click)="openCreateTaskModal()">
+          <ion-icon name="add-outline"></ion-icon>
+          <span>Nova Tarefa</span>
+        </button>
+      }
+
+      <!-- Botão para Recolher/Expandir Resumo de KPIs para Ganhar Espaço Vertical -->
+      <button
+        type="button"
+        class="btn-toggle-summary"
+        (click)="toggleSummary()"
+        [title]="isSummaryCollapsed() ? 'Exibir barra de resumo' : 'Recolher resumo para ganhar espaço vertical'"
+      >
+        <ion-icon [name]="isSummaryCollapsed() ? 'expand-outline' : 'contract-outline'"></ion-icon>
+        <span>{{ isSummaryCollapsed() ? 'Resumo' : 'Compactar' }}</span>
+      </button>
+
+      <button type="button" class="refresh-action-btn" (click)="fetchData()" title="Atualizar dados">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
     </div>
   </div>
 
-  <!-- Cards de Resumo & Barra de Progresso -->
-  <div class="summary-dashboard-card">
-    <div class="summary-top-row">
-      <div class="progress-info">
-        <div class="progress-title-row">
-          <ion-icon name="flash-outline" class="flash-icon"></ion-icon>
-          <span class="progress-label">Taxa de Conclusão da Carteira</span>
-          <span class="progress-percent">
-            {{ taskService.summary()?.percentualConclusao || 0 }}%
-          </span>
+  <!-- Cards de Resumo & Barra de Progresso (Colapsável) -->
+  @if (!isSummaryCollapsed()) {
+    <div class="summary-dashboard-card animate-fade-in">
+      <div class="summary-top-row">
+        <div class="progress-info">
+          <div class="progress-title-row">
+            <ion-icon name="flash-outline" class="flash-icon"></ion-icon>
+            <span class="progress-label">Taxa de Conclusão da Carteira</span>
+            <span class="progress-percent">
+              {{ taskService.summary()?.percentualConclusao || 0 }}%
+            </span>
+          </div>
+          <ion-progress-bar
+            [value]="(taskService.summary()?.percentualConclusao || 0) / 100"
+            color="primary"
+            class="timeline-progress-bar"
+          ></ion-progress-bar>
         </div>
-        <ion-progress-bar
-          [value]="(taskService.summary()?.percentualConclusao || 0) / 100"
-          color="primary"
-          class="timeline-progress-bar"
-        ></ion-progress-bar>
-      </div>
 
-      <div class="kpi-mini-group">
-        <div class="kpi-mini-item">
-          <span class="mini-label">Total</span>
-          <strong class="mini-val">{{ taskService.summary()?.total || 0 }}</strong>
-        </div>
-        <div class="kpi-mini-item is-success">
-          <span class="mini-label">Concluídas</span>
-          <strong class="mini-val text-success">{{ taskService.summary()?.concluido || taskService.summary()?.concluidas || 0 }}</strong>
-        </div>
-        <div class="kpi-mini-item is-warning">
-          <span class="mini-label">Em Aberto</span>
-          <strong class="mini-val text-warning">{{ taskService.summary()?.aberta || taskService.summary()?.abertas || 0 }}</strong>
-        </div>
-        <div class="kpi-mini-item is-danger">
-          <span class="mini-label">Impedimentos</span>
-          <strong class="mini-val text-danger">{{ taskService.summary()?.impedimento || taskService.summary()?.impedimentos || 0 }}</strong>
+        <div class="kpi-mini-group">
+          <div class="kpi-mini-item">
+            <span class="mini-label">Total</span>
+            <strong class="mini-val">{{ taskService.summary()?.total || 0 }}</strong>
+          </div>
+          <div class="kpi-mini-item is-success">
+            <span class="mini-label">Concluídas</span>
+            <strong class="mini-val text-success">{{ taskService.summary()?.concluido || taskService.summary()?.concluidas || 0 }}</strong>
+          </div>
+          <div class="kpi-mini-item is-primary">
+            <span class="mini-label">Em Andamento</span>
+            <strong class="mini-val text-primary">{{ taskService.summary()?.emAndamento || 0 }}</strong>
+          </div>
+          <div class="kpi-mini-item is-warning">
+            <span class="mini-label">Em Aberto</span>
+            <strong class="mini-val text-warning">{{ taskService.summary()?.aberta || taskService.summary()?.abertas || 0 }}</strong>
+          </div>
+          <div class="kpi-mini-item is-danger">
+            <span class="mini-label">Impedimentos</span>
+            <strong class="mini-val text-danger">{{ taskService.summary()?.impedimento || taskService.summary()?.impedimentos || 0 }}</strong>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Segment / Filtro por Status -->
-  <div class="status-segment-bar">
-    <ion-segment
-      [value]="taskService.selectedStatusFilter()"
-      (ionChange)="onFilterChange($event)"
-      mode="ios"
-      class="custom-segment"
-    >
-      <ion-segment-button value="ALL">
-        <ion-label>TODAS AS OBRIGAÇÕES</ion-label>
-      </ion-segment-button>
-      <ion-segment-button [value]="TaskStatus.ABERTA">
-        <ion-label>EM ABERTO</ion-label>
-      </ion-segment-button>
-      <ion-segment-button [value]="TaskStatus.CONCLUIDO">
-        <ion-label>CONCLUÍDAS</ion-label>
-      </ion-segment-button>
-      <ion-segment-button [value]="TaskStatus.IMPEDIMENTO">
-        <ion-label>IMPEDIMENTOS</ion-label>
-      </ion-segment-button>
-      <ion-segment-button [value]="TaskStatus.DESCONSIDERADO">
-        <ion-label>DESCONSIDERADAS</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
+  }
 
   <!-- Loading State -->
   @if (taskService.isLoading()) {
     <div class="loading-container">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p>Atualizando linha do tempo...</p>
+      <p>Carregando tarefas do cronograma...</p>
     </div>
   }
 
-  <!-- Lista de Tarefas da Linha do Tempo -->
-  <div class="timeline-feed">
-    @for (task of taskService.filteredTasks(); track task._id) {
-      <div class="timeline-item-card" [class.is-done]="task.status === TaskStatus.CONCLUIDO" [class.is-impediment]="task.status === TaskStatus.IMPEDIMENTO">
-        
-        <!-- Marcador Lateral de Linha do Tempo -->
-        <div class="timeline-indicator-col">
-          <div class="indicator-dot" [class]="'status-' + task.status.toLowerCase()">
-            <ion-icon [name]="getStatusIcon(task.status)"></ion-icon>
+  <!-- ========================================================================= -->
+  <!-- MODO 1: PAINEL DE TAREFAS EM 3 COLUNAS (ESTILO GESTTA / HUB CONTÁBIL) -->
+  <!-- ========================================================================= -->
+  @if (viewMode() === 'gestta' && !taskService.isLoading()) {
+    <!-- Abas de Navegação no Mobile / Tablet -->
+    <div class="mobile-layout-tabs">
+      <button
+        type="button"
+        class="mobile-tab-btn"
+        [class.active]="mobileActiveTab() === 'list'"
+        (click)="setMobileTab('list')"
+      >
+        <ion-icon name="list-outline"></ion-icon>
+        <span>Tarefas ({{ taskService.filteredTasks().length }})</span>
+      </button>
+      <button
+        type="button"
+        class="mobile-tab-btn"
+        [class.active]="mobileActiveTab() === 'detail'"
+        (click)="setMobileTab('detail')"
+      >
+        <ion-icon name="flash-outline"></ion-icon>
+        <span>Detalhe</span>
+      </button>
+      <button
+        type="button"
+        class="mobile-tab-btn"
+        [class.active]="mobileActiveTab() === 'chat'"
+        (click)="setMobileTab('chat')"
+      >
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <span>Trilha & Chat</span>
+      </button>
+    </div>
+
+    <div class="gestta-three-columns-layout" [attr.data-mobile-active]="mobileActiveTab()">
+      
+      <!-- COLUNA 1: LISTA VERTICAL DE TAREFAS -->
+      <aside class="col-task-list" [class.mobile-hidden]="mobileActiveTab() !== 'list'">
+        <div class="col-list-header">
+          <div class="list-count-row">
+            <span class="task-counter">{{ taskService.filteredTasks().length }} Tarefas</span>
+            <div class="status-mini-filter">
+              <select [ngModel]="taskService.selectedStatusFilter()" (ngModelChange)="taskService.selectedStatusFilter.set($event)">
+                <option value="ALL">Todas</option>
+                <option [value]="TaskStatus.ABERTA">Abertas</option>
+                <option [value]="TaskStatus.EM_ANDAMENTO">Em Andamento</option>
+                <option [value]="TaskStatus.CONCLUIDO">Concluídas</option>
+                <option [value]="TaskStatus.IMPEDIMENTO">Impedimentos</option>
+              </select>
+            </div>
           </div>
-          <div class="indicator-line"></div>
         </div>
 
-        <!-- Conteúdo do Card -->
-        <div class="task-card-body">
-          <div class="card-header-row">
-            <div class="badges-row">
-              <span class="category-pill" [class]="'cat-' + task.category.toLowerCase()">
-                {{ task.category }}
-              </span>
-              <span class="company-name-badge">
+        <div class="task-cards-scroll">
+          @for (task of taskService.filteredTasks(); track task._id) {
+            <div
+              class="compact-task-card"
+              [class.is-selected]="task._id === activeTask()?._id"
+              [class.is-done]="task.status === TaskStatus.CONCLUIDO"
+              [class.is-impediment]="task.status === TaskStatus.IMPEDIMENTO"
+              (click)="selectTask(task)"
+            >
+              <div class="compact-card-top">
+                <span class="task-category-tag" [class]="'cat-' + task.category.toLowerCase()">
+                  {{ task.category }}
+                </span>
+                <span class="compact-status-badge" [class]="'badge-' + task.status.toLowerCase()">
+                  {{ getStatusLabel(task.status) }}
+                </span>
+              </div>
+
+              <h4 class="compact-task-title">{{ task.title }}</h4>
+              
+              <div class="compact-company-row">
                 <ion-icon name="business-outline"></ion-icon>
-                {{ task.companyId.tradeName || task.companyId.corporateName }}
-              </span>
+                <span>{{ task.companyId.tradeName || task.companyId.corporateName }}</span>
+              </div>
+
+              <div class="compact-card-footer">
+                <div class="assigned-user-info">
+                  <span class="user-avatar-circle">
+                    {{ (task.assignedTo?.name || 'TaxSmart').charAt(0).toUpperCase() }}
+                  </span>
+                  <span class="user-name">{{ task.assignedTo?.name || 'Equipe' }}</span>
+                </div>
+
+                <div class="meta-indicators">
+                  <div class="due-badge" title="Data Meta">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span>{{ task.dueDate | date: 'dd/MM' }}</span>
+                  </div>
+                  @if (task.checklist && task.checklist.length > 0) {
+                    <div class="checklist-badge" title="Progresso do Checklist">
+                      <ion-icon name="checkbox-outline"></ion-icon>
+                      <span>{{ (task.checklist | json) ? '' : '' }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-list-state">
+              <ion-icon name="layers-outline"></ion-icon>
+              <p>Nenhuma tarefa encontrada para os filtros selecionados.</p>
+            </div>
+          }
+        </div>
+      </aside>
+
+      <!-- COLUNA 2: DETALHE DA TAREFA ATIVA -->
+      <main class="col-task-detail" [class.mobile-hidden]="mobileActiveTab() !== 'detail'">
+        @if (activeTask(); as task) {
+          <div class="detail-scrollable-content">
+            
+            <!-- Header do Detalhe: Título, Empresa, Status e Cronômetro -->
+            <div class="detail-header-panel">
+              <div class="title-and-company-block">
+                <div class="task-type-badge">
+                  <ion-icon name="flash-outline"></ion-icon>
+                  <span>ROTINA OPERACIONAL</span>
+                </div>
+                <h2 class="detail-task-title">{{ task.title }}</h2>
+                <div class="detail-company-sub">
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>{{ task.companyId.tradeName || task.companyId.corporateName }}</span>
+                  <small>(CNPJ: {{ task.companyId.cnpj }})</small>
+                </div>
+              </div>
+
+              <div class="action-status-and-timer">
+                <!-- Dropdown de Ação Rápida de Status -->
+                <div class="status-selector-wrap">
+                  <button type="button" class="btn-status-dropdown" (click)="openStatusAction(task)">
+                    <span class="status-indicator-dot" [class]="'dot-' + task.status.toLowerCase()"></span>
+                    <span>{{ getStatusLabel(task.status) }}</span>
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </button>
+                </div>
+
+                <!-- Cronômetro e Apontamento de Horas -->
+                <div class="timer-widget">
+                  <div class="timer-display" [class.is-running]="isTimerRunning()">
+                    <ion-icon name="stopwatch-outline"></ion-icon>
+                    <span>{{ formatTimer(timerSeconds() || task.timeSpentSeconds || 0) }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-timer-action"
+                    [class.btn-stop]="isTimerRunning()"
+                    (click)="toggleTimer()"
+                  >
+                    <ion-icon [name]="isTimerRunning() ? 'pause-outline' : 'play-outline'"></ion-icon>
+                    <span>{{ isTimerRunning() ? 'Pausar' : 'Apontar' }}</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div class="status-badge-wrap">
+            <!-- Grade de Metadados / Informações da Tarefa (Fiel ao Gestta) -->
+            <div class="detail-metadata-grid">
+              <div class="meta-cell">
+                <span class="cell-label">Criado por:</span>
+                <span class="cell-value">{{ task.createdBy?.name || 'Administrador' }}</span>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Meta (Entrega):</span>
+                <strong class="cell-value">{{ task.dueDate | date: 'dd/MM/yyyy' }}</strong>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Departamento:</span>
+                <span class="cell-value">{{ task.category }}</span>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Competência:</span>
+                <strong class="cell-value">{{ task.competence }}</strong>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Valor:</span>
+                <button type="button" class="btn-meta-clickable" (click)="promptEditTaskValue()" title="Clique para editar valor">
+                  <strong>{{ (task.taskValue || task.taxAmount || 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Notificar Cliente via E-mail:</span>
+                <button type="button" class="btn-toggle-meta" [class.is-yes]="task.notifyClientEmail" (click)="toggleNotifyEmail()">
+                  <span>{{ task.notifyClientEmail ? 'Sim' : 'Não' }}</span>
+                </button>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">Notificar Cliente via WhatsApp:</span>
+                <button type="button" class="btn-toggle-meta" [class.is-yes]="task.notifyClientWhatsapp" (click)="toggleNotifyWhatsapp()">
+                  <span>{{ task.notifyClientWhatsapp ? 'Sim' : 'Não' }}</span>
+                </button>
+              </div>
+              <div class="meta-cell">
+                <span class="cell-label">E-mail da Tarefa:</span>
+                <button type="button" class="btn-copy-email" (click)="copyTaskEmail()">
+                  <ion-icon name="copy-outline"></ion-icon>
+                  <span>Copiar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra de Progresso da Tarefa (Fiel ao Gestta) -->
+            <div class="task-progress-box">
+              <div class="progress-labels-row">
+                <span class="progress-txt">{{ checklistProgress().percent }}%</span>
+                <span class="progress-stats">
+                  {{ checklistProgress().completed }} de {{ checklistProgress().total }}
+                </span>
+              </div>
+              <ion-progress-bar
+                [value]="checklistProgress().percent / 100"
+                color="success"
+                class="task-detail-progress-bar"
+              ></ion-progress-bar>
+            </div>
+
+            <!-- Bloco de Alerta de Impedimento -->
+            @if (task.status === TaskStatus.IMPEDIMENTO && task.impedimentReason) {
+              <div class="impediment-banner">
+                <div class="banner-icon"><ion-icon name="alert-circle"></ion-icon></div>
+                <div class="banner-body">
+                  <strong>Impedimento Registrado:</strong>
+                  <p>{{ task.impedimentReason }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- 6 SANFONAS OPERACIONAIS DO GESTTA -->
+            
+            <!-- 1. SANFONA: USUÁRIOS DE CLIENTE -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isUsersAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleUsersAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isUsersAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>USUÁRIOS DE CLIENTE</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Usuários da empresa vinculada com acesso a esta tarefa"></ion-icon>
+                </div>
+                <div class="strip-right-controls">
+                  <span class="strip-counter-plain">
+                    {{ clientUsers().length }} usuários
+                  </span>
+                </div>
+              </div>
+
+              @if (isUsersAccordionOpen()) {
+                <div class="accordion-body animate-fade-in">
+                  @if (isLoadingClientUsers()) {
+                    <div class="accordion-loading">
+                      <ion-spinner name="crescent"></ion-spinner>
+                      <span>Carregando usuários vinculados...</span>
+                    </div>
+                  } @else {
+                    <div class="client-users-list">
+                      @for (u of clientUsers(); track u._id) {
+                        <div class="client-user-item">
+                          <div class="user-avatar-small">
+                            {{ (u.name || 'U').charAt(0).toUpperCase() }}
+                          </div>
+                          <div class="user-meta-col">
+                            <strong class="user-name-title">{{ u.name }}</strong>
+                            <span class="user-email-sub">{{ u.email }}</span>
+                          </div>
+                          <span class="user-role-pill">{{ u.role || 'CLIENTE' }}</span>
+                        </div>
+                      } @empty {
+                        <p class="empty-section-hint">Nenhum usuário de cliente cadastrado para esta empresa.</p>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+
+            <!-- 2. SANFONA: E-MAILS ADICIONAIS (COM CÓPIA) -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isEmailsAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleEmailsAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isEmailsAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>E-MAILS ADICIONAIS (COM CÓPIA)</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Contatos que receberão cópias de notificações desta tarefa"></ion-icon>
+                </div>
+                <div class="strip-right-controls">
+                  @if (!task.additionalEmails || task.additionalEmails.length === 0) {
+                    <span class="strip-empty-text">Nenhum e-mail adicional cadastrado</span>
+                  } @else {
+                    <span class="strip-counter-plain">{{ task.additionalEmails.length }} e-mails</span>
+                  }
+                  <button type="button" class="btn-orange-action" (click)="$event.stopPropagation(); promptAddAdditionalEmail()">
+                    Cadastre agora
+                  </button>
+                </div>
+              </div>
+
+              @if (isEmailsAccordionOpen()) {
+                <div class="accordion-body animate-fade-in">
+                  <div class="emails-list-container">
+                    @for (em of (task.additionalEmails || []); track em) {
+                      <div class="email-item-row">
+                        <ion-icon name="mail-outline"></ion-icon>
+                        <span class="email-address">{{ em }}</span>
+                      </div>
+                    } @empty {
+                      <p class="empty-section-hint">Nenhum e-mail adicional cadastrado. Clique no botão "Cadastre agora" para adicionar.</p>
+                    }
+                  </div>
+                </div>
+              }
+            </section>
+
+            <!-- 3. SANFONA: DOCUMENTOS SOLICITADOS -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isDocsAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleDocsAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isDocsAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>DOCUMENTOS SOLICITADOS</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Arquivos e guias que devem ser anexados ou validados"></ion-icon>
+                </div>
+                <div class="strip-right-controls">
+                  <button type="button" class="btn-gestta-recover" (click)="$event.stopPropagation(); recoverDocuments()" title="Disparar recobrança de pendências">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <span>Recobrar</span>
+                  </button>
+                  <span class="strip-counter-plain">
+                    {{ (task.requiredDocuments || []).length }} documentos
+                  </span>
+                </div>
+              </div>
+
+              @if (isDocsAccordionOpen()) {
+                <div class="section-items-list accordion-body animate-fade-in">
+                  @for (docReq of task.requiredDocuments; track docReq._id) {
+                    <div class="doc-requirement-row" [class.is-done]="docReq.status === 'ENVIADO' || docReq.status === 'VALIDADO'">
+                      <div class="doc-info-col">
+                        <div class="doc-title-row">
+                          <strong class="doc-req-title">{{ docReq.title }}</strong>
+                          <span class="doc-status-tag" [class]="'doc-' + docReq.status.toLowerCase()">
+                            {{ docReq.status }}
+                          </span>
+                        </div>
+                        @if (docReq.description) {
+                          <p class="doc-req-desc">{{ docReq.description }}</p>
+                        }
+                        @if (docReq.uploadedBy) {
+                          <small class="doc-meta-sub">
+                            Anexado por {{ docReq.uploadedBy.name }} em {{ docReq.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}
+                          </small>
+                        }
+                        @if (docReq.disregardReason) {
+                          <small class="doc-disregard-sub">
+                            Desconsiderado: {{ docReq.disregardReason }}
+                          </small>
+                        }
+                      </div>
+
+                      <div class="doc-actions-col">
+                        @if (docReq.fileUrl || docReq.documentId) {
+                          <button type="button" class="btn-view-doc" (click)="openDocFile(docReq)">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <span>Ver</span>
+                          </button>
+                        } @else {
+                          <button type="button" class="btn-attach-doc" (click)="triggerUploadForDocument(docReq)">
+                            <ion-icon name="cloud-upload-outline"></ion-icon>
+                            <span>Anexar</span>
+                          </button>
+                        }
+                        <button
+                          type="button"
+                          class="btn-disregard-doc"
+                          (click)="promptDisregardDocument(docReq)"
+                          title="Desconsiderar exigência deste documento"
+                        >
+                          <ion-icon name="ban-outline"></ion-icon>
+                        </button>
+                      </div>
+                    </div>
+                  } @empty {
+                    <p class="empty-section-hint">Nenhum documento exigido para esta rotina.</p>
+                  }
+                </div>
+              }
+            </section>
+
+            <!-- 4. SANFONA: ATIVIDADES SEM ANEXO -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isNoAttachmentAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleNoAttachmentAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isNoAttachmentAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>ATIVIDADES SEM ANEXO</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Rotinas de validação interna que não exigem arquivos"></ion-icon>
+                </div>
+                <div class="strip-right-controls">
+                  <span class="strip-counter-plain">0 / 0 itens</span>
+                </div>
+              </div>
+
+              @if (isNoAttachmentAccordionOpen()) {
+                <div class="accordion-body animate-fade-in">
+                  <p class="empty-section-hint">Não há atividades internas pendentes sem anexo para esta competência.</p>
+                </div>
+              }
+            </section>
+
+            <!-- 5. SANFONA: CHECKLIST OPERACIONAL -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isChecklistAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleChecklistAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isChecklistAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>CHECKLIST</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Etapas operacionais que compõem o fechamento da tarefa"></ion-icon>
+                </div>
+                <div class="strip-right-actions">
+                  <button type="button" class="btn-add-item-action" (click)="$event.stopPropagation(); promptAddChecklistItem()">
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Adicionar item</span>
+                  </button>
+                  <span class="strip-counter-plain">
+                    {{ checklistProgress().completed }} / {{ checklistProgress().total }} itens
+                  </span>
+                </div>
+              </div>
+
+              @if (isChecklistAccordionOpen()) {
+                <div class="checklist-items-container accordion-body animate-fade-in">
+                  @for (item of task.checklist; track item._id) {
+                    <div class="checklist-item-row" [class.is-completed]="item.completed" (click)="toggleChecklist(item)">
+                      <div class="checkbox-box">
+                        <ion-icon [name]="item.completed ? 'checkmark-circle' : 'square-outline'"></ion-icon>
+                      </div>
+                      <div class="item-text-col">
+                        <span class="item-title">{{ item.title }}</span>
+                        @if (item.completed && item.completedBy) {
+                          <small class="item-audit">
+                            Concluído por {{ item.completedBy.name }} em {{ item.completedAt | date: 'dd/MM HH:mm' }}
+                          </small>
+                        }
+                      </div>
+                    </div>
+                  } @empty {
+                    <p class="empty-section-hint">Nenhuma etapa cadastrada no checklist. Clique em "Adicionar item" para incluir.</p>
+                  }
+                </div>
+              }
+            </section>
+
+            <!-- 6. SANFONA: TAREFAS ASSOCIADAS -->
+            <section class="task-section-accordion" [class.is-collapsed]="!isAssociatedAccordionOpen()">
+              <div class="section-title-strip is-clickable" (click)="toggleAssociatedAccordion()">
+                <div class="strip-left">
+                  <ion-icon [name]="isAssociatedAccordionOpen() ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                  <h3>TAREFAS ASSOCIADAS</h3>
+                  <ion-icon name="information-circle-outline" class="info-help-icon" title="Outras tarefas da mesma empresa e competência"></ion-icon>
+                </div>
+                <div class="strip-right-controls">
+                  <span class="strip-counter-plain">
+                    {{ associatedTasks().length }} tarefas
+                  </span>
+                </div>
+              </div>
+
+              @if (isAssociatedAccordionOpen()) {
+                <div class="accordion-body animate-fade-in">
+                  <div class="associated-tasks-grid">
+                    @for (assoc of associatedTasks(); track assoc._id) {
+                      <div class="associated-task-chip" (click)="selectTask(assoc)">
+                        <div class="chip-cat-tag" [class]="'cat-' + assoc.category.toLowerCase()">
+                          {{ assoc.category }}
+                        </div>
+                        <div class="chip-info">
+                          <strong class="chip-title">{{ assoc.title }}</strong>
+                          <span class="chip-due">Meta: {{ assoc.dueDate | date: 'dd/MM/yyyy' }}</span>
+                        </div>
+                        <span class="chip-status" [class]="'badge-' + assoc.status.toLowerCase()">
+                          {{ getStatusLabel(assoc.status) }}
+                        </span>
+                      </div>
+                    } @empty {
+                      <p class="empty-section-hint">Nenhuma outra tarefa cadastrada para esta empresa na competência {{ task.competence }}.</p>
+                    }
+                  </div>
+                </div>
+              }
+            </section>
+
+          </div>
+        } @else {
+          <div class="no-task-selected-placeholder">
+            <ion-icon name="flash-outline"></ion-icon>
+            <h3>Selecione uma tarefa para visualizar os detalhes operacionais</h3>
+          </div>
+        }
+      </main>
+
+      <!-- COLUNA 3: AUDITORIA, TIMELINE DE EVENTOS E CHAT -->
+      <aside class="col-task-audit-chat" [class.mobile-hidden]="mobileActiveTab() !== 'chat'">
+        @if (activeTask(); as task) {
+          <div class="audit-chat-wrapper">
+            <div class="audit-panel-header">
+              <ion-icon name="chatbubbles-outline"></ion-icon>
+              <h3>Trilha & Mensagens da Tarefa</h3>
+            </div>
+
+            <!-- Feed de Eventos e Mensagens -->
+            <div class="audit-feed-scroll">
+              <!-- Eventos do Histórico de Status -->
+              @for (hist of task.statusHistory; track hist.timestamp) {
+                <div class="audit-event-entry">
+                  <div class="entry-timeline-line"></div>
+                  <div class="entry-icon-dot">
+                    <ion-icon name="time-outline"></ion-icon>
+                  </div>
+                  <div class="entry-content">
+                    <span class="entry-time">{{ hist.timestamp | date: 'dd/MM/yyyy HH:mm' }}</span>
+                    <p class="entry-text">
+                      <strong>{{ hist.reason || 'Alteração de status' }}</strong>
+                    </p>
+                  </div>
+                </div>
+              }
+
+              <!-- Mensagens / Comentários da Tarefa -->
+              @for (comment of task.comments; track comment.createdAt) {
+                <div class="chat-bubble-card">
+                  <div class="bubble-header">
+                    <span class="bubble-author">{{ comment.author.name || 'Membro da Equipe' }}</span>
+                    <span class="bubble-time">{{ comment.createdAt | date: 'dd/MM HH:mm' }}</span>
+                  </div>
+                  <p class="bubble-body">{{ comment.message }}</p>
+                </div>
+              }
+            </div>
+
+            <!-- Input de Envio de Mensagem no Rodapé -->
+            <div class="chat-input-bar">
+              <input
+                type="text"
+                placeholder="Escreva uma mensagem..."
+                [ngModel]="chatInput()"
+                (ngModelChange)="chatInput.set($event)"
+                (keyup.enter)="sendChatMessage()"
+                class="chat-text-input"
+              />
+              <button
+                type="button"
+                class="btn-send-chat"
+                (click)="sendChatMessage()"
+                [disabled]="!chatInput() || !chatInput().trim()"
+              >
+                <ion-icon name="send-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </aside>
+
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- MODO 2: LINHA DO TEMPO TRADICIONAL (FEED DE CARDS) -->
+  <!-- ========================================================================= -->
+  @if (viewMode() === 'feed' && !taskService.isLoading()) {
+    <div class="status-segment-bar">
+      <ion-segment
+        [value]="taskService.selectedStatusFilter()"
+        (ionChange)="onFilterChange($event)"
+        mode="ios"
+        class="custom-segment"
+      >
+        <ion-segment-button value="ALL"><ion-label>TODAS</ion-label></ion-segment-button>
+        <ion-segment-button [value]="TaskStatus.ABERTA"><ion-label>EM ABERTO</ion-label></ion-segment-button>
+        <ion-segment-button [value]="TaskStatus.EM_ANDAMENTO"><ion-label>EM ANDAMENTO</ion-label></ion-segment-button>
+        <ion-segment-button [value]="TaskStatus.CONCLUIDO"><ion-label>CONCLUÍDAS</ion-label></ion-segment-button>
+        <ion-segment-button [value]="TaskStatus.IMPEDIMENTO"><ion-label>IMPEDIMENTOS</ion-label></ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <div class="timeline-feed">
+      @for (task of taskService.filteredTasks(); track task._id) {
+        <div class="timeline-item-card" [class.is-done]="task.status === TaskStatus.CONCLUIDO" [class.is-impediment]="task.status === TaskStatus.IMPEDIMENTO">
+          <div class="timeline-indicator-col">
+            <div class="indicator-dot" [class]="'status-' + task.status.toLowerCase()">
+              <ion-icon [name]="getStatusIcon(task.status)"></ion-icon>
+            </div>
+            <div class="indicator-line"></div>
+          </div>
+
+          <div class="task-card-body">
+            <div class="card-header-row">
+              <div class="badges-row">
+                <span class="category-pill" [class]="'cat-' + task.category.toLowerCase()">
+                  {{ task.category }}
+                </span>
+                <span class="company-name-badge">
+                  <ion-icon name="business-outline"></ion-icon>
+                  {{ task.companyId.tradeName || task.companyId.corporateName }}
+                </span>
+              </div>
               <ion-badge [color]="getStatusBadgeColor(task.status)" class="task-status-pill">
                 {{ getStatusLabel(task.status) }}
               </ion-badge>
             </div>
-          </div>
 
-          <h3 class="task-card-title">{{ task.title }}</h3>
-          <p class="task-card-desc">{{ task.description }}</p>
+            <h3 class="task-card-title">{{ task.title }}</h3>
+            <p class="task-card-desc">{{ task.description }}</p>
 
-          <!-- Seção de Impedimento (se houver) -->
-          @if (task.status === TaskStatus.IMPEDIMENTO && task.impedimentReason) {
-            <div class="impediment-alert-box clickable" (click)="resolveImpediment(task)" title="Clique para anexar o documento pendente">
-              <div class="impediment-info">
-                <ion-icon name="alert-circle-outline"></ion-icon>
-                <div class="impediment-text">
-                  <strong>Motivo do Impedimento:</strong>
-                  <span>{{ task.impedimentReason }}</span>
+            <div class="card-meta-row">
+              <div class="meta-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Vencimento: <strong>{{ task.dueDate | date: 'dd/MM/yyyy' }}</strong></span>
+              </div>
+              @if (task.taxAmount) {
+                <div class="meta-item tax-highlight">
+                  <span>Valor: <strong>{{ task.taxAmount | currency: 'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></span>
                 </div>
-              </div>
-              <div class="impediment-action-tag">
-                <ion-icon name="cloud-upload-outline"></ion-icon>
-                <span>Anexar Arquivo</span>
+              }
+              <div class="meta-item">
+                <span>Competência: <strong>{{ task.competence }}</strong></span>
               </div>
             </div>
-          }
 
-          <!-- Metadados e Valores -->
-          <div class="card-meta-row">
-            <div class="meta-item">
-              <ion-icon name="calendar-outline"></ion-icon>
-              <span>Vencimento: <strong>{{ task.dueDate | date: 'dd/MM/yyyy' }}</strong></span>
+            <!-- Botões de Ação -->
+            <div class="card-actions-row">
+              @if (isAccountant()) {
+                <button type="button" class="btn-action-status" (click)="openStatusAction(task)">
+                  <ion-icon name="refresh-outline"></ion-icon>
+                  <span>Alterar Status</span>
+                </button>
+              }
+              @if (task.pixCode) {
+                <button type="button" class="btn-action-pix" (click)="copyPixCode(task.pixCode, task.taxAmount)">
+                  <ion-icon name="copy-outline"></ion-icon>
+                  <span>Copiar PIX</span>
+                </button>
+              }
+              @if (task.barcode) {
+                <button type="button" class="btn-action-barcode" (click)="copyBarcode(task.barcode)">
+                  <ion-icon name="barcode-outline"></ion-icon>
+                  <span>Código Boleto</span>
+                </button>
+              }
+              @if (task.pdfUrl) {
+                <button type="button" class="btn-view-pdf" (click)="openPdf(task.pdfUrl)">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <span>Visualizar Guia PDF</span>
+                </button>
+              }
             </div>
-
-            @if (task.taxAmount) {
-              <div class="meta-item tax-highlight">
-                <span>Valor Guia: <strong>{{ task.taxAmount | currency: 'BRL' }}</strong></span>
-              </div>
-            }
-
-            <div class="meta-item">
-              <span>Competência: <strong>{{ task.competence }}</strong></span>
-            </div>
-          </div>
-
-          <!-- Ações Disponíveis -->
-          <div class="card-actions-row">
-            <!-- Ação de Resolver Impedimento -->
-            @if (task.status === TaskStatus.IMPEDIMENTO) {
-              <ion-button
-                size="small"
-                fill="solid"
-                color="danger"
-                class="action-btn"
-                (click)="resolveImpediment(task)"
-              >
-                <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
-                Resolver Impedimento / Anexar Arquivo
-              </ion-button>
-            }
-
-            <!-- Ação de Enviar / Acessar Pasta se Aberta -->
-            @if (task.status === TaskStatus.ABERTA) {
-              <ion-button
-                size="small"
-                fill="outline"
-                color="medium"
-                class="action-btn"
-                (click)="resolveImpediment(task)"
-              >
-                <ion-icon slot="start" name="folder-open-outline"></ion-icon>
-                Acessar Pasta / Enviar Arquivo
-              </ion-button>
-            }
-
-            <!-- Ações para Contador -->
-            @if (isAccountant()) {
-              <ion-button
-                size="small"
-                fill="solid"
-                color="primary"
-                class="action-btn"
-                (click)="openStatusAction(task)"
-              >
-                <ion-icon slot="start" name="refresh-outline"></ion-icon>
-                Alterar Status
-              </ion-button>
-            }
-
-            <!-- Ações para Guias Prontas (PIX e Boleto) -->
-            @if (task.status === TaskStatus.CONCLUIDO) {
-              <ion-button
-                size="small"
-                fill="outline"
-                color="success"
-                class="action-btn"
-                (click)="copyPixCode(task.pixCode)"
-              >
-                <ion-icon slot="start" name="copy-outline"></ion-icon>
-                Copiar PIX
-              </ion-button>
-
-              <ion-button
-                size="small"
-                fill="outline"
-                class="action-btn barcode-btn"
-                (click)="copyBarcode(task.barcode)"
-              >
-                <ion-icon slot="start" name="barcode-outline"></ion-icon>
-                Código Boleto
-              </ion-button>
-            }
           </div>
         </div>
-      </div>
-    } @empty {
-      <div class="empty-timeline-state">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
-        <h3>Nenhuma obrigação encontrada</h3>
-        <p>Não há tarefas registradas com os filtros selecionados para a competência {{ taskService.selectedCompetence() }}.</p>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 
-  <!-- Toast de Notificações -->
+  <!-- Modal de Criação de Tarefas -->
+  <app-task-create-modal
+    [isOpen]="isCreateModalOpen()"
+    [defaultCompetence]="taskService.selectedCompetence()"
+    (onClose)="closeCreateTaskModal()"
+    (onCreated)="onTaskCreated($event)"
+  ></app-task-create-modal>
+
+  <!-- Toast -->
   <ion-toast
     [isOpen]="isToastOpen()"
     [message]="toastMessage()"

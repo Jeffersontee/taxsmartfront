@@ -27,6 +27,7 @@ import {
   gridOutline,
   businessOutline,
   timeOutline,
+  layersOutline,
   documentTextOutline,
   calculatorOutline,
   peopleOutline,
@@ -48,6 +49,7 @@ import {
   helpCircleOutline,
   menuOutline,
   closeOutline,
+  cloudOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { UserRole } from '../../../models/user.model';
@@ -127,6 +129,7 @@ export class AdminLayoutComponent implements OnInit {
       gridOutline,
       businessOutline,
       timeOutline,
+      layersOutline,
       documentTextOutline,
       calculatorOutline,
       peopleOutline,
@@ -148,6 +151,7 @@ export class AdminLayoutComponent implements OnInit {
       helpCircleOutline,
       menuOutline,
       closeOutline,
+      cloudOutline,
     });
   }
 
@@ -209,4 +213,3 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.logout();
   }
 }
-

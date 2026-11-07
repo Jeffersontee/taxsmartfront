@@ -1,5 +1,6 @@
 ---
-name: interfacesdescription: Diretrizes automáticas para interfaces.
+name: interfaces
+description: Diretrizes automáticas para interfaces.
 ---
 
 Esta skill fornece diretrizes sobre **interfaces** no ecossistema TaxSmart Front.

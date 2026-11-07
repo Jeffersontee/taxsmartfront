@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Strings } from '../../enum/strings';
-import { User, ApiResponse, UserRole } from '../../models/user.model';
+import { User, ApiResponse, UserRole, SystemModule } from '../../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -50,6 +50,8 @@ export class StaffService {
     password?: string;
     role: UserRole;
     phone?: string;
+    allowedModules?: SystemModule[];
+    assignedCompanies?: string[];
   }): Observable<ApiResponse<User>> {
     this.isLoading.set(true);
     const url = `${this.baseUrl}${Strings.API_STAFF}`;

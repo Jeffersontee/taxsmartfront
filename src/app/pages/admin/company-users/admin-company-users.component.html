@@ -77,12 +77,9 @@
                   </div>
                 </div>
 
-                <ion-badge
-                  [color]="u.role === 'COMPANY_ADMIN' || u.role === 'OWNER' ? 'success' : (u.role === 'PARTNER' ? 'warning' : (u.role === 'COMPANY_FINANCIAL' ? 'tertiary' : 'medium'))"
-                  class="role-badge"
-                >
+                <ion-badge [color]="getRoleBadge(u.role).color" class="role-badge">
                   <ion-icon name="shield-checkmark-outline"></ion-icon>
-                  {{ u.role === 'COMPANY_ADMIN' || u.role === 'OWNER' ? 'Titular / Diretor' : (u.role === 'PARTNER' ? 'Sócio' : (u.role === 'COMPANY_FINANCIAL' ? 'Gestor Financeiro' : 'Colaborador')) }}
+                  {{ getRoleBadge(u.role).label }}
                 </ion-badge>
               </div>
 
@@ -101,6 +98,36 @@
                   {{ u.active ? '● Ativo' : '○ Inativo' }}
                 </span>
               </div>
+
+              <!-- MÓDULOS LIBERADOS -->
+              <div class="user-modules-preview">
+                <span class="modules-title">Módulos:</span>
+                <div class="modules-chip-group">
+                  @for (mod of getUserModules(u); track mod) {
+                    <span class="mini-module-badge" [attr.data-mod]="mod">
+                      {{ mod === 'FISCAL' ? 'Fiscal' : (mod === 'ACCOUNTING' ? 'Contábil' : (mod === 'PAYROLL' ? 'Folha/DP' : (mod === 'RH' ? 'RH' : (mod === 'DOCUMENTS' ? 'Documentos' : mod)))) }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Ações no Rodapé do Card -->
+              <div class="card-footer-actions">
+                <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(u)">
+                  <ion-icon slot="start" name="create-outline"></ion-icon>
+                  Editar
+                </ion-button>
+
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  [color]="u.active ? 'danger' : 'success'"
+                  (click)="toggleUserStatus(u)"
+                >
+                  <ion-icon slot="start" [name]="u.active ? 'close-circle-outline' : 'checkmark-circle-outline'"></ion-icon>
+                  {{ u.active ? 'Desativar' : 'Ativar' }}
+                </ion-button>
+              </div>
             </div>
           }
         </div>
@@ -108,12 +135,12 @@
     }
   </div>
 
-  <!-- Modal de Criação de Usuário da Empresa -->
+  <!-- Modal de Criação / Edição de Usuário da Empresa -->
   <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
     <ng-template>
       <ion-header class="ion-no-border modal-header">
         <ion-toolbar class="modal-toolbar">
-          <ion-title>Adicionar Usuário para {{ selectedCompanyName() }}</ion-title>
+          <ion-title>{{ isEditing() ? 'Editar Usuário da Empresa' : 'Adicionar Usuário para ' + selectedCompanyName() }}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeModal()" color="medium">
               <ion-icon slot="icon-only" name="close-outline"></ion-icon>
@@ -138,72 +165,93 @@
             <ion-input
               type="email"
               formControlName="email"
-              placeholder="ex: carlos@empresa.com.br"
+              placeholder="Ex: carlos@techinova.com.br"
               class="form-input"
             ></ion-input>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Senha Provisória *</label>
-            <ion-input
-              type="password"
-              formControlName="password"
-              placeholder="Mínimo 6 caracteres"
-              class="form-input"
-            ></ion-input>
-          </div>
-
-          @if (isMeiCompany()) {
-            <div class="regime-banner mei">
-              <ion-icon name="information-circle-outline"></ion-icon>
-              <span>Enquadramento <strong>MEI</strong>: Titular único (sem sócios adicionais).</span>
+            <label class="form-label">{{ isEditing() ? 'Alterar Senha (opcional)' : 'Senha Inicial *' }}</label>
+            <div class="password-input-wrap">
+              <ion-input
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="{{ isEditing() ? 'Deixe em branco para manter a senha' : 'Mínimo de 6 caracteres' }}"
+                class="form-input password-input"
+              ></ion-input>
+              <button
+                type="button"
+                class="toggle-eye-btn"
+                (click)="toggleShowPassword()"
+                tabindex="-1"
+              >
+                <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
             </div>
-          } @else if (selectedCompany()) {
-            <div class="regime-banner society">
-              <ion-icon name="business-outline"></ion-icon>
-              <span>Regime <strong>{{ selectedCompany()?.taxRegime }}</strong>: Quadro societário ativo (Titular e Sócios).</span>
-            </div>
-          }
-
-          <div class="form-group">
-            <label class="form-label">Tipo de Usuário (Type) *</label>
-            <ion-select
-              formControlName="type"
-              interface="action-sheet"
-              class="form-select"
-            >
-              @for (t of availableTypes(); track t.value) {
-                <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
-              }
-            </ion-select>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Papel / Função na Empresa (Role) *</label>
+            <label class="form-label">Papel / Função no Portal *</label>
             <ion-select
               formControlName="role"
               interface="action-sheet"
               class="form-select"
             >
-              @for (r of availableRoles(); track r.value) {
+              @for (r of rolesList; track r.value) {
                 <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
               }
             </ion-select>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Telefone / WhatsApp (opcional)</label>
+            <label class="form-label">Telefone / WhatsApp</label>
             <ion-input
               formControlName="phone"
               placeholder="(11) 98765-4321"
               class="form-input"
+              appPhoneMask
+              (ionInput)="onPhoneInput($event)"
+              maxlength="15"
             ></ion-input>
           </div>
 
-          <div class="modal-actions">
-            <ion-button fill="outline" color="medium" (click)="closeModal()">Cancelar</ion-button>
-            <ion-button type="submit" color="primary" [disabled]="userForm.invalid">
-              Salvar Acesso
+          <!-- MÓDULOS LIBERADOS COM CARDS CHECKBOXES -->
+          <div class="form-section">
+            <div class="section-title-wrap">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <div>
+                <h4 class="section-subtitle">Módulos Liberados</h4>
+                <p class="section-desc">Defina quais áreas deste portal da empresa o usuário pode visualizar e interagir.</p>
+              </div>
+            </div>
+
+            <div class="modules-checkbox-grid">
+              @for (mod of modulesList; track mod.value) {
+                <div
+                  class="module-check-card"
+                  [class.is-checked]="isModuleSelected(mod.value)"
+                  (click)="toggleModule(mod.value)"
+                >
+                  <div class="check-box-indicator">
+                    @if (isModuleSelected(mod.value)) {
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                    }
+                  </div>
+                  <div class="check-texts">
+                    <strong>{{ mod.label }}</strong>
+                    <span>{{ mod.desc }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <ion-button fill="outline" color="medium" (click)="closeModal()">
+              Cancelar
+            </ion-button>
+            <ion-button color="primary" type="submit" [disabled]="userForm.invalid">
+              {{ isEditing() ? 'Salvar Alterações' : 'Cadastrar Usuário' }}
             </ion-button>
           </div>
         </form>

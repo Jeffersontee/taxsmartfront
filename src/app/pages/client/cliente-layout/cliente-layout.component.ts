@@ -30,6 +30,7 @@ import {
   gridOutline,
   businessOutline,
   timeOutline,
+  layersOutline,
   documentTextOutline,
   cloudUploadOutline,
   chatbubblesOutline,
@@ -49,6 +50,8 @@ import {
   colorPaletteOutline,
   menuOutline,
   closeOutline,
+  calculatorOutline,
+  personAddOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { CompanyService } from '../../../services/company/company.service';
@@ -111,6 +114,7 @@ export class ClienteLayoutComponent implements OnInit {
       gridOutline,
       businessOutline,
       timeOutline,
+      layersOutline,
       documentTextOutline,
       cloudUploadOutline,
       chatbubblesOutline,
@@ -130,6 +134,8 @@ export class ClienteLayoutComponent implements OnInit {
       colorPaletteOutline,
       menuOutline,
       closeOutline,
+      calculatorOutline,
+      personAddOutline,
     });
   }
 
@@ -206,4 +212,3 @@ export class ClienteLayoutComponent implements OnInit {
     this.authService.logout();
   }
 }
-

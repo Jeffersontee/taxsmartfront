@@ -1,5 +1,6 @@
 import { Component, input, output, computed, inject, signal, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
   IonHeader,
   IonToolbar,
@@ -26,6 +27,8 @@ import {
   shieldCheckmarkOutline,
   eyeOutline,
   refreshOutline,
+  openOutline,
+  copyOutline,
 } from 'ionicons/icons';
 import { DocumentService, IDocumentItem, IAuditLogItem } from '../../services/document/document.service';
 
@@ -50,6 +53,7 @@ import { DocumentService, IDocumentItem, IAuditLogItem } from '../../services/do
 })
 export class DocumentPreviewModalComponent {
   private documentService = inject(DocumentService);
+  private sanitizer = inject(DomSanitizer);
 
   document = input.required<IDocumentItem>();
   isOpen = input<boolean>(false);
@@ -60,6 +64,17 @@ export class DocumentPreviewModalComponent {
   // Signals de Auditoria
   auditLogs = signal<IAuditLogItem[]>([]);
   isLoadingAudit = signal<boolean>(false);
+
+  // Conteúdo Raw (XML / OFX / Código)
+  rawContent = signal<string>('');
+  isLoadingRaw = signal<boolean>(false);
+  copied = signal<boolean>(false);
+
+  safeResourceUrl = computed<SafeResourceUrl | null>(() => {
+    const doc = this.document();
+    if (!doc?.fileUrl) return null;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(doc.fileUrl);
+  });
 
   isImage = computed(() => {
     const doc = this.document();
@@ -151,9 +166,11 @@ export class DocumentPreviewModalComponent {
       shieldCheckmarkOutline,
       eyeOutline,
       refreshOutline,
+      openOutline,
+      copyOutline,
     });
 
-    // Efeito reativo para auditar leitura/visualização em tela e carregar histórico
+    // Efeito reativo para auditar leitura e carregar conteúdo / histórico
     effect(
       () => {
         const isModalOpen = this.isOpen();
@@ -161,6 +178,9 @@ export class DocumentPreviewModalComponent {
         if (isModalOpen && doc?._id) {
           untracked(() => {
             this.recordViewAndLoadAudit(doc._id);
+            if (this.isCodeOrXml()) {
+              this.loadRawContent(doc._id);
+            }
           });
         }
       },
@@ -185,6 +205,38 @@ export class DocumentPreviewModalComponent {
         this.isLoadingAudit.set(false);
       },
     });
+  }
+
+  loadRawContent(docId: string): void {
+    this.isLoadingRaw.set(true);
+    this.documentService.getDocumentRawContent(docId).subscribe({
+      next: (res) => {
+        this.isLoadingRaw.set(false);
+        if (res.data?.content) {
+          this.rawContent.set(res.data.content);
+        }
+      },
+      error: () => {
+        this.isLoadingRaw.set(false);
+      },
+    });
+  }
+
+  copyContent(): void {
+    const text = this.rawContent();
+    if (text && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.copied.set(true);
+        setTimeout(() => this.copied.set(false), 2000);
+      });
+    }
+  }
+
+  openInNewTab(): void {
+    const doc = this.document();
+    if (!doc?.fileUrl) return;
+    this.documentService.logDocumentView(doc._id).subscribe();
+    window.open(doc.fileUrl, '_blank');
   }
 
   getActionLabel(action: string): string {
@@ -216,7 +268,6 @@ export class DocumentPreviewModalComponent {
     const doc = this.document();
     if (!doc) return;
 
-    // Registra a auditoria de download
     this.documentService.logDocumentDownload(doc._id).subscribe();
     this.downloadTriggered.emit(doc);
     window.open(doc.fileUrl, '_blank');

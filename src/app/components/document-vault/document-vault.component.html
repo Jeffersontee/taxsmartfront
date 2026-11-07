@@ -34,6 +34,23 @@
     </div>
   }
 
+  <!-- Aviso quando o Super Admin desativa o envio de documentos avulsos -->
+  @if (!allowUpload() && !readOnly() && !isCompetenceClosed()) {
+    <div class="loose-upload-disabled-banner">
+      <div class="banner-icon-box">
+        <ion-icon name="information-circle-outline"></ion-icon>
+      </div>
+      <div class="banner-body-text">
+        <strong>Envio de Documentos Avulsos Desativado</strong>
+        <p>O escritório contábil exige que todos os documentos sejam enviados diretamente vinculados às suas Tarefas correspondentes na Linha do Tempo.</p>
+      </div>
+      <a routerLink="/company/tasks" class="btn-goto-tasks">
+        <ion-icon name="list-outline"></ion-icon>
+        <span>Ver Minhas Tarefas</span>
+      </a>
+    </div>
+  }
+
   <!-- Drag & Drop Upload Zone (quando permitido) -->
   @if (allowUpload() && !readOnly() && !isCompetenceClosed()) {
     <div
@@ -140,6 +157,14 @@
                   <span class="meta-item">{{ formatBytes(doc.fileSizeBytes) }}</span>
                   <span class="meta-dot">•</span>
                   <span class="meta-item">{{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  @if (doc.taskTitle) {
+                    <span class="meta-dot">•</span>
+                    <span class="meta-item task-bound-tag" title="Vinculado à Tarefa">📋 {{ doc.taskTitle }}</span>
+                  }
+                  @if (doc.dueMetaDate) {
+                    <span class="meta-dot">•</span>
+                    <span class="meta-item meta-due-tag">Meta: {{ doc.dueMetaDate | date: 'dd/MM/yyyy' }}</span>
+                  }
                 </div>
               </div>
 

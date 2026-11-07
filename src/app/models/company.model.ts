@@ -14,16 +14,27 @@ export interface IPartner {
   isResponsible: boolean;
 }
 
+export interface ICompanyResponsibles {
+  fiscalResponsibleId?: any;
+  accountingResponsibleId?: any;
+  payrollResponsibleId?: any;
+  legalResponsibleId?: any;
+}
+
 export interface ICompany {
   _id: string;
+  code?: string;
   corporateName: string;
   tradeName: string;
   cnpj: string;
   taxRegime: TaxRegime;
+  regimeEstadual?: string;
+  regimeMunicipal?: string;
   cnaePrincipal: string;
   cnaesSecundarios?: string[];
   stateRegistration?: string;
   municipalRegistration?: string;
+  openingDate?: string;
   email: string;
   phone: string;
   address: {
@@ -36,6 +47,11 @@ export interface ICompany {
     zipCode: string;
   };
   partners: IPartner[];
+  assignedResponsibles?: ICompanyResponsibles;
+  allowLooseDocumentUpload?: boolean;
+  notifyClient?: boolean;
+  monthlyPayment?: number | string;
+  paymentDueDay?: number;
   active: boolean;
   size?: 'MEI' | 'ME' | 'EPP' | 'MEDIA_GRANDE' | string;
   allowedModules?: string[];

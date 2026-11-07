@@ -108,53 +108,68 @@
 // Tabs
 .tabs-navigation {
   display: flex;
-  gap: 12px;
-  border-bottom: 1px solid var(--app-border);
-  padding-bottom: 12px;
+  gap: 10px;
+  border-bottom: 1px solid var(--app-border, #e2e8f0);
+  padding-bottom: 14px;
   overflow-x: auto;
+  align-items: center;
 
   .tab-btn {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: var(--app-surface);
-    border: 1px solid var(--app-border);
-    color: var(--app-text-muted);
+    background: var(--app-surface, #ffffff);
+    border: 1px solid var(--app-border-strong, #cbd5e1);
+    color: var(--app-text-secondary, #334155);
     padding: 10px 18px;
     border-radius: 10px;
-    font-size: 0.95rem;
+    font-size: 0.925rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
 
     ion-icon {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
+      color: #64748b;
+      transition: color 0.2s ease;
     }
 
     .tab-badge {
-      background: var(--app-surface-subtle);
-      color: var(--app-text-primary);
+      background: var(--app-surface-subtle, #f1f5f9);
+      color: var(--app-text-primary, #0f172a);
+      border: 1px solid var(--app-border, #e2e8f0);
       padding: 2px 8px;
       border-radius: 12px;
       font-size: 0.75rem;
-    }
-
-    &.active {
-      background: var(--app-primary);
-      color: #ffffff;
-      border-color: var(--app-primary);
-      box-shadow: 0 4px 12px rgba(var(--app-primary-rgb), 0.35);
-
-      .tab-badge {
-        background: rgba(0, 0, 0, 0.25);
-        color: #ffffff;
-      }
+      font-weight: 700;
     }
 
     &:hover:not(.active) {
-      background: var(--app-surface-subtle);
-      color: var(--app-text-primary);
+      background: #fff7ed;
+      color: #ea580c;
+      border-color: rgba(234, 88, 12, 0.4);
+
+      ion-icon {
+        color: #ea580c;
+      }
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+      color: #ffffff !important;
+      border-color: #ea580c !important;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35) !important;
+
+      ion-icon {
+        color: #ffffff !important;
+      }
+
+      .tab-badge {
+        background: rgba(255, 255, 255, 0.25) !important;
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+      }
     }
   }
 }
@@ -855,5 +870,124 @@
         }
       }
     }
+  }
+}
+
+// Fixed Company Badge (para Portal /company)
+.fixed-company-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid rgba(234, 88, 12, 0.3);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  ion-icon {
+    font-size: 1.15rem;
+    color: #ea580c;
+  }
+}
+
+// Company Status Badge (na tabela de apuração)
+.company-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid rgba(22, 101, 52, 0.2);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 1.1rem;
+    color: #16a34a;
+  }
+}
+
+// Empty State Elegante da Apuração
+.empty-calculation-card {
+  background: var(--app-surface, #ffffff);
+  border: 1px solid var(--app-border, #e2e8f0);
+  border-radius: 14px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  max-width: 640px;
+  margin: 20px auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+
+  .empty-icon-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(234, 88, 12, 0.1);
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--app-text-primary, #0f172a);
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.925rem;
+    color: var(--app-text-muted, #64748b);
+    max-width: 500px;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .btn-calculate-now {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    ion-icon.spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
   }
 }

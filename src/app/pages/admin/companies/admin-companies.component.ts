@@ -41,9 +41,11 @@ import {
   shieldCheckmarkOutline,
   cashOutline,
   createOutline,
+  checkboxOutline,
 } from 'ionicons/icons';
 import { CompanyService } from '../../../services/company/company.service';
 import { ICompany, TaxRegime } from '../../../models/company.model';
+import { CompanyTasksManagerComponent } from '../../../components/company-tasks-manager/company-tasks-manager.component';
 
 @Component({
   selector: 'app-admin-companies',
@@ -76,6 +78,7 @@ import { ICompany, TaxRegime } from '../../../models/company.model';
     IonRow,
     IonCol,
     IonSearchbar,
+    CompanyTasksManagerComponent,
   ],
 })
 export class AdminCompaniesComponent implements OnInit {
@@ -89,6 +92,10 @@ export class AdminCompaniesComponent implements OnInit {
   selectedFilterRegime = signal<string>('ALL');
   isModalOpen = signal<boolean>(false);
   isSaving = signal<boolean>(false);
+
+  // Modal de Tarefas do Cliente (Estilo Gestta)
+  isTasksManagerOpen = signal<boolean>(false);
+  selectedCompanyForTasks = signal<ICompany | null>(null);
 
   // Form
   companyForm!: FormGroup;
@@ -132,8 +139,26 @@ export class AdminCompaniesComponent implements OnInit {
       shieldCheckmarkOutline,
       cashOutline,
       createOutline,
+      checkboxOutline,
     });
     this.initForm();
+  }
+
+  defaultModalTab = signal<string>('detalhes');
+
+  openEditModal(company: ICompany, tab: string = 'detalhes'): void {
+    this.selectedCompanyForTasks.set(company);
+    this.defaultModalTab.set(tab);
+    this.isTasksManagerOpen.set(true);
+  }
+
+  openTasksManager(company: ICompany): void {
+    this.openEditModal(company, 'tarefas');
+  }
+
+  closeTasksManager(): void {
+    this.isTasksManagerOpen.set(false);
+    this.selectedCompanyForTasks.set(null);
   }
 
   ngOnInit(): void {
@@ -142,15 +167,20 @@ export class AdminCompaniesComponent implements OnInit {
 
   initForm(): void {
     this.companyForm = this.fb.group({
+      code: [''],
       corporateName: ['', [Validators.required]],
       tradeName: ['', [Validators.required]],
       cnpj: ['', [Validators.required]],
+      stateRegistration: [''],
+      municipalRegistration: [''],
       taxRegime: [TaxRegime.SIMPLES_NACIONAL, [Validators.required]],
+      openingDate: [''],
       cnaePrincipal: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
       street: ['', [Validators.required]],
       number: ['', [Validators.required]],
+      complement: [''],
       neighborhood: ['', [Validators.required]],
       city: ['', [Validators.required]],
       state: ['SP', [Validators.required]],
@@ -206,16 +236,21 @@ export class AdminCompaniesComponent implements OnInit {
     const raw = this.companyForm.getRawValue();
 
     const payload = {
+      code: raw.code?.trim() || undefined,
       corporateName: raw.corporateName,
       tradeName: raw.tradeName,
       cnpj: raw.cnpj,
+      stateRegistration: raw.stateRegistration?.trim() || undefined,
+      municipalRegistration: raw.municipalRegistration?.trim() || undefined,
       taxRegime: raw.taxRegime,
+      openingDate: raw.openingDate || undefined,
       cnaePrincipal: raw.cnaePrincipal,
       email: raw.email,
       phone: raw.phone,
       address: {
         street: raw.street,
         number: raw.number,
+        complement: raw.complement?.trim() || undefined,
         neighborhood: raw.neighborhood,
         city: raw.city,
         state: raw.state,

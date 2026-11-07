@@ -36,8 +36,8 @@ export interface IInvoice {
   issueDate: string | Date;
   competence: string;
   accessKey?: string;
-  issuer: IInvoiceEntity;
-  recipient: IInvoiceEntity;
+  issuer?: IInvoiceEntity;
+  recipient?: IInvoiceEntity;
   totalAmount: number;
   discountAmount?: number;
   netAmount: number;

@@ -154,6 +154,28 @@
                 <ion-icon name="checkmark-circle-outline"></ion-icon>
                 Ativa no Sistema
               </span>
+
+              <div class="footer-actions-group">
+                <button
+                  type="button"
+                  class="btn-gestta-edit"
+                  (click)="openEditModal(comp, 'detalhes')"
+                  title="Editar dados cadastrais, responsáveis e políticas da empresa"
+                >
+                  <ion-icon name="create-outline"></ion-icon>
+                  <span>Editar</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-gestta-tasks"
+                  (click)="openEditModal(comp, 'tarefas')"
+                  title="Vincular e Gerenciar Tarefas Deste Cliente (Estilo Gestta)"
+                >
+                  <ion-icon name="checkbox-outline"></ion-icon>
+                  <span>Tarefas</span>
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -176,6 +198,16 @@
           <div class="form-section-title">Dados Cadastrais</div>
           <div class="form-grid">
             <div class="form-group">
+              <label>Código Interno</label>
+              <input type="text" formControlName="code" placeholder="Ex: 100 ou 1800" />
+            </div>
+
+            <div class="form-group">
+              <label>CNPJ *</label>
+              <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00" />
+            </div>
+
+            <div class="form-group">
               <label>Razão Social *</label>
               <input type="text" formControlName="corporateName" placeholder="Ex: Minha Empresa Ltda" />
             </div>
@@ -186,8 +218,13 @@
             </div>
 
             <div class="form-group">
-              <label>CNPJ *</label>
-              <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00" />
+              <label>Inscrição Estadual (IE)</label>
+              <input type="text" formControlName="stateRegistration" placeholder="Isento ou número da IE" />
+            </div>
+
+            <div class="form-group">
+              <label>Inscrição Municipal (CCM)</label>
+              <input type="text" formControlName="municipalRegistration" placeholder="Número do CCM" />
             </div>
 
             <div class="form-group">
@@ -198,6 +235,11 @@
                 <option value="LUCRO_REAL">Lucro Real</option>
                 <option value="MEI">MEI</option>
               </select>
+            </div>
+
+            <div class="form-group">
+              <label>Data de Abertura</label>
+              <input type="date" formControlName="openingDate" />
             </div>
 
             <div class="form-group full-width">
@@ -229,6 +271,11 @@
             </div>
 
             <div class="form-group">
+              <label>Complemento</label>
+              <input type="text" formControlName="complement" placeholder="Ex: Sala 12, Bloco B" />
+            </div>
+
+            <div class="form-group">
               <label>Bairro *</label>
               <input type="text" formControlName="neighborhood" placeholder="Bela Vista" />
             </div>
@@ -243,7 +290,7 @@
               <input type="text" formControlName="state" placeholder="SP" />
             </div>
 
-            <div class="form-group">
+            <div class="form-group full-width">
               <label>CEP *</label>
               <input type="text" formControlName="zipCode" placeholder="01310-100" />
             </div>
@@ -281,4 +328,13 @@
       </div>
     </ng-template>
   </ion-modal>
+
+  <!-- Modal Gestta: Edição de Cliente -> Abas Detalhes, Responsáveis, Tarefas, CNAEs e Geração -->
+  <app-company-tasks-manager
+    [isOpen]="isTasksManagerOpen()"
+    [company]="selectedCompanyForTasks()"
+    [initialTab]="defaultModalTab()"
+    (closed)="closeTasksManager()"
+    (tasksUpdated)="loadCompanies()"
+  ></app-company-tasks-manager>
 </ion-content>

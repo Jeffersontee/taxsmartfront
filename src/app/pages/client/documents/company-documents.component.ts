@@ -30,6 +30,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { CompanyService } from '../../../services/company/company.service';
+import { DocumentService } from '../../../services/document/document.service';
 import { DocumentVaultComponent } from '../../../components/document-vault/document-vault.component';
 import { UserCompany } from '../../../models/user.model';
 
@@ -58,6 +59,7 @@ import { UserCompany } from '../../../models/user.model';
 export class CompanyDocumentsComponent implements OnInit {
   authService = inject(AuthService);
   companyService = inject(CompanyService);
+  documentService = inject(DocumentService);
   route = inject(ActivatedRoute);
 
   // Signals de Estado

@@ -11,17 +11,28 @@
     <div class="filters-bar">
       <div class="select-wrapper">
         <label>Empresa Selecionada:</label>
-        <select
-          class="custom-select"
-          [ngModel]="selectedCompanyId()"
-          (ngModelChange)="onCompanyChange($event)"
-        >
-          @for (company of companyService.companies(); track company._id) {
-            <option [value]="company._id">
-              {{ company.tradeName || company.corporateName }} ({{ company.taxRegime }})
-            </option>
-          }
-        </select>
+        @if (isCompanyUser()) {
+          <div class="fixed-company-badge">
+            <ion-icon name="business-outline"></ion-icon>
+            @for (company of companyService.companies(); track company._id) {
+              @if (company._id === selectedCompanyId()) {
+                <span>{{ company.tradeName || company.corporateName }} ({{ company.taxRegime }})</span>
+              }
+            }
+          </div>
+        } @else {
+          <select
+            class="custom-select"
+            [ngModel]="selectedCompanyId()"
+            (ngModelChange)="onCompanyChange($event)"
+          >
+            @for (company of companyService.companies(); track company._id) {
+              <option [value]="company._id">
+                {{ company.tradeName || company.corporateName }} ({{ company.taxRegime }})
+              </option>
+            }
+          </select>
+        }
       </div>
 
       <div class="select-wrapper">
@@ -44,7 +55,7 @@
       (click)="onTabChange('invoices')"
     >
       <ion-icon name="document-text-outline"></ion-icon>
-      Notas Fiscais & Faturamento
+      <span>Notas Fiscais & Faturamento</span>
       <span class="tab-badge">{{ fiscalService.invoices().length }}</span>
     </button>
 
@@ -54,7 +65,7 @@
       (click)="onTabChange('documents')"
     >
       <ion-icon name="folder-open-outline"></ion-icon>
-      Documentos & XMLs Recebidos
+      <span>Documentos & XMLs Recebidos</span>
       <span class="tab-badge">{{ fiscalDocuments().length }}</span>
     </button>
 
@@ -64,7 +75,7 @@
       (click)="onTabChange('calculation')"
     >
       <ion-icon name="calculator-outline"></ion-icon>
-      Apuração de Tributos
+      <span>Apuração de Tributos</span>
     </button>
 
     <button
@@ -73,7 +84,7 @@
       (click)="onTabChange('guides')"
     >
       <ion-icon name="receipt-outline"></ion-icon>
-      Central de Guias Fiscais
+      <span>Central de Guias Fiscais</span>
       <span class="tab-badge">{{ fiscalService.guides().length }}</span>
     </button>
   </div>
@@ -209,37 +220,61 @@
         <div class="data-table-card">
           <div class="table-header-box">
             <h3>Discriminação dos Tributos Calculados</h3>
-            <button class="btn-action-success" (click)="generateGuideFromCalculation()">
-              <ion-icon name="receipt-outline"></ion-icon>
-              Salvar Apuração & Emitir Guia com PIX
-            </button>
+            @if (canEmitGuide()) {
+              <button class="btn-action-success" (click)="generateGuideFromCalculation()">
+                <ion-icon name="receipt-outline"></ion-icon>
+                Salvar Apuração & Emitir Guia com PIX
+              </button>
+            } @else {
+              <div class="company-status-badge">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
+                Demonstrativo Contábil Oficial
+              </div>
+            }
           </div>
 
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>Tributo / Guia</th>
-                <th>Base de Cálculo</th>
-                <th>Alíquota</th>
-                <th>Valor Calculado</th>
-                <th>Retenções</th>
-                <th>Valor a Pagar</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (tax of sim.taxDetails; track tax.name) {
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
                 <tr>
-                  <td><strong>{{ tax.name }}</strong></td>
-                  <td>{{ tax.baseCalculation | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-                  <td>{{ tax.rate }}%</td>
-                  <td>{{ tax.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-                  <td>{{ (tax.retainedAmount || 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-                  <td><strong class="payable-highlight">{{ (tax.amount - (tax.retainedAmount || 0)) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td>
+                  <th>Tributo / Guia</th>
+                  <th>Base de Cálculo</th>
+                  <th>Alíquota</th>
+                  <th>Valor Calculado</th>
+                  <th>Retenções</th>
+                  <th>Valor a Pagar</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (tax of sim.taxDetails; track tax.name) {
+                  <tr>
+                    <td><strong>{{ tax.name }}</strong></td>
+                    <td>{{ tax.baseCalculation | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td>{{ tax.rate }}%</td>
+                    <td>{{ tax.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td>{{ (tax.retainedAmount || 0) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td><strong class="payable-highlight">{{ (tax.amount - (tax.retainedAmount || 0)) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
+    } @else {
+      <!-- Fallback / Empty State Elegante da Apuração -->
+      <div class="empty-calculation-card">
+        <div class="empty-icon-box">
+          <ion-icon name="calculator-outline"></ion-icon>
+        </div>
+        <h3>Apuração de Tributos da Competência {{ selectedCompetence() }}</h3>
+        <p>
+          O demonstrativo fiscal consolida as notas fiscais emitidas no mês e calcula os tributos devidos de acordo com o regime tributário da empresa.
+        </p>
+        <button class="btn-calculate-now" (click)="runSimulation()" [disabled]="fiscalService.isLoading()">
+          <ion-icon name="refresh-outline" [class.spinning]="fiscalService.isLoading()"></ion-icon>
+          {{ fiscalService.isLoading() ? 'Processando Apuração...' : 'Processar Apuração de Tributos' }}
+        </button>
       </div>
     }
   }

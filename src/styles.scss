@@ -9,6 +9,15 @@ html {
 :root,
 [data-theme="light"],
 .theme-light {
+  --app-primary: #ea580c;
+  --app-primary-rgb: 234, 88, 12;
+  --app-primary-hover: #c2410c;
+  --app-secondary: #0284c7;
+  --app-secondary-rgb: 2, 132, 199;
+  --app-secondary-hover: #0369a1;
+  --ion-color-primary: #ea580c;
+  --ion-color-primary-rgb: 234, 88, 12;
+  --ion-color-primary-contrast: #ffffff;
   --app-bg: #f8fafc;
   --app-bg-gradient: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
   --app-surface: #ffffff;
@@ -34,6 +43,15 @@ html {
 
 [data-theme="dark"],
 .theme-dark {
+  --app-primary: #ea580c;
+  --app-primary-rgb: 234, 88, 12;
+  --app-primary-hover: #f97316;
+  --app-secondary: #38bdf8;
+  --app-secondary-rgb: 56, 189, 248;
+  --app-secondary-hover: #0284c7;
+  --ion-color-primary: #ea580c;
+  --ion-color-primary-rgb: 234, 88, 12;
+  --ion-color-primary-contrast: #ffffff;
   --app-bg: #090d16;
   --app-bg-gradient: radial-gradient(circle at 50% 0%, #1a1f35 0%, #090d16 75%);
   --app-surface: #121826;

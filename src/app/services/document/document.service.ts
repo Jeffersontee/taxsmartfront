@@ -13,6 +13,11 @@ export interface IDocumentItem {
   module: 'FISCAL' | 'CONTABIL' | 'DP' | 'RH' | 'GERAL';
   documentType: string;
   stage: 'ENVIADO' | 'EM_ANALISE' | 'IMPEDIMENTO' | 'APROVADO' | 'PROCESSADO' | 'FECHADO';
+  taskId?: string | { _id: string; title: string; dueDate?: string; status?: string; category?: string; competence?: string };
+  taskTitle?: string;
+  taskDocumentId?: string;
+  attachedTo?: 'Tarefa' | 'Cobrança' | 'Avulso';
+  dueMetaDate?: string;
   originalFilename: string;
   safeFilename: string;
   fileUrl: string;
@@ -64,9 +69,10 @@ export class DocumentService {
   totalDocuments = signal<number>(0);
   isLoading = signal<boolean>(false);
   isUploading = signal<boolean>(false);
+  allowLooseDocumentUpload = signal<boolean>(true);
 
   /**
-   * Busca documentos com filtros de esteira
+   * Busca documentos com filtros de esteira e central de busca integrada
    */
   loadDocuments(filters: {
     companyId?: string;
@@ -74,6 +80,12 @@ export class DocumentService {
     module?: string;
     stage?: string;
     documentType?: string;
+    taskId?: string;
+    attachedTo?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+    department?: string;
     page?: number;
     limit?: number;
   }): Observable<ApiResponse<{ documents: IDocumentItem[]; total: number }>> {
@@ -85,6 +97,12 @@ export class DocumentService {
     if (filters.module) params = params.set('module', filters.module);
     if (filters.stage) params = params.set('stage', filters.stage);
     if (filters.documentType) params = params.set('documentType', filters.documentType);
+    if (filters.taskId) params = params.set('taskId', filters.taskId);
+    if (filters.attachedTo) params = params.set('attachedTo', filters.attachedTo);
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.startDate) params = params.set('startDate', filters.startDate);
+    if (filters.endDate) params = params.set('endDate', filters.endDate);
+    if (filters.department) params = params.set('department', filters.department);
     if (filters.page) params = params.set('page', String(filters.page));
     if (filters.limit) params = params.set('limit', String(filters.limit));
 
@@ -227,5 +245,81 @@ export class DocumentService {
   getDocumentAuditHistory(documentId: string): Observable<ApiResponse<IAuditLogItem[]>> {
     const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/audit`;
     return this.http.get<ApiResponse<IAuditLogItem[]>>(url);
+  }
+
+  /**
+   * Obtém status e configurações dos provedores de armazenamento
+   */
+  getStorageStatus(): Observable<ApiResponse<any>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/storage/status`;
+    return this.http.get<ApiResponse<any>>(url);
+  }
+
+  /**
+   * Testa conectividade com o Cloudinary
+   */
+  testCloudinaryConnection(): Observable<ApiResponse<any>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/storage/test-cloudinary`;
+    return this.http.post<ApiResponse<any>>(url, {});
+  }
+
+  /**
+   * Altera o provedor de storage ativo
+   */
+  setActiveStorageProvider(provider: string): Observable<ApiResponse<any>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/storage/set-active`;
+    return this.http.post<ApiResponse<any>>(url, { provider });
+  }
+
+  /**
+   * Obtém o conteúdo cru/texto de um documento (XML, OFX, etc.)
+   */
+  getDocumentRawContent(documentId: string): Observable<ApiResponse<{ filename: string; mimeType: string; content: string }>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/raw`;
+    return this.http.get<ApiResponse<{ filename: string; mimeType: string; content: string }>>(url);
+  }
+
+  /**
+   * Obtém as configurações globais de armazenamento e políticas de envio
+   */
+  getSettings(): Observable<ApiResponse<any>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/settings`;
+    return this.http.get<ApiResponse<any>>(url).pipe(
+      tap((res) => {
+        if (res.data && res.data.allowLooseDocumentUpload !== undefined) {
+          this.allowLooseDocumentUpload.set(res.data.allowLooseDocumentUpload);
+        }
+      })
+    );
+  }
+
+  /**
+   * Atualiza as configurações de envio e storage (Super Admin)
+   */
+  updateSettings(data: { allowLooseDocumentUpload?: boolean; activeStorageProvider?: string }): Observable<ApiResponse<any>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/settings`;
+    return this.http.patch<ApiResponse<any>>(url, data).pipe(
+      tap((res) => {
+        if (res.data && res.data.allowLooseDocumentUpload !== undefined) {
+          this.allowLooseDocumentUpload.set(res.data.allowLooseDocumentUpload);
+        }
+      })
+    );
+  }
+
+  /**
+   * Gera URL segura para streaming/visualização inline de PDF ou arquivo
+   */
+  getFileViewUrl(documentId: string): string {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    return `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/view?token=${encodeURIComponent(token)}`;
+  }
+
+  /**
+   * Gera URL segura para download direto
+   */
+  getFileDownloadUrl(documentId: string): string {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    return `${this.baseUrl}${Strings.API_DOCUMENTS}/${documentId}/download?download=true&token=${encodeURIComponent(token)}`;
   }
 }

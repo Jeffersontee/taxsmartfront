@@ -212,6 +212,67 @@
     }
   }
 
+  .staff-permissions-preview {
+    background: var(--app-bg, #f8fafc);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .perm-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .perm-title {
+        font-size: 0.6875rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--app-text-muted, #64748b);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 60px;
+      }
+    }
+
+    .modules-chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+
+      .mini-module-badge {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        background: rgba(37, 99, 235, 0.08);
+        color: #2563eb;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        padding: 2px 7px;
+        border-radius: 6px;
+      }
+    }
+
+    .scope-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #059669;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+
+      &.custom {
+        color: #d97706;
+      }
+
+      ion-icon {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
   .card-footer-actions {
     display: flex;
     align-items: center;
@@ -272,27 +333,268 @@ ion-modal {
   }
 
   .form-container {
-    padding: 20px;
+    padding: 24px 28px;
   }
 
   .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 
     .form-label {
       display: block;
-      font-size: 0.8125rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      color: var(--app-text-secondary, #334155);
-      margin-bottom: 6px;
+      color: var(--app-text-primary, #1e293b);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
     }
 
     .form-input,
     .form-select {
       background: var(--app-bg, #f8fafc);
-      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.1));
-      border-radius: 10px;
-      padding: 4px 12px;
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.12));
+      border-radius: 12px;
+      --padding-start: 14px;
+      --padding-end: 14px;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      min-height: 48px;
       font-size: 0.9375rem;
+      --highlight-color-focused: transparent;
+      --border-color: transparent;
+      transition: all 0.2s ease;
+
+      &:focus-within {
+        border-color: var(--app-primary, #ff4d00);
+        box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.12);
+        background: #ffffff;
+      }
+    }
+
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .password-input {
+        flex: 1;
+        --padding-end: 46px;
+      }
+
+      .toggle-eye-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--app-text-muted, #64748b);
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        z-index: 5;
+
+        &:hover {
+          color: var(--app-text-primary, #0f172a);
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+
+  .form-section {
+    margin-top: 26px;
+    margin-bottom: 22px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--app-border, rgba(0, 0, 0, 0.12));
+
+    .section-title-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 1.4rem;
+        color: var(--app-primary, #ff4d00);
+        margin-top: 2px;
+      }
+
+      .section-subtitle {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--app-text-primary, #0f172a);
+        margin: 0 0 3px 0;
+      }
+
+      .section-desc {
+        font-size: 0.775rem;
+        color: var(--app-text-secondary, #64748b);
+        margin: 0;
+      }
+    }
+  }
+
+  .modules-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+
+    .module-check-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--app-bg, #f8fafc);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(255, 77, 0, 0.4);
+      }
+
+      &.is-checked {
+        background: rgba(255, 77, 0, 0.06);
+        border-color: var(--app-primary, #ff4d00);
+
+        .check-box-indicator {
+          background: var(--app-primary, #ff4d00);
+          border-color: var(--app-primary, #ff4d00);
+          color: #ffffff;
+        }
+
+        .check-texts strong {
+          color: var(--app-primary, #ff4d00);
+        }
+      }
+
+      .check-box-indicator {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border: 2px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+
+        ion-icon {
+          font-size: 0.85rem;
+          font-weight: 800;
+        }
+      }
+
+      .check-texts {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.825rem;
+          color: var(--app-text-primary, #1e293b);
+          line-height: 1.2;
+        }
+
+        span {
+          font-size: 0.7rem;
+          color: var(--app-text-secondary, #64748b);
+          margin-top: 2px;
+          line-height: 1.2;
+        }
+      }
+    }
+  }
+
+  .scope-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .scope-option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--app-bg, #f8fafc);
+      border: 1px solid var(--app-border, rgba(0, 0, 0, 0.08));
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(255, 77, 0, 0.3);
+      }
+
+      &.is-selected {
+        background: rgba(255, 77, 0, 0.05);
+        border-color: var(--app-primary, #ff4d00);
+
+        .radio-indicator {
+          border-color: var(--app-primary, #ff4d00);
+        }
+
+        .option-texts strong {
+          color: var(--app-primary, #ff4d00);
+        }
+      }
+
+      .radio-indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+        flex-shrink: 0;
+
+        .radio-inner {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--app-primary, #ff4d00);
+        }
+      }
+
+      .option-texts {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+          font-size: 0.85rem;
+          color: var(--app-text-primary, #1e293b);
+        }
+
+        span {
+          font-size: 0.725rem;
+          color: var(--app-text-secondary, #64748b);
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .custom-companies-select {
+    margin-top: 14px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 77, 0, 0.2);
+
+    .multi-select {
+      margin-top: 4px;
     }
   }
 

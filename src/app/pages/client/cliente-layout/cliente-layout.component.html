@@ -67,11 +67,11 @@
         }
       </div>
 
-      <!-- Links de Navegação Dinâmicos por Módulos -->
+      <!-- Links de Navegação Clean & Objetivos -->
       <ion-list lines="none" class="nav-list">
         @if (!isSidebarCollapsed()) {
           <ion-list-header>
-            <ion-label>PAINEL PRINCIPAL</ion-label>
+            <ion-label>PRINCIPAL</ion-label>
           </ion-list-header>
         }
 
@@ -81,176 +81,177 @@
           [routerLinkActiveOptions]="{ exact: true }"
           detail="false"
           class="nav-item"
-          title="Visão Geral"
+          title="Dashboard Geral"
           (click)="onNavClick()"
         >
           <ion-icon slot="start" name="grid-outline"></ion-icon>
           @if (!isSidebarCollapsed()) {
-            <ion-label>Visão Geral</ion-label>
+            <ion-label>Dashboard Geral</ion-label>
           }
         </ion-item>
 
-        <ion-item
-          routerLink="/company/timeline"
-          routerLinkActive="active-item"
-          detail="false"
-          class="nav-item"
-          title="Linha do Tempo de Obrigações"
-          (click)="onNavClick()"
-        >
-          <ion-icon slot="start" name="time-outline"></ion-icon>
-          @if (!isSidebarCollapsed()) {
-            <ion-label>Linha do Tempo</ion-label>
-          }
-        </ion-item>
-
-        <!-- MÓDULO FISCAL -->
-        @if (hasModule('FISCAL') && !authService.isCompanyEmployee()) {
-          @if (!isSidebarCollapsed()) {
-            <ion-list-header class="mt-section">
-              <ion-label>MÓDULO FISCAL & TRIBUTOS</ion-label>
-            </ion-list-header>
-          }
-
+        <!-- TAREFAS (Menu Dedicado) -->
+        @if (hasModule('TIMELINE_TASKS')) {
           <ion-item
-            routerLink="/company/dashboard"
-            detail="false"
-            class="nav-item"
-            title="Minhas Guias & Impostos (DAS/DARF)"
-            (click)="onNavClick()"
-          >
-            <ion-icon slot="start" name="wallet-outline"></ion-icon>
-            @if (!isSidebarCollapsed()) {
-              <ion-label>Guias & Tributos</ion-label>
-            }
-          </ion-item>
-
-          <ion-item
-            routerLink="/company/documents"
+            routerLink="/company/tasks"
             routerLinkActive="active-item"
             detail="false"
             class="nav-item"
-            title="Notas Fiscais e XMLs da Competência"
+            title="Tarefas"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="layers-outline"></ion-icon>
+            @if (!isSidebarCollapsed()) {
+              <ion-label>Tarefas</ion-label>
+            }
+          </ion-item>
+        }
+
+        <!-- LINHA DO TEMPO (Sozinha como estava antes) -->
+        @if (hasModule('TIMELINE_TASKS')) {
+          <ion-item
+            routerLink="/company/timeline"
+            routerLinkActive="active-item"
+            detail="false"
+            class="nav-item"
+            title="Linha do Tempo"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="time-outline"></ion-icon>
+            @if (!isSidebarCollapsed()) {
+              <ion-label>Linha do Tempo</ion-label>
+            }
+          </ion-item>
+        }
+
+        <!-- GESTÃO CONTÁBIL -->
+        @if (!isSidebarCollapsed()) {
+          <ion-list-header class="mt-section">
+            <ion-label>GESTÃO CONTÁBIL</ion-label>
+          </ion-list-header>
+        }
+
+        <!-- MÓDULO FISCAL -->
+        @if (hasModule('FISCAL') && !authService.isCompanyEmployee()) {
+          <ion-item
+            routerLink="/company/fiscal"
+            routerLinkActive="active-item"
+            detail="false"
+            class="nav-item"
+            title="Módulo Fiscal"
             (click)="onNavClick()"
           >
             <ion-icon slot="start" name="document-text-outline"></ion-icon>
             @if (!isSidebarCollapsed()) {
-              <ion-label>Documentos Fiscais</ion-label>
+              <ion-label>Módulo Fiscal</ion-label>
             }
           </ion-item>
         }
 
         <!-- MÓDULO CONTÁBIL -->
         @if (hasModule('ACCOUNTING') && !authService.isCompanyEmployee()) {
-          @if (!isSidebarCollapsed()) {
-            <ion-list-header class="mt-section">
-              <ion-label>MÓDULO CONTÁBIL</ion-label>
-            </ion-list-header>
-          }
-
           <ion-item
-            routerLink="/company/documents"
+            routerLink="/company/contabil"
             routerLinkActive="active-item"
             detail="false"
             class="nav-item"
-            title="Extratos Bancários OFX e Despesas"
+            title="Módulo Contábil"
             (click)="onNavClick()"
           >
-            <ion-icon slot="start" name="cash-outline"></ion-icon>
+            <ion-icon slot="start" name="calculator-outline"></ion-icon>
             @if (!isSidebarCollapsed()) {
-              <ion-label>Extratos & Contábil</ion-label>
+              <ion-label>Módulo Contábil</ion-label>
             }
           </ion-item>
         }
 
-        <!-- MÓDULO FOLHA / DP -->
+        <!-- MÓDULO DP -->
         @if (hasModule('PAYROLL') || hasModule('DP')) {
-          @if (!isSidebarCollapsed()) {
-            <ion-list-header class="mt-section">
-              <ion-label>FOLHA DE PAGAMENTO & DP</ion-label>
-            </ion-list-header>
-          }
-
           <ion-item
-            routerLink="/company/documents"
+            routerLink="/company/dp"
             routerLinkActive="active-item"
             detail="false"
             class="nav-item"
-            title="Holerites e Pró-Labore"
+            title="Módulo DP"
             (click)="onNavClick()"
           >
-            <ion-icon slot="start" name="people-outline"></ion-icon>
+            <ion-icon slot="start" name="receipt-outline"></ion-icon>
             @if (!isSidebarCollapsed()) {
-              <ion-label>Holerites & Pessoal</ion-label>
+              <ion-label>Módulo DP</ion-label>
+            }
+          </ion-item>
+
+          <!-- MÓDULO RH -->
+          <ion-item
+            routerLink="/company/rh"
+            routerLinkActive="active-item"
+            detail="false"
+            class="nav-item"
+            title="Módulo RH"
+            (click)="onNavClick()"
+          >
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            @if (!isSidebarCollapsed()) {
+              <ion-label>Módulo RH</ion-label>
             }
           </ion-item>
         }
 
         <!-- ESTEIRA DE DOCUMENTOS -->
-        @if (!isSidebarCollapsed()) {
-          <ion-list-header class="mt-section">
-            <ion-label>ESTEIRA DE ARQUIVOS</ion-label>
-          </ion-list-header>
-        }
-
         <ion-item
-          routerLink="/company/documents"
+          routerLink="/company/documentos"
           routerLinkActive="active-item"
           detail="false"
           class="nav-item"
-          title="Cofre de Documentos e Envio para o Escritório"
+          title="Documentos"
           (click)="onNavClick()"
         >
           <ion-icon slot="start" name="folder-open-outline"></ion-icon>
           @if (!isSidebarCollapsed()) {
-            <ion-label>Cofre de Documentos</ion-label>
+            <ion-label>Documentos</ion-label>
           }
         </ion-item>
 
-        <!-- GESTÃO DA EMPRESA (Apenas Gestores / Titular) -->
-        @if (authService.canManageCompanyUsers()) {
+        <!-- GESTÃO DA EMPRESA -->
+        @if (authService.canManageCompanyUsers() || !isSidebarCollapsed()) {
           @if (!isSidebarCollapsed()) {
             <ion-list-header class="mt-section">
               <ion-label>GESTÃO DA EMPRESA</ion-label>
             </ion-list-header>
           }
 
+          @if (authService.canManageCompanyUsers()) {
+            <ion-item
+              routerLink="/company/users"
+              routerLinkActive="active-item"
+              detail="false"
+              class="nav-item"
+              title="Usuários da Empresa"
+              (click)="onNavClick()"
+            >
+              <ion-icon slot="start" name="people-outline"></ion-icon>
+              @if (!isSidebarCollapsed()) {
+                <ion-label>Usuários da Empresa</ion-label>
+              }
+            </ion-item>
+          }
+
           <ion-item
-            routerLink="/company/users"
+            routerLink="/company/appearance"
             routerLinkActive="active-item"
             detail="false"
             class="nav-item"
-            title="Usuários & Acessos da Empresa"
+            title="Aparência & Template"
             (click)="onNavClick()"
           >
-            <ion-icon slot="start" name="people-outline"></ion-icon>
+            <ion-icon slot="start" name="color-palette-outline"></ion-icon>
             @if (!isSidebarCollapsed()) {
-              <ion-label>Usuários & Acessos</ion-label>
+              <ion-label>Aparência & Template</ion-label>
             }
           </ion-item>
         }
 
-        <!-- CONFIGURAÇÕES E APARÊNCIA -->
-        @if (!isSidebarCollapsed()) {
-          <ion-list-header class="mt-section">
-            <ion-label>PERSONALIZAÇÃO</ion-label>
-          </ion-list-header>
-        }
-
-        <ion-item
-          routerLink="/company/appearance"
-          routerLinkActive="active-item"
-          detail="false"
-          class="nav-item"
-          title="Personalização Visual & Preview de Celular"
-          (click)="onNavClick()"
-        >
-          <ion-icon slot="start" name="color-palette-outline"></ion-icon>
-          @if (!isSidebarCollapsed()) {
-            <ion-label>Aparência & Cores</ion-label>
-          }
-        </ion-item>
-
+        <!-- ATENDIMENTO -->
         @if (!isSidebarCollapsed()) {
           <ion-list-header class="mt-section">
             <ion-label>ATENDIMENTO</ion-label>
@@ -357,4 +358,3 @@
     </ion-content>
   </div>
 </ion-split-pane>
-

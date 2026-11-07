@@ -1,5 +1,6 @@
 ---
-name: guardsdescription: Diretrizes automáticas para guards.
+name: guards
+description: Diretrizes automáticas para guards.
 ---
 
 Esta skill fornece diretrizes sobre **guards** no ecossistema TaxSmart Front.

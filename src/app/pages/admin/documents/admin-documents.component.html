@@ -3,11 +3,21 @@
     <div class="header-content">
       <div class="title-group">
         <span class="category-badge">ARMAZENAMENTO & ESTEIRA DE ARQUIVOS</span>
-        <h1 class="page-title">Esteira de Documentos & Fechamento</h1>
-        <p class="page-subtitle">Central de trâmite de arquivos contábeis, validação de XMLs, extratos, ponto e homologações.</p>
+        <h1 class="page-title">Central de Documentos & Tarefas</h1>
+        <p class="page-subtitle">Busca unificada de arquivos atrelados a tarefas fiscais, contábeis e trabalhistas da esteira.</p>
       </div>
 
       <div class="header-actions">
+        <ion-button
+          fill="solid"
+          color="primary"
+          class="action-btn upload-toggle-btn"
+          (click)="isUploadCardOpen.set(!isUploadCardOpen())"
+        >
+          <ion-icon slot="start" [name]="isUploadCardOpen() ? 'close-outline' : 'cloud-upload-outline'"></ion-icon>
+          {{ isUploadCardOpen() ? 'Fechar Upload' : '+ Enviar Documento' }}
+        </ion-button>
+
         <ion-button
           color="dark"
           class="action-btn"
@@ -24,79 +34,30 @@
 
 <ion-content class="main-content">
   <div class="content-container">
-    <!-- Grid Superior: Seletor + Card de Upload com Drag & Drop -->
-    <div class="top-workflow-grid">
-      <!-- Painel de Contexto -->
-      <div class="context-panel">
-        <h2 class="panel-title">Filtros da Carteira</h2>
 
-        <div class="control-group">
-          <label class="control-label">Empresa Selecionada:</label>
-          <ion-select
-            interface="popover"
-            [value]="selectedCompanyId()"
-            (ionChange)="selectedCompanyId.set($any($event).detail.value); onFilterChange()"
-            class="custom-select"
-          >
-            <ion-select-option value="">Todas as Empresas (Carteira Geral)</ion-select-option>
-            @for (c of companies(); track c._id) {
-              <ion-select-option [value]="c._id">
-                {{ c.tradeName || c.corporateName }}
-              </ion-select-option>
-            }
-          </ion-select>
-        </div>
-
-        <div class="control-row">
-          <div class="control-group half">
-            <label class="control-label">Competência:</label>
-            <ion-select
-              interface="popover"
-              [value]="selectedCompetence()"
-              (ionChange)="selectedCompetence.set($any($event).detail.value); onFilterChange()"
-              class="custom-select"
-            >
-              @for (comp of competencesList; track comp) {
-                <ion-select-option [value]="comp">{{ comp }}</ion-select-option>
-              }
-            </ion-select>
+    <!-- Card de Upload Retrátil -->
+    @if (isUploadCardOpen()) {
+      <div class="upload-retractable-card">
+        @if (authService.isCompany() && !allowLooseDocumentUpload()) {
+          <div class="loose-policy-warning-banner">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>
+              <strong>Atenção:</strong> O escritório contábil configurou que todo documento desta empresa deve ser enviado vinculado a uma Tarefa da Linha do Tempo. O envio avulso está desativado.
+            </span>
           </div>
+        }
 
-          <div class="control-group half">
-            <label class="control-label">Módulo:</label>
-            <ion-select
-              interface="popover"
-              [value]="selectedModule()"
-              (ionChange)="selectedModule.set($any($event).detail.value); onFilterChange()"
-              class="custom-select"
-            >
-              <ion-select-option value="">Todos os Módulos Autorizados</ion-select-option>
-              @for (m of accessibleModules(); track m.value) {
-                <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
-              }
-            </ion-select>
-          </div>
-        </div>
-
-        <div class="status-box" [class.closed]="isCurrentCompetenceClosed()">
-          <ion-icon [name]="isCurrentCompetenceClosed() ? 'lock-closed-outline' : 'checkmark-circle-outline'"></ion-icon>
-          <div class="status-texts">
-            <strong>{{ isCurrentCompetenceClosed() ? 'Competência Bloqueada' : 'Competência Aberta para Envio' }}</strong>
-            <span>{{ isCurrentCompetenceClosed() ? 'Nenhum novo arquivo pode ser recebido sem reabertura.' : 'Arquivos recebidos entram na fila de conferência.' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card de Upload no Estilo da Imagem do Cliente -->
-      <div class="upload-workflow-card">
         <div class="card-header-line">
           <div class="title-with-icon">
             <ion-icon name="cloud-upload-outline"></ion-icon>
             <div>
-              <h3>Envio de Documentos</h3>
-              <span>Envie notas, extratos e arquivos para a esteira</span>
+              <h3>Upload & Vínculo de Documento</h3>
+              <span>Envie arquivos atrelados a uma Tarefa específica ou como arquivo avulso da empresa</span>
             </div>
           </div>
+          <button type="button" class="btn-close-card" (click)="isUploadCardOpen.set(false)">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
         </div>
 
         <div
@@ -112,7 +73,7 @@
             type="file"
             (change)="onFileSelected($event)"
             style="display: none"
-            accept=".xml,.pdf,.ofx,.png,.jpeg,.jpg,.xlsx,.csv"
+            accept=".xml,.pdf,.ofx,.png,.jpeg,.jpg,.xlsx,.csv,.txt"
           />
 
           <div class="drop-content">
@@ -120,7 +81,7 @@
             <strong class="drop-title">
               {{ selectedFile() ? selectedFile()?.name : 'Arraste ou selecione arquivos' }}
             </strong>
-            <span class="drop-hint">Formatos aceitos: XML, OFX, PDF, PNG, JPG, XLSX</span>
+            <span class="drop-hint">Formatos aceitos: PDF, XML, OFX, TXT, XLSX, PNG, JPG</span>
 
             <ion-button color="primary" class="select-btn">
               {{ selectedFile() ? 'Trocar Arquivo' : 'SELECIONAR ARQUIVO' }}
@@ -129,14 +90,14 @@
         </div>
 
         @if (selectedFile()) {
-          <div class="upload-options-row">
-            <div class="opt-col company-col">
+          <div class="upload-options-grid">
+            <div class="opt-field">
               <label>Empresa Destinatária: *</label>
               <ion-select
                 interface="popover"
                 [value]="uploadCompanyId() || selectedCompanyId()"
-                (ionChange)="uploadCompanyId.set($any($event).detail.value)"
-                class="mini-select"
+                (ionChange)="uploadCompanyId.set($any($event).detail.value); loadTasksForCompany()"
+                class="field-select"
                 placeholder="Selecione a empresa..."
               >
                 @for (c of companies(); track c._id) {
@@ -147,13 +108,46 @@
               </ion-select>
             </div>
 
-            <div class="opt-col module-col">
-              <label>Destino / Módulo: *</label>
+            <div class="opt-field">
+              <label>Atrelado a(ao): *</label>
+              <ion-select
+                interface="popover"
+                [value]="uploadAttachedTo()"
+                (ionChange)="uploadAttachedTo.set($any($event).detail.value)"
+                class="field-select"
+              >
+                <ion-select-option value="Tarefa">Tarefa da Esteira</ion-select-option>
+                @if (!authService.isCompany() || allowLooseDocumentUpload()) {
+                  <ion-select-option value="Avulso">Avulso / Arquivo Geral</ion-select-option>
+                }
+              </ion-select>
+            </div>
+
+            @if (uploadAttachedTo() === 'Tarefa') {
+              <div class="opt-field">
+                <label>Tarefa Vinculada:</label>
+                <ion-select
+                  interface="popover"
+                  [value]="uploadTaskId()"
+                  (ionChange)="uploadTaskId.set($any($event).detail.value)"
+                  class="field-select"
+                  placeholder="Selecione a tarefa..."
+                >
+                  <ion-select-option value="">Nenhuma / Vincular Depois</ion-select-option>
+                  @for (t of availableTasks(); track t._id) {
+                    <ion-select-option [value]="t._id">{{ t.title }}</ion-select-option>
+                  }
+                </ion-select>
+              </div>
+            }
+
+            <div class="opt-field">
+              <label>Departamento / Módulo: *</label>
               <ion-select
                 interface="popover"
                 [value]="uploadModule()"
                 (ionChange)="uploadModule.set($any($event).detail.value)"
-                class="mini-select"
+                class="field-select"
               >
                 @for (m of accessibleModules(); track m.value) {
                   <ion-select-option [value]="m.value">{{ m.label }}</ion-select-option>
@@ -161,7 +155,23 @@
               </ion-select>
             </div>
 
-            <div class="opt-btn-col">
+            <div class="opt-field">
+              <label>Tipo do Documento:</label>
+              <ion-select
+                interface="popover"
+                [value]="uploadDocType()"
+                (ionChange)="uploadDocType.set($any($event).detail.value)"
+                class="field-select"
+              >
+                @for (dt of documentTypesList; track dt.value) {
+                  @if (dt.value) {
+                    <ion-select-option [value]="dt.value">{{ dt.label }}</ion-select-option>
+                  }
+                }
+              </ion-select>
+            </div>
+
+            <div class="opt-btn-container">
               <ion-button
                 color="success"
                 expand="block"
@@ -176,128 +186,293 @@
           </div>
         }
       </div>
-    </div>
+    }
 
-    <!-- Tabela / Lista de Documentos da Esteira -->
-    <div class="documents-section">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <h2>Documentos na Competência ({{ filteredDocuments().length }})</h2>
-          <span>Controle de validação, pendências e fechamento</span>
+    <!-- Barra de Filtros Superior no Estilo Gestta (Print do Cliente) -->
+    <div class="gestta-filter-container">
+      <div class="gestta-filter-bar">
+        <!-- 1. Filtro de Empresa com botão 'x' de limpar -->
+        <div class="filter-item company-filter-item">
+          <ion-select
+            interface="popover"
+            [value]="selectedCompanyId()"
+            (ionChange)="onCompanyFilterChange($any($event).detail.value)"
+            class="gestta-select"
+            placeholder="Empresa / Cliente"
+          >
+            <ion-select-option value="">Todas as Empresas</ion-select-option>
+            @for (c of companies(); track c._id) {
+              <ion-select-option [value]="c._id">
+                {{ c.tradeName || c.corporateName }}
+              </ion-select-option>
+            }
+          </ion-select>
+          @if (selectedCompanyId()) {
+            <button type="button" class="btn-clear-filter" (click)="clearCompanyFilter()" title="Limpar filtro de empresa">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          }
         </div>
 
-        <div class="search-wrap">
-          <ion-searchbar
-            placeholder="Buscar por nome do arquivo ou usuário..."
-            [debounce]="250"
-            (ionInput)="searchTerm.set($any($event).detail.value || '')"
-            class="table-search"
-          ></ion-searchbar>
+        <!-- 2. Filtro de Tarefa -->
+        <div class="filter-item task-filter-item">
+          <ion-select
+            interface="popover"
+            [value]="selectedTaskId()"
+            (ionChange)="selectedTaskId.set($any($event).detail.value); onFilterChange()"
+            class="gestta-select"
+            placeholder="Tarefa"
+          >
+            <ion-select-option value="">Todas as Tarefas</ion-select-option>
+            @for (t of availableTasks(); track t._id) {
+              <ion-select-option [value]="t._id">{{ t.title }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <!-- 3. Filtro de Competência / Período -->
+        <div class="filter-item competence-filter-item">
+          <div class="competence-picker-wrap">
+            <ion-icon name="calendar-outline" class="calendar-icon"></ion-icon>
+            <ion-select
+              interface="popover"
+              [value]="selectedCompetence()"
+              (ionChange)="selectedCompetence.set($any($event).detail.value); onFilterChange()"
+              class="gestta-select comp-select"
+            >
+              @for (comp of competencesList; track comp) {
+                <ion-select-option [value]="comp">{{ comp }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
+          <label class="checkbox-competence-label">
+            <input
+              type="checkbox"
+              [checked]="useCompetenceFilter()"
+              (change)="useCompetenceFilter.set(!useCompetenceFilter()); onFilterChange()"
+            />
+            <span>Competência</span>
+          </label>
+        </div>
+
+        <!-- 4. Filtro de Tipo de Documento -->
+        <div class="filter-item type-filter-item">
+          <ion-select
+            interface="popover"
+            [value]="selectedDocType()"
+            (ionChange)="selectedDocType.set($any($event).detail.value); onFilterChange()"
+            class="gestta-select"
+            placeholder="Tipo de documento"
+          >
+            @for (dt of documentTypesList; track dt.value) {
+              <ion-select-option [value]="dt.value">{{ dt.label }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <!-- 5. Filtro de Departamento -->
+        <div class="filter-item dept-filter-item">
+          <ion-select
+            interface="popover"
+            [value]="selectedDepartment()"
+            (ionChange)="selectedDepartment.set($any($event).detail.value); onFilterChange()"
+            class="gestta-select"
+            placeholder="Departamento"
+          >
+            @for (dept of departmentsList; track dept.value) {
+              <ion-select-option [value]="dept.value">{{ dept.label }}</ion-select-option>
+            }
+          </ion-select>
         </div>
       </div>
 
+      <!-- Barra de Ações em Lote (Selecionar Todos / Baixar Selecionados) -->
+      <div class="batch-action-bar">
+        <div class="search-field-compact">
+          <ion-searchbar
+            placeholder="Pesquisar por tarefa, documento, arquivo ou cliente..."
+            [debounce]="250"
+            (ionInput)="searchTerm.set($any($event).detail.value || '')"
+            class="gestta-searchbar"
+          ></ion-searchbar>
+        </div>
+
+        <div class="batch-buttons">
+          <button
+            type="button"
+            class="btn-batch btn-select-all"
+            (click)="toggleSelectAll()"
+          >
+            <input
+              type="checkbox"
+              [checked]="isAllSelected()"
+              readonly
+            />
+            <span>Selecionar Todos</span>
+          </button>
+
+          <button
+            type="button"
+            class="btn-batch btn-download-selected"
+            (click)="downloadSelected()"
+            [disabled]="selectedCount() === 0"
+          >
+            <ion-icon name="download-outline"></ion-icon>
+            <span>Baixar Selecionados ({{ selectedCount() }})</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela Principal Fiel ao Print do Gestta -->
+    <div class="documents-table-section">
       @if (isLoading()) {
         <div class="loading-state">
           <ion-spinner name="crescent" color="primary"></ion-spinner>
-          <span>Carregando esteira de documentos...</span>
+          <span>Carregando documentos da esteira...</span>
         </div>
       } @else {
         @if (filteredDocuments().length === 0) {
           <div class="empty-state">
             <ion-icon name="folder-open-outline" class="empty-icon"></ion-icon>
-            <h3>Nenhum documento encontrado</h3>
-            <p>Utilize a área de upload acima para enviar o primeiro arquivo desta competência.</p>
+            <h3>Nenhum documento encontrado com os filtros selecionados</h3>
+            <p>Selecione outra competência, empresa ou utilize o botão "+ Enviar Documento" acima.</p>
           </div>
         } @else {
-          <div class="documents-table-card">
-            <table class="custom-table">
+          <div class="gestta-table-wrap">
+            <table class="gestta-table">
               <thead>
                 <tr>
-                  <th>ARQUIVO</th>
-                  <th>MÓDULO</th>
-                  <th>TIPO</th>
-                  <th>ENVIADO POR</th>
-                  <th>ESTÁGIO DO PROCESSO</th>
-                  <th class="actions-col">AÇÕES DA ESTEIRA</th>
+                  <th class="col-checkbox">
+                    <input
+                      type="checkbox"
+                      [checked]="isAllSelected()"
+                      (change)="toggleSelectAll()"
+                    />
+                  </th>
+                  <th class="col-task">Tarefa</th>
+                  <th class="col-doc">Documento</th>
+                  <th class="col-comp">Competência</th>
+                  <th class="col-meta">Meta</th>
+                  <th class="col-upload">Upload</th>
+                  <th class="col-attached">Atrelado a(ao)</th>
+                  <th class="col-file">Arquivo</th>
+                  <th class="col-actions">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 @for (doc of filteredDocuments(); track doc._id) {
-                  <tr [class.is-impediment]="doc.stage === 'IMPEDIMENTO'">
-                    <td class="file-cell">
-                      <div class="file-info-wrap">
-                        <ion-icon name="document-text-outline" class="file-icon"></ion-icon>
-                        <div class="file-names">
-                          <a [href]="getFileUrl(doc.fileUrl)" target="_blank" class="filename-link" title="Abrir arquivo">
-                            {{ doc.originalFilename }}
-                          </a>
-                          @if (!selectedCompanyId() && doc.companyName) {
-                            <span class="company-badge-inline">🏢 {{ doc.companyName }}</span>
-                          }
-                          <span class="file-size">{{ formatSize(doc.fileSizeBytes) }} • {{ doc.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-                          @if (doc.impedimentReason) {
-                            <div class="impediment-reason-alert">
-                              <ion-icon name="warning-outline"></ion-icon>
-                              <span>Motivo: {{ doc.impedimentReason }}</span>
-                            </div>
-                          }
+                  <tr [class.selected-row]="isDocSelected(doc._id)" [class.is-impediment]="doc.stage === 'IMPEDIMENTO'">
+                    <!-- Checkbox de Seleção -->
+                    <td class="col-checkbox">
+                      <input
+                        type="checkbox"
+                        [checked]="isDocSelected(doc._id)"
+                        (change)="toggleSelectDoc(doc._id)"
+                      />
+                    </td>
+
+                    <!-- Tarefa (Link em Azul) -->
+                    <td class="col-task">
+                      @if (doc.taskTitle) {
+                        <span class="task-link-title" title="Tarefa vinculada">
+                          {{ doc.taskTitle }}
+                        </span>
+                      } @else {
+                        <span class="task-avulso-label">Envio Avulso</span>
+                      }
+                      @if (!selectedCompanyId() && doc.companyName) {
+                        <span class="company-subname">{{ doc.companyName }}</span>
+                      }
+                    </td>
+
+                    <!-- Documento (Título em Destaque) -->
+                    <td class="col-doc">
+                      <strong class="document-requirement-title">
+                        {{ doc.documentType }}
+                      </strong>
+                      @if (doc.impedimentReason) {
+                        <div class="impediment-alert-box">
+                          <ion-icon name="warning-outline"></ion-icon>
+                          <span>{{ doc.impedimentReason }}</span>
                         </div>
-                      </div>
+                      }
                     </td>
 
-                    <td>
-                      <span class="module-chip">{{ doc.module }}</span>
+                    <!-- Competência -->
+                    <td class="col-comp">
+                      <span class="competence-text">{{ doc.competence }}</span>
                     </td>
 
-                    <td>
-                      <span class="type-text">{{ doc.documentType }}</span>
+                    <!-- Meta -->
+                    <td class="col-meta">
+                      @if (doc.dueMetaDate) {
+                        <span class="meta-date">{{ doc.dueMetaDate | date: 'dd/MM/yyyy' }}</span>
+                      } @else {
+                        <span class="empty-meta">-</span>
+                      }
                     </td>
 
-                    <td class="author-cell">
-                      <strong>{{ doc.uploadedBy.userName }}</strong>
-                      <span class="author-role">{{ doc.uploadedBy.userRole }}</span>
+                    <!-- Upload -->
+                    <td class="col-upload">
+                      <span class="upload-date">{{ doc.createdAt | date: 'dd/MM/yyyy' }}</span>
                     </td>
 
-                    <td>
-                      <ion-badge [color]="getStageBadge(doc.stage).color" class="stage-badge">
-                        {{ getStageBadge(doc.stage).label }}
-                      </ion-badge>
+                    <!-- Atrelado a(ao) -->
+                    <td class="col-attached">
+                      <span class="attached-badge" [class.badge-tarefa]="doc.attachedTo === 'Tarefa' || doc.taskTitle">
+                        {{ doc.attachedTo || (doc.taskTitle ? 'Tarefa' : 'Avulso') }}
+                      </span>
                     </td>
 
-                    <td class="actions-col">
-                      <div class="actions-button-group">
-                        <!-- Avançar para Em Análise -->
-                        @if (doc.stage === 'ENVIADO') {
-                          <ion-button fill="outline" size="small" color="primary" (click)="changeStage(doc, 'EM_ANALISE')">
-                            Iniciar Análise
-                          </ion-button>
-                        }
+                    <!-- Arquivo (Link para Download/Visualização) -->
+                    <td class="col-file">
+                      <a
+                        [href]="getFileUrl(doc)"
+                        target="_blank"
+                        class="file-download-link"
+                        title="Baixar ou visualizar arquivo"
+                      >
+                        {{ doc.originalFilename }}
+                      </a>
+                    </td>
 
-                        <!-- Aprovar -->
-                        @if (doc.stage === 'EM_ANALISE' || doc.stage === 'ENVIADO') {
-                          <ion-button fill="solid" size="small" color="success" (click)="changeStage(doc, 'APROVADO')">
-                            Aprovar
-                          </ion-button>
-
-                          <ion-button fill="outline" size="small" color="danger" (click)="changeStage(doc, 'IMPEDIMENTO')">
-                            Impedimento
-                          </ion-button>
-                        }
-
-                        <!-- Processado -->
-                        @if (doc.stage === 'APROVADO') {
-                          <ion-button fill="solid" size="small" color="tertiary" (click)="changeStage(doc, 'PROCESSADO')">
-                            Processar Lançamento
-                          </ion-button>
-                        }
-
-                        <a [href]="getFileUrl(doc.fileUrl)" target="_blank" class="icon-action-btn" title="Visualizar/Download">
+                    <!-- Ações -->
+                    <td class="col-actions">
+                      <div class="action-buttons-inline">
+                        <a
+                          [href]="getFileUrl(doc)"
+                          target="_blank"
+                          class="action-icon-link"
+                          title="Visualizar documento em tela"
+                        >
                           <ion-icon name="eye-outline"></ion-icon>
                         </a>
 
+                        @if (doc.stage === 'ENVIADO' || doc.stage === 'EM_ANALISE') {
+                          <button
+                            type="button"
+                            class="action-icon-btn approve"
+                            (click)="changeStage(doc, 'APROVADO')"
+                            title="Aprovar Documento"
+                          >
+                            <ion-icon name="checkmark-circle-outline"></ion-icon>
+                          </button>
+
+                          <button
+                            type="button"
+                            class="action-icon-btn impediment"
+                            (click)="changeStage(doc, 'IMPEDIMENTO')"
+                            title="Apontar Impedimento"
+                          >
+                            <ion-icon name="warning-outline"></ion-icon>
+                          </button>
+                        }
+
                         <button
                           type="button"
-                          class="icon-action-btn danger"
+                          class="action-icon-btn delete"
                           (click)="deleteDoc(doc)"
                           [disabled]="doc.isCompetenceClosed"
                           title="Excluir Arquivo"
@@ -333,7 +508,7 @@
       <ion-content class="modal-content">
         <div class="impediment-form">
           <p class="modal-hint">
-            Informe ao cliente detalhadamente por que este documento foi rejeitado ou demanda retificação (ex: extrato incompleto, falta de assinatura, nota divergente).
+            Informe detalhadamente por que este documento foi rejeitado (ex: período incompleto, falta de assinatura, divergência de valor).
           </p>
 
           <div class="form-group">

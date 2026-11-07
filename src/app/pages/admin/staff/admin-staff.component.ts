@@ -6,10 +6,6 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
   IonButton,
   IonIcon,
   IonBadge,
@@ -21,7 +17,6 @@ import {
   IonModal,
   IonButtons,
   IonSearchbar,
-  IonAvatar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -36,10 +31,18 @@ import {
   createOutline,
   keyOutline,
   callOutline,
+  businessOutline,
+  globeOutline,
+  layersOutline,
+  checkmarkOutline,
+  eyeOutline,
+  eyeOffOutline,
 } from 'ionicons/icons';
 import { StaffService } from '../../../services/staff/staff.service';
-import { User, UserRole } from '../../../models/user.model';
-
+import { CompanyService } from '../../../services/company/company.service';
+import { User, UserRole, SystemModule } from '../../../models/user.model';
+import { formatPhone, handlePhoneInput } from '../../../utils/phone-mask.util';
+import { PhoneMaskDirective } from '../../../directives/phone-mask.directive';
 
 @Component({
   selector: 'app-admin-staff',
@@ -50,14 +53,11 @@ import { User, UserRole } from '../../../models/user.model';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    PhoneMaskDirective,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
     IonButton,
     IonIcon,
     IonBadge,
@@ -69,14 +69,15 @@ import { User, UserRole } from '../../../models/user.model';
     IonModal,
     IonButtons,
     IonSearchbar,
-    IonAvatar,
   ],
 })
 export class AdminStaffComponent implements OnInit {
   private staffService = inject(StaffService);
+  private companyService = inject(CompanyService);
   private fb = inject(FormBuilder);
 
   staffMembers = this.staffService.staffMembers;
+  companies = this.companyService.companies;
   isLoading = this.staffService.isLoading;
 
   searchTerm = signal<string>('');
@@ -84,6 +85,7 @@ export class AdminStaffComponent implements OnInit {
   isModalOpen = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   currentStaffId = signal<string | null>(null);
+  showPassword = signal<boolean>(false);
 
   staffForm: FormGroup;
 
@@ -92,6 +94,15 @@ export class AdminStaffComponent implements OnInit {
     { value: UserRole.ACCOUNTANT, label: 'Contador Responsável' },
     { value: UserRole.FISCAL_ANALYST, label: 'Analista Fiscal' },
     { value: UserRole.PAYROLL_ANALYST, label: 'Analista DP / RH' },
+  ];
+
+  modulesList = [
+    { value: SystemModule.FISCAL, label: 'Módulo Fiscal', desc: 'Notas fiscais, apuração de tributos (DAS/DARF) e SPED' },
+    { value: SystemModule.ACCOUNTING, label: 'Módulo Contábil', desc: 'Extratos OFX, conciliação bancária, razão e balancetes' },
+    { value: SystemModule.PAYROLL, label: 'Módulo DP / Folha', desc: 'Folha de pagamento, pró-labore, encargos e eSocial' },
+    { value: 'RH', label: 'Módulo RH', desc: 'Colaboradores, admissões, férias, rescisões e ASO' },
+    { value: SystemModule.COMPANIES, label: 'Empresas & Clientes', desc: 'Visualização e gestão cadastral das empresas clientes' },
+    { value: SystemModule.TIMELINE_TASKS, label: 'Linha do Tempo & Tarefas', desc: 'Calendário de fechamento e obrigações da carteira' },
   ];
 
   filteredStaff = computed(() => {
@@ -128,6 +139,12 @@ export class AdminStaffComponent implements OnInit {
       createOutline,
       keyOutline,
       callOutline,
+      businessOutline,
+      globeOutline,
+      layersOutline,
+      checkmarkOutline,
+      eyeOutline,
+      eyeOffOutline,
     });
 
     this.staffForm = this.fb.group({
@@ -136,22 +153,68 @@ export class AdminStaffComponent implements OnInit {
       password: ['', [Validators.minLength(6)]],
       role: [UserRole.ACCOUNTANT, [Validators.required]],
       phone: [''],
+      scopeType: ['ALL'], // 'ALL' = Carteira Geral, 'CUSTOM' = Empresas Específicas
+      assignedCompanies: [[]],
+      selectedModules: [this.getDefaultModulesForRole(UserRole.ACCOUNTANT)],
+    });
+
+    // Atualiza automaticamente os módulos sugeridos ao mudar o cargo no modo de cadastro
+    this.staffForm.get('role')?.valueChanges.subscribe((newRole) => {
+      if (!this.isEditing() && newRole) {
+        this.staffForm.get('selectedModules')?.setValue(this.getDefaultModulesForRole(newRole));
+      }
     });
   }
 
   ngOnInit(): void {
     this.loadStaff();
+    this.companyService.loadCompanies().subscribe();
   }
 
   loadStaff(): void {
     this.staffService.loadStaffMembers().subscribe();
   }
 
+  getDefaultModulesForRole(role: UserRole): string[] {
+    switch (role) {
+      case UserRole.SUPER_ADMIN:
+      case UserRole.ACCOUNTANT:
+        return [
+          SystemModule.FISCAL,
+          SystemModule.ACCOUNTING,
+          SystemModule.PAYROLL,
+          'RH',
+          SystemModule.COMPANIES,
+          SystemModule.TIMELINE_TASKS,
+        ];
+      case UserRole.FISCAL_ANALYST:
+        return [
+          SystemModule.FISCAL,
+          SystemModule.ACCOUNTING,
+          SystemModule.COMPANIES,
+          SystemModule.TIMELINE_TASKS,
+        ];
+      case UserRole.PAYROLL_ANALYST:
+        return [
+          SystemModule.PAYROLL,
+          'RH',
+          SystemModule.COMPANIES,
+          SystemModule.TIMELINE_TASKS,
+        ];
+      default:
+        return [SystemModule.TIMELINE_TASKS];
+    }
+  }
+
   openCreateModal(): void {
     this.isEditing.set(false);
     this.currentStaffId.set(null);
+    this.showPassword.set(false);
     this.staffForm.reset({
       role: UserRole.ACCOUNTANT,
+      scopeType: 'ALL',
+      assignedCompanies: [],
+      selectedModules: this.getDefaultModulesForRole(UserRole.ACCOUNTANT),
     });
     this.staffForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
     this.staffForm.get('password')?.updateValueAndValidity();
@@ -161,20 +224,71 @@ export class AdminStaffComponent implements OnInit {
   openEditModal(member: User): void {
     this.isEditing.set(true);
     this.currentStaffId.set(member._id || null);
+    this.showPassword.set(false);
+
+    const isCustomScope = Array.isArray(member.assignedCompanies) && member.assignedCompanies.length > 0;
+    const assignedIds = (member.assignedCompanies || []).map((c: any) =>
+      typeof c === 'object' && c._id ? c._id : String(c)
+    );
+    const memberMods =
+      member.allowedModules && member.allowedModules.length > 0
+        ? member.allowedModules
+        : this.getDefaultModulesForRole(member.role);
+
     this.staffForm.patchValue({
       name: member.name,
       email: member.email,
+      password: '',
       role: member.role,
-      phone: member.phone || '',
+      phone: formatPhone(member.phone || ''),
+      scopeType: isCustomScope ? 'CUSTOM' : 'ALL',
+      assignedCompanies: assignedIds,
+      selectedModules: memberMods,
     });
+
     // Senha opcional na edição
     this.staffForm.get('password')?.clearValidators();
     this.staffForm.get('password')?.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
+  toggleShowPassword(): void {
+    this.showPassword.update((val) => !val);
+  }
+
+  onPhoneInput(event: any): void {
+    handlePhoneInput(event, this.staffForm.get('phone'));
+  }
+
+  onScopeChange(type: 'ALL' | 'CUSTOM'): void {
+    this.staffForm.get('scopeType')?.setValue(type);
+    if (type === 'ALL') {
+      this.staffForm.get('assignedCompanies')?.setValue([]);
+    }
+  }
+
+  onAssignedCompaniesChange(event: any): void {
+    const val = event.detail.value;
+    const arrayVal = Array.isArray(val) ? val : (val ? [val] : []);
+    this.staffForm.get('assignedCompanies')?.setValue(arrayVal);
+  }
+
   closeModal(): void {
     this.isModalOpen.set(false);
+  }
+
+  toggleModule(modValue: any): void {
+    const current = (this.staffForm.get('selectedModules')?.value as string[]) || [];
+    if (current.includes(modValue)) {
+      this.staffForm.get('selectedModules')?.setValue(current.filter((m) => m !== modValue));
+    } else {
+      this.staffForm.get('selectedModules')?.setValue([...current, modValue]);
+    }
+  }
+
+  isModuleSelected(modValue: any): boolean {
+    const current = (this.staffForm.get('selectedModules')?.value as string[]) || [];
+    return current.includes(modValue);
   }
 
   saveStaff(): void {
@@ -184,6 +298,15 @@ export class AdminStaffComponent implements OnInit {
     }
 
     const formVal = this.staffForm.getRawValue();
+    const allowedModules = formVal.selectedModules || [];
+    let assignedCompanies: string[] = [];
+    if (formVal.scopeType === 'CUSTOM') {
+      if (Array.isArray(formVal.assignedCompanies)) {
+        assignedCompanies = formVal.assignedCompanies;
+      } else if (formVal.assignedCompanies) {
+        assignedCompanies = [formVal.assignedCompanies];
+      }
+    }
 
     if (this.isEditing() && this.currentStaffId()) {
       const updatePayload: any = {
@@ -191,18 +314,42 @@ export class AdminStaffComponent implements OnInit {
         email: formVal.email,
         role: formVal.role,
         phone: formVal.phone,
+        allowedModules,
+        assignedCompanies,
       };
-      if (formVal.password) {
-        updatePayload.password = formVal.password;
+      if (formVal.password && formVal.password.trim().length >= 6) {
+        updatePayload.password = formVal.password.trim();
       }
 
       this.staffService.updateStaffMember(this.currentStaffId()!, updatePayload).subscribe({
-        next: () => this.closeModal(),
+        next: (res) => {
+          this.closeModal();
+          this.loadStaff();
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar membro da equipe:', err);
+        },
       });
     } else {
-      this.staffService.createStaffMember(formVal).subscribe({
-        next: () => this.closeModal(),
-      });
+      this.staffService
+        .createStaffMember({
+          name: formVal.name,
+          email: formVal.email,
+          password: formVal.password,
+          role: formVal.role,
+          phone: formVal.phone,
+          allowedModules,
+          assignedCompanies,
+        })
+        .subscribe({
+          next: (res) => {
+            this.closeModal();
+            this.loadStaff();
+          },
+          error: (err) => {
+            console.error('Erro ao criar membro da equipe:', err);
+          },
+        });
     }
   }
 
@@ -225,5 +372,49 @@ export class AdminStaffComponent implements OnInit {
       default:
         return { label: 'Staff', color: 'medium' };
     }
+  }
+
+  getMemberModules(member: User): string[] {
+    const mods = member.allowedModules && member.allowedModules.length > 0
+      ? member.allowedModules
+      : this.getDefaultModulesForRole(member.role);
+
+    return mods.map((m) => {
+      switch (m) {
+        case SystemModule.FISCAL:
+          return 'Fiscal';
+        case SystemModule.ACCOUNTING:
+          return 'Contábil';
+        case SystemModule.PAYROLL:
+          return 'DP / Folha';
+        case 'RH':
+          return 'RH';
+        case SystemModule.COMPANIES:
+          return 'Empresas';
+        case SystemModule.TIMELINE_TASKS:
+          return 'Linha do Tempo';
+        default:
+          return String(m);
+      }
+    });
+  }
+
+  getMemberScopeLabel(member: User): string {
+    if (!member.assignedCompanies || member.assignedCompanies.length === 0) {
+      return 'Carteira Geral (Todas as Empresas)';
+    }
+    const count = member.assignedCompanies.length;
+    if (count === 1) {
+      const first: any = member.assignedCompanies[0];
+      if (typeof first === 'object' && (first.tradeName || first.corporateName)) {
+        return first.tradeName || first.corporateName;
+      }
+      const found = this.companies().find((c) => c._id === String(first));
+      if (found) {
+        return found.tradeName || found.corporateName;
+      }
+      return '1 empresa atribuída';
+    }
+    return `${count} empresas atribuídas`;
   }
 }

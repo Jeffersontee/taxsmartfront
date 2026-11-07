@@ -97,6 +97,32 @@
                 </span>
               </div>
 
+              <!-- Badges de Módulos e Carteira -->
+              <div class="staff-permissions-preview">
+                <div class="perm-row">
+                  <span class="perm-title">
+                    <ion-icon name="layers-outline"></ion-icon>
+                    Módulos:
+                  </span>
+                  <div class="modules-chip-group">
+                    @for (mod of getMemberModules(member); track mod) {
+                      <span class="mini-module-badge">{{ mod }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="perm-row">
+                  <span class="perm-title">
+                    <ion-icon name="business-outline"></ion-icon>
+                    Carteira:
+                  </span>
+                  <span class="scope-badge" [class.custom]="member.assignedCompanies && member.assignedCompanies.length > 0">
+                    <ion-icon [name]="member.assignedCompanies && member.assignedCompanies.length > 0 ? 'business-outline' : 'globe-outline'"></ion-icon>
+                    {{ getMemberScopeLabel(member) }}
+                  </span>
+                </div>
+              </div>
+
               <div class="card-footer-actions">
                 <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(member)">
                   <ion-icon slot="start" name="create-outline"></ion-icon>
@@ -159,12 +185,23 @@
             <label class="form-label">
               {{ isEditing() ? 'Alterar Senha (opcional)' : 'Senha de Acesso *' }}
             </label>
-            <ion-input
-              type="password"
-              formControlName="password"
-              placeholder="Mínimo de 6 caracteres"
-              class="form-input"
-            ></ion-input>
+            <div class="password-input-wrap">
+              <ion-input
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Mínimo de 6 caracteres"
+                class="form-input password-input"
+              ></ion-input>
+              <button
+                type="button"
+                class="toggle-eye-btn"
+                (click)="toggleShowPassword()"
+                tabindex="-1"
+                [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
+              >
+                <ion-icon [name]="showPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
           </div>
 
           <div class="form-group">
@@ -186,14 +223,106 @@
               formControlName="phone"
               placeholder="(11) 98765-4321"
               class="form-input"
+              appPhoneMask
+              (ionInput)="onPhoneInput($event)"
+              maxlength="15"
             ></ion-input>
+          </div>
+
+          <!-- MÓDULOS AUTORIZADOS -->
+          <div class="form-section">
+            <div class="section-title-wrap">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <div>
+                <h4 class="section-subtitle">Módulos Autorizados</h4>
+                <p class="section-desc">Defina quais áreas operacionais este colaborador pode visualizar e atuar.</p>
+              </div>
+            </div>
+
+            <div class="modules-checkbox-grid">
+              @for (mod of modulesList; track mod.value) {
+                <div
+                  class="module-check-card"
+                  [class.is-checked]="isModuleSelected(mod.value)"
+                  (click)="toggleModule(mod.value)"
+                >
+                  <div class="check-box-indicator">
+                    <ion-icon *ngIf="isModuleSelected(mod.value)" name="checkmark-outline"></ion-icon>
+                  </div>
+                  <div class="check-texts">
+                    <strong>{{ mod.label }}</strong>
+                    <span>{{ mod.desc }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- CARTEIRA DE EMPRESAS -->
+          <div class="form-section">
+            <div class="section-title-wrap">
+              <ion-icon name="business-outline"></ion-icon>
+              <div>
+                <h4 class="section-subtitle">Carteira de Empresas</h4>
+                <p class="section-desc">Defina o escopo de empresas que este colaborador pode visualizar.</p>
+              </div>
+            </div>
+
+            <div class="scope-options-grid">
+              <div
+                class="scope-option-card"
+                [class.is-selected]="staffForm.get('scopeType')?.value === 'ALL'"
+                (click)="onScopeChange('ALL')"
+              >
+                <div class="radio-indicator">
+                  <div class="radio-inner" *ngIf="staffForm.get('scopeType')?.value === 'ALL'"></div>
+                </div>
+                <div class="option-texts">
+                  <strong>Todas as Empresas (Carteira Geral)</strong>
+                  <span>Acesso irrestrito a todas as empresas ativas do escritório.</span>
+                </div>
+              </div>
+
+              <div
+                class="scope-option-card"
+                [class.is-selected]="staffForm.get('scopeType')?.value === 'CUSTOM'"
+                (click)="onScopeChange('CUSTOM')"
+              >
+                <div class="radio-indicator">
+                  <div class="radio-inner" *ngIf="staffForm.get('scopeType')?.value === 'CUSTOM'"></div>
+                </div>
+                <div class="option-texts">
+                  <strong>Empresas Específicas (Atribuídas)</strong>
+                  <span>Acesso restrito apenas aos clientes PJ selecionados abaixo.</span>
+                </div>
+              </div>
+            </div>
+
+            @if (staffForm.get('scopeType')?.value === 'CUSTOM') {
+              <div class="form-group custom-companies-select">
+                <label class="form-label">Selecione as Empresas Atribuídas:</label>
+                <ion-select
+                  formControlName="assignedCompanies"
+                  [multiple]="true"
+                  interface="popover"
+                  placeholder="Selecione as empresas da carteira..."
+                  class="form-select multi-select"
+                >
+                  @for (c of companies(); track c._id) {
+                    <ion-select-option [value]="c._id">
+                      {{ c.tradeName || c.corporateName }} (CNPJ: {{ c.cnpj }})
+                    </ion-select-option>
+                  }
+                </ion-select>
+              </div>
+            }
           </div>
 
           <div class="modal-actions">
             <ion-button fill="outline" color="medium" (click)="closeModal()" class="btn-cancel">
               Cancelar
             </ion-button>
-            <ion-button type="submit" color="primary" [disabled]="staffForm.invalid" class="btn-save">
+            <ion-button type="button" color="primary" (click)="saveStaff()" class="btn-save">
               {{ isEditing() ? 'Salvar Alterações' : 'Cadastrar Membro' }}
             </ion-button>
           </div>

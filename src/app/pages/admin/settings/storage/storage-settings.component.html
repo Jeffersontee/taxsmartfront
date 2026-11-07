@@ -1,0 +1,354 @@
+<ion-header class="ion-no-border storage-page-header">
+  <ion-toolbar class="header-toolbar">
+    <div class="header-content">
+      <div class="title-group">
+        <span class="category-badge">CONFIGURAÇÕES DE PLATAFORMA & INFRAESTRUTURA</span>
+        <h1 class="page-title">Sistemas de Arquivamento & Storage</h1>
+        <p class="page-subtitle">
+          Gerenciamento multi-provedor (Cloudinary, Google Drive, Local e AWS S3) e organização lógica de pastas contábeis.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <ion-button
+          color="primary"
+          class="test-btn"
+          (click)="testCloudinary()"
+          [disabled]="isTesting()"
+        >
+          @if (isTesting()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            <span>Testando Conexão...</span>
+          } @else {
+            <ion-icon slot="start" name="cloud-done-outline"></ion-icon>
+            <span>Testar Cloudinary</span>
+          }
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="storage-main-content">
+  <div class="content-container">
+    
+    <!-- Alerta de Resultado do Teste ao Vivo (se executado) -->
+    @if (testResult(); as res) {
+      <div class="test-feedback-banner" [class.success]="res.ok" [class.error]="!res.ok">
+        <div class="banner-icon-box">
+          <ion-icon [name]="res.ok ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+        </div>
+        <div class="banner-text">
+          <h4 class="banner-title">{{ res.ok ? 'Cloudinary 100% Conectado e Operacional' : 'Aviso de Conexão' }}</h4>
+          <p class="banner-msg">{{ res.message }}</p>
+          @if (res.details) {
+            <div class="banner-metrics">
+              <span class="metric-pill">Conta: <strong>{{ res.details.cloudName }}</strong></span>
+              <span class="metric-pill">Status: <strong>{{ res.details.status }}</strong></span>
+              <span class="metric-pill">Rate Limit Restante: <strong>{{ res.details.rateLimitRemaining }}</strong></span>
+            </div>
+          }
+        </div>
+        <button type="button" class="btn-dismiss-banner" (click)="testResult.set(null)">✕</button>
+      </div>
+    }
+
+    <!-- Grid de Provedores de Armazenamento -->
+    <div class="section-title-row">
+      <h2 class="section-heading">Provedores de Armazenamento Suportados</h2>
+      <span class="active-provider-label">
+        Provedor Padrão Ativo: <ion-badge color="success">CLOUDINARY</ion-badge>
+      </span>
+    </div>
+
+    <div class="providers-grid">
+      <!-- Card 1: Cloudinary (Ativo / Principal) -->
+      <div class="provider-card active-card">
+        <div class="card-top-row">
+          <div class="provider-brand-badge cloudinary-badge">
+            <ion-icon name="cloud-outline"></ion-icon>
+            <span>Cloudinary</span>
+          </div>
+          <span class="status-chip chip-connected">
+            <span class="pulse-dot"></span> Ativo & Conectado
+          </span>
+        </div>
+
+        <h3 class="provider-title">Cloudinary Media & Documents</h3>
+        <p class="provider-desc">
+          Armazenamento em nuvem ultra-rápido com CDN global de alta disponibilidade, criptografia SSL e entrega instantânea de XMLs, OFX, PDFs e Imagens.
+        </p>
+
+        <div class="provider-meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Cloud Name:</span>
+            <span class="meta-val code-val">dzi7nta6k</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Pasta Raiz:</span>
+            <span class="meta-val code-val">taxsmart/</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Tipos Aceitos:</span>
+            <span class="meta-val">XML (NF-e/NFS-e), OFX, PDF, PNG, JPG, ZIP</span>
+          </div>
+        </div>
+
+        <div class="provider-card-footer">
+          <div class="selected-indicator">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Provedor Principal do Sistema</span>
+          </div>
+          <button type="button" class="btn-action-test" (click)="testCloudinary()" [disabled]="isTesting()">
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span>Verificar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2: Google Drive API (Corporativo) -->
+      <div class="provider-card">
+        <div class="card-top-row">
+          <div class="provider-brand-badge gdrive-badge">
+            <ion-icon name="logo-google"></ion-icon>
+            <span>Google Drive API</span>
+          </div>
+          <span class="status-chip chip-standby">Pronto / Alternativo</span>
+        </div>
+
+        <h3 class="provider-title">Google Drive Workspace</h3>
+        <p class="provider-desc">
+          Integração via Service Account / OAuth com o Google Drive corporativo do escritório contábil para sincronização com pastas desktop locais.
+        </p>
+
+        <div class="provider-meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Pasta Raiz:</span>
+            <span class="meta-val code-val">TaxSmart_Workspace_Drive</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Modo Atual:</span>
+            <span class="meta-val">Em Espera (Cloudinary Ativo)</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Vantagens:</span>
+            <span class="meta-val">Sincronização com Google Drive Desktop</span>
+          </div>
+        </div>
+
+        <div class="provider-card-footer">
+          <span class="standby-note">Disponível para ativação se desejado</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Storage Local no Servidor -->
+      <div class="provider-card">
+        <div class="card-top-row">
+          <div class="provider-brand-badge local-badge">
+            <ion-icon name="server-outline"></ion-icon>
+            <span>Local Storage</span>
+          </div>
+          <span class="status-chip chip-fallback">Fallback Automático</span>
+        </div>
+
+        <h3 class="provider-title">Storage Estruturado no Servidor</h3>
+        <p class="provider-desc">
+          Armazenamento particionado em disco no servidor (/uploads) utilizado como contingência automática transparente caso a conexão externa oscile.
+        </p>
+
+        <div class="provider-meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Caminho:</span>
+            <span class="meta-val code-val">/uploads/id_empresa/competencia</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Disponibilidade:</span>
+            <span class="meta-val">100% Offline e Local</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Função:</span>
+            <span class="meta-val">Garantia de Zero Perda de Documentos</span>
+          </div>
+        </div>
+
+        <div class="provider-card-footer">
+          <span class="standby-note">Sempre ativo em segundo plano</span>
+        </div>
+      </div>
+
+      <!-- Card 4: AWS S3 Glacier (Guarda Fiscal) -->
+      <div class="provider-card s3-card">
+        <div class="card-top-row">
+          <div class="provider-brand-badge s3-badge">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <span>AWS S3 Glacier</span>
+          </div>
+          <span class="status-chip chip-planned">Planejado (5 Anos)</span>
+        </div>
+
+        <h3 class="provider-title">Guarda Fiscal de Longo Prazo</h3>
+        <p class="provider-desc">
+          Armazenamento imutável e econômico (Glacier Deep Archive) para cumprir o prazo legal de 5 anos de guarda de notas fiscais exigido pela Receita Federal.
+        </p>
+
+        <div class="provider-meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Prazo Legal:</span>
+            <span class="meta-val">5 Anos (Art. 173 do CTN)</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Segurança:</span>
+            <span class="meta-val">Bucket Imutável (WORM / Object Lock)</span>
+          </div>
+        </div>
+
+        <div class="provider-card-footer">
+          <span class="standby-note">Módulo de arquivamento legal</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Organização Lógica de Pastas no Cloudinary -->
+    <section class="hierarchy-section">
+      <div class="section-header">
+        <div class="header-icon-wrap">
+          <ion-icon name="folder-open-outline"></ion-icon>
+        </div>
+        <div>
+          <h2 class="section-heading">Estrutura e Organização Lógica de Pastas no Cloudinary</h2>
+          <p class="section-subtext">
+            O TaxSmart organiza os arquivos contábeis automaticamente em diretórios inteligentes para permitir busca instantânea, isolamento estrito entre empresas e conformidade com auditorias fiscais.
+          </p>
+        </div>
+      </div>
+
+      <div class="hierarchy-layout">
+        <div class="tree-container">
+          <div class="tree-header">
+            <span class="tree-dot red"></span>
+            <span class="tree-dot yellow"></span>
+            <span class="tree-dot green"></span>
+            <span class="tree-title">taxsmart-storage-cloud-structure</span>
+          </div>
+
+          <div class="tree-body">
+            <div class="tree-line root-line">
+              <ion-icon name="cloud-outline"></ion-icon>
+              <strong>taxsmart/</strong> <span class="tree-comment"># Raiz global da plataforma</span>
+            </div>
+            
+            <div class="tree-line lvl-1">
+              <span class="branch-connector">├──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>techinova_software/</strong> <span class="tree-comment"># Nome/CNPJ da Empresa</span>
+            </div>
+
+            <div class="tree-line lvl-2">
+              <span class="branch-connector">│   ├──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>2026_10/</strong> <span class="tree-comment"># Competência cronológica (Ano_Mês)</span>
+            </div>
+
+            <div class="tree-line lvl-3">
+              <span class="branch-connector">│   │   ├──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>FISCAL/</strong>
+            </div>
+            <div class="tree-line lvl-4">
+              <span class="branch-connector">│   │   │   ├──</span>
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>NFE_XML/NFE_Entrada_Servidor_Cloud_1024.xml</span>
+            </div>
+            <div class="tree-line lvl-4">
+              <span class="branch-connector">│   │   │   └──</span>
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>GUIA_DAS/Guia_DAS_Simples_Nacional_10_2026.pdf</span>
+            </div>
+
+            <div class="tree-line lvl-3">
+              <span class="branch-connector">│   │   ├──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>CONTABIL/</strong>
+            </div>
+            <div class="tree-line lvl-4">
+              <span class="branch-connector">│   │   │   └──</span>
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>EXTRATO_BANCARIO/Extrato_Bancario_Itau_102026.ofx</span>
+            </div>
+
+            <div class="tree-line lvl-3">
+              <span class="branch-connector">│   │   ├──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>DP/</strong>
+            </div>
+            <div class="tree-line lvl-4">
+              <span class="branch-connector">│   │   │   └──</span>
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>HOLERITE/Holerite_Adiantamento_102026.pdf</span>
+            </div>
+
+            <div class="tree-line lvl-3">
+              <span class="branch-connector">│   │   └──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>LEGALIZACAO/</strong>
+            </div>
+            <div class="tree-line lvl-4">
+              <span class="branch-connector">│   │       └──</span>
+              <ion-icon name="document-text-outline"></ion-icon>
+              <span>CONTRATO_SOCIAL/Contrato_Social_Consolidado.pdf</span>
+            </div>
+
+            <div class="tree-line lvl-1">
+              <span class="branch-connector">└──</span>
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <strong>vanguarda_express/</strong> <span class="tree-comment"># Próxima empresa da carteira...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hierarchy-highlights">
+          <div class="highlight-item">
+            <div class="item-icon-circle">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+            </div>
+            <div class="item-text">
+              <h4>Isolamento Total por Empresa</h4>
+              <p>Cada empresa possui seu próprio subdiretório raiz isolado, impedindo vazamentos ou acessos cruzados.</p>
+            </div>
+          </div>
+
+          <div class="highlight-item">
+            <div class="item-icon-circle">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="item-text">
+              <h4>Ordenação Cronológica (Ano_Mês)</h4>
+              <p>O formato <code>YYYY_MM</code> garante ordenação natural e facilita fechamentos fiscais anuais.</p>
+            </div>
+          </div>
+
+          <div class="highlight-item">
+            <div class="item-icon-circle">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="item-text">
+              <h4>Integridade com Hash SHA-256</h4>
+              <p>Cada arquivo recebe hash criptográfico para comprovação de autenticidade perante a Receita Federal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</ion-content>
+
+<!-- Toast de Notificação -->
+<ion-toast
+  [isOpen]="showToast()"
+  [message]="toastMessage()"
+  [duration]="3500"
+  [color]="toastColor()"
+  (didDismiss)="showToast.set(false)"
+></ion-toast>
+

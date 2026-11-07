@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -39,10 +39,13 @@ import {
   qrCodeOutline,
   folderOpenOutline,
   eyeOutline,
+  shieldCheckmarkOutline,
+  sparklesOutline,
 } from 'ionicons/icons';
 import { FiscalService } from '../../../services/fiscal/fiscal.service';
 import { CompanyService } from '../../../services/company/company.service';
 import { DocumentService, IDocumentItem } from '../../../services/document/document.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { environment } from '../../../../environments/environment';
 import { Strings } from '../../../enum/strings';
 import { IInvoice, ITaxSimulation, ITaxGuide, TaxGuideStatus } from '../../../models/fiscal.model';
@@ -84,6 +87,7 @@ export class AdminFiscalComponent implements OnInit {
   fiscalService = inject(FiscalService);
   companyService = inject(CompanyService);
   documentService = inject(DocumentService);
+  authService = inject(AuthService);
   private readonly baseUrl = environment.apiBaseUrl || Strings.API_BASE_URL;
 
   activeTab = signal<'invoices' | 'documents' | 'calculation' | 'guides'>('invoices');
@@ -92,6 +96,10 @@ export class AdminFiscalComponent implements OnInit {
   fiscalDocuments = signal<IDocumentItem[]>([]);
   toastMessage = signal<string>('');
   showToast = signal<boolean>(false);
+
+  // Controle de Permissões
+  isCompanyUser = computed(() => this.authService.isCompany());
+  canEmitGuide = computed(() => this.authService.isSuperAdmin() || this.authService.isAccountant());
 
   constructor() {
     addIcons({
@@ -111,13 +119,29 @@ export class AdminFiscalComponent implements OnInit {
       qrCodeOutline,
       folderOpenOutline,
       eyeOutline,
+      shieldCheckmarkOutline,
+      sparklesOutline,
     });
   }
 
   ngOnInit(): void {
+    // Se o usuário logado for de empresa, seleciona de imediato a empresa vinculada
+    const user = this.authService.currentUser();
+    const userCompany = user?.companyId;
+    const initialCompanyId = typeof userCompany === 'object' ? (userCompany as any)?._id : userCompany;
+    if (initialCompanyId) {
+      this.selectedCompanyId.set(initialCompanyId);
+      this.fiscalService.selectedCompanyId.set(initialCompanyId);
+    }
+
     this.companyService.loadCompanies().subscribe((res) => {
       if (res.data && res.data.length > 0) {
-        this.selectedCompanyId.set(res.data[0]._id);
+        if (!this.selectedCompanyId()) {
+          this.selectedCompanyId.set(res.data[0]._id);
+          this.fiscalService.selectedCompanyId.set(res.data[0]._id);
+        }
+        this.loadAllData();
+      } else if (this.selectedCompanyId()) {
         this.loadAllData();
       }
     });
@@ -125,7 +149,7 @@ export class AdminFiscalComponent implements OnInit {
 
   onTabChange(tab: any): void {
     this.activeTab.set(tab);
-    if (tab === 'calculation' && !this.fiscalService.simulation()) {
+    if (tab === 'calculation') {
       this.runSimulation();
     }
   }
@@ -169,7 +193,11 @@ export class AdminFiscalComponent implements OnInit {
     const compId = this.selectedCompanyId();
     const comp = this.selectedCompetence();
     if (compId) {
-      this.fiscalService.simulateCalculation(compId, comp).subscribe();
+      this.fiscalService.simulateCalculation(compId, comp).subscribe({
+        error: (err) => {
+          console.error('Erro ao simular apuração fiscal:', err);
+        },
+      });
     }
   }
 

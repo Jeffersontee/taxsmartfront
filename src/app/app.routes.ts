@@ -46,6 +46,19 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tasks',
+        canActivate: [moduleGuard(SystemModule.TIMELINE_TASKS)],
+        loadComponent: () =>
+          import('./pages/admin/timeline/timeline.component').then(
+            (m) => m.TimelineComponent
+          ),
+      },
+      {
+        path: 'tarefas',
+        redirectTo: 'tasks',
+        pathMatch: 'full',
+      },
+      {
         path: 'timeline',
         canActivate: [moduleGuard(SystemModule.TIMELINE_TASKS)],
         loadComponent: () =>
@@ -152,6 +165,22 @@ export const routes: Routes = [
             (m) => m.AppearanceComponent
           ),
       },
+      {
+        path: 'storage',
+        canActivate: [superAdminGuard],
+        loadComponent: () =>
+          import('./pages/admin/settings/storage/storage-settings.component').then(
+            (m) => m.StorageSettingsComponent
+          ),
+      },
+      {
+        path: 'settings/storage',
+        canActivate: [superAdminGuard],
+        loadComponent: () =>
+          import('./pages/admin/settings/storage/storage-settings.component').then(
+            (m) => m.StorageSettingsComponent
+          ),
+      },
     ],
   },
 
@@ -179,6 +208,18 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./pages/admin/timeline/timeline.component').then(
+            (m) => m.TimelineComponent
+          ),
+      },
+      {
+        path: 'tarefas',
+        redirectTo: 'tasks',
+        pathMatch: 'full',
+      },
+      {
         path: 'timeline',
         loadComponent: () =>
           import('./pages/admin/timeline/timeline.component').then(
@@ -186,11 +227,49 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'documents',
+        path: 'fiscal',
         loadComponent: () =>
-          import('./pages/client/documents/company-documents.component').then(
-            (m) => m.CompanyDocumentsComponent
+          import('./pages/admin/fiscal/admin-fiscal.component').then(
+            (m) => m.AdminFiscalComponent
           ),
+      },
+      {
+        path: 'contabil',
+        loadComponent: () =>
+          import('./pages/admin/accounting/admin-accounting.component').then(
+            (m) => m.AdminAccountingComponent
+          ),
+      },
+      {
+        path: 'dp',
+        loadComponent: () =>
+          import('./pages/admin/payroll/admin-payroll.component').then(
+            (m) => m.AdminPayrollComponent
+          ),
+      },
+      {
+        path: 'folha',
+        redirectTo: 'dp',
+        pathMatch: 'full',
+      },
+      {
+        path: 'rh',
+        loadComponent: () =>
+          import('./pages/admin/rh/admin-rh.component').then(
+            (m) => m.AdminRhComponent
+          ),
+      },
+      {
+        path: 'documentos',
+        loadComponent: () =>
+          import('./pages/admin/documents/admin-documents.component').then(
+            (m) => m.AdminDocumentsComponent
+          ),
+      },
+      {
+        path: 'documents',
+        redirectTo: 'documentos',
+        pathMatch: 'full',
       },
       {
         path: 'users',

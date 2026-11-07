@@ -128,21 +128,40 @@
 
     ion-segment-button {
       --color: #64748b;
-      --color-checked: #0284c7;
-      --indicator-color: #f0f9ff;
+      --color-checked: #ea580c;
+      --indicator-color: #fff7ed;
       --border-radius: 8px;
-      min-height: 44px;
+      min-height: 48px;
       font-weight: 600;
       font-size: 0.875rem;
 
+      &::part(native) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 12px;
+      }
+
       ion-icon {
-        font-size: 1.15rem;
-        margin-right: 6px;
+        font-size: 1.25rem;
+        margin: 0 !important;
+        flex-shrink: 0;
+      }
+
+      ion-label {
+        margin: 0 !important;
+        white-space: nowrap;
       }
 
       &.segment-button-checked {
         font-weight: 700;
-        border: 1px solid #bae6fd;
+        border: 1px solid rgba(234, 88, 12, 0.3);
+
+        ion-icon {
+          color: #ea580c;
+        }
       }
     }
   }

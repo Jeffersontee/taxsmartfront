@@ -374,8 +374,9 @@
 
     .card-footer-row {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
+      gap: 12px;
 
       .status-indicator {
         display: flex;
@@ -390,6 +391,61 @@
 
         ion-icon {
           font-size: 0.9rem;
+        }
+      }
+
+      .footer-actions-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .btn-gestta-edit {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          background: #f8fafc;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          padding: 5px 12px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+          }
+
+          ion-icon {
+            font-size: 0.95rem;
+          }
+        }
+
+        .btn-gestta-tasks {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          background: #fff7ed;
+          color: #ea580c;
+          border: 1px solid #fed7aa;
+          border-radius: 6px;
+          padding: 5px 12px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            background: #ea580c;
+            color: #ffffff;
+            border-color: #ea580c;
+          }
+
+          ion-icon {
+            font-size: 15px;
+          }
         }
       }
     }

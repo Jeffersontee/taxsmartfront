@@ -261,8 +261,14 @@ export class DocumentVaultComponent implements OnInit {
     this.selectedPreviewDoc.set(null);
   }
 
+  getViewUrl(doc: IDocumentItem): string {
+    if (!doc || !doc._id) return '#';
+    return this.documentService.getFileViewUrl(doc._id);
+  }
+
   onDownload(doc: IDocumentItem): void {
-    window.open(doc.fileUrl, '_blank');
+    if (!doc || !doc._id) return;
+    window.open(this.documentService.getFileDownloadUrl(doc._id), '_blank');
   }
 
   approveDocument(doc: IDocumentItem): void {

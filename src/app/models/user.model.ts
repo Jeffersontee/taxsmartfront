@@ -67,6 +67,7 @@ export interface User {
   company?: UserCompany;
   employeeId?: string;
   allowedModules?: SystemModule[];
+  assignedCompanies?: (string | UserCompany)[];
   phone?: string;
   active?: boolean;
   isActive?: boolean;

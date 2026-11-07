@@ -81,7 +81,7 @@
         [module]="activeModule()"
         [title]="vaultTitle()"
         [subtitle]="vaultSubtitle()"
-        [allowUpload]="true"
+        [allowUpload]="documentService.allowLooseDocumentUpload()"
         [readOnly]="false"
       >
       </app-document-vault>
