@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -82,6 +83,7 @@ export class AdminDocumentsComponent implements OnInit {
   companyService = inject(CompanyService);
   taskService = inject(TaskService);
   authService = inject(AuthService);
+  router = inject(Router);
   private toastCtrl = inject(ToastController);
 
   private readonly baseUrl = environment.apiBaseUrl || Strings.API_BASE_URL;
@@ -239,11 +241,17 @@ export class AdminDocumentsComponent implements OnInit {
     return list;
   });
 
+  isCompanyPortal = computed(() => {
+    return this.authService.isCompany() || this.router.url.includes('/company/');
+  });
+
   canShowUploadButton = computed(() => {
+    // Se for portal da empresa ou usuário com papel de cliente, respeita estritamente a permissão de envio avulso
+    if (this.isCompanyPortal()) {
+      return this.allowLooseDocumentUpload();
+    }
     // Super Admin e Staff contábil sempre têm acesso ao botão de upload na esteira
-    if (!this.authService.isCompany()) return true;
-    // Para Empresa (Cliente): depende do envio avulso estar habilitado para ela
-    return this.allowLooseDocumentUpload();
+    return true;
   });
 
   isAllSelected = computed(() => {

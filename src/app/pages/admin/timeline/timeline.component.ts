@@ -73,6 +73,7 @@ import {
   expandOutline,
   informationCircleOutline,
   createOutline,
+  lockClosedOutline,
 } from 'ionicons/icons';
 import { TaskService } from '../../../services/task/task.service';
 import { CompanyService } from '../../../services/company/company.service';
@@ -142,6 +143,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   // Visualização: 'gestta' (3 Colunas) ou 'feed' (Linha do Tempo)
   viewMode = signal<'gestta' | 'feed'>('gestta');
+
+  // Estado de Fechamento da Competência para a Empresa Selecionada
+  isCompetenceClosed = signal<boolean>(false);
 
   // Estado do Modal de Criação
   isCreateModalOpen = signal<boolean>(false);
@@ -258,6 +262,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       expandOutline,
       informationCircleOutline,
       createOutline,
+      lockClosedOutline,
     });
   }
 
@@ -287,6 +292,82 @@ export class TimelineComponent implements OnInit, OnDestroy {
       },
     });
     this.taskService.loadSummary().subscribe();
+    this.checkCompetenceStatus();
+  }
+
+  checkCompetenceStatus(): void {
+    const compId = this.taskService.selectedCompanyId();
+    const comp = this.taskService.selectedCompetence();
+    if (!compId || !comp) {
+      this.isCompetenceClosed.set(false);
+      return;
+    }
+
+    this.documentService.getCompetenceStatus(compId, comp).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.isCompetenceClosed.set(!!res.data.isClosed);
+        }
+      },
+      error: () => this.isCompetenceClosed.set(false),
+    });
+  }
+
+  async promptCloseCompetence(): Promise<void> {
+    if (!this.isAccountant()) return;
+    const compId = this.taskService.selectedCompanyId();
+    const comp = this.taskService.selectedCompetence();
+
+    if (!compId) {
+      this.showToast('Selecione uma empresa para fechar a competência.');
+      return;
+    }
+
+    this.documentService.getCompetenceStatus(compId, comp).subscribe({
+      next: async (res) => {
+        const status = res.data;
+        if (!status?.canClose) {
+          const alert = await this.alertCtrl.create({
+            header: 'Competência com Pendências',
+            subHeader: `Não é possível fechar a competência ${comp}`,
+            message: `Esta empresa possui ${status?.pendingTasks ?? 0} tarefa(s) pendente(s) e ${status?.impedimentTasks ?? 0} impedimento(s). Conclua ou desconsidere todas as tarefas antes de encerrar a competência contábil.`,
+            buttons: ['Entendido'],
+          });
+          await alert.present();
+          return;
+        }
+
+        const confirmAlert = await this.alertCtrl.create({
+          header: 'Encerrar Competência Contábil',
+          subHeader: `Competência ${comp}`,
+          message: `Tem certeza que deseja fechar a competência ${comp} para esta empresa? Todos os documentos e obrigações fiscais/contábeis se tornarão imutáveis para conciliação contábil.`,
+          buttons: [
+            { text: 'Cancelar', role: 'cancel' },
+            {
+              text: 'Sim, Fechar Competência',
+              cssClass: 'status-btn-success',
+              handler: () => {
+                this.documentService.closeCompetence(compId, comp, 'ALL').subscribe({
+                  next: () => {
+                    this.showToast(`Competência ${comp} fechada com sucesso!`);
+                    this.isCompetenceClosed.set(true);
+                    this.fetchData();
+                  },
+                  error: (err) => {
+                    const msg = err?.error?.error?.message || err?.error?.message || 'Erro ao fechar competência.';
+                    this.showToast(msg);
+                  },
+                });
+              },
+            },
+          ],
+        });
+        await confirmAlert.present();
+      },
+      error: () => {
+        this.showToast('Erro ao validar status da competência.');
+      },
+    });
   }
 
   onCompetenceChange(event: any): void {

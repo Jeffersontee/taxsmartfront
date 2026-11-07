@@ -197,19 +197,36 @@ export class DocumentService {
   }
 
   /**
-   * Encerra e bloqueia a competência formalmente
+   * Obtém o status formal de fechamento e quality gate da competência
    */
-  closeCompetence(companyId: string, competence: string, module: string): Observable<ApiResponse<{ documentsClosed: number }>> {
+  getCompetenceStatus(companyId: string, competence: string): Observable<ApiResponse<{
+    isClosed: boolean;
+    canClose: boolean;
+    totalTasks: number;
+    completedTasks: number;
+    pendingTasks: number;
+    impedimentTasks: number;
+    percentComplete: number;
+  }>> {
+    const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/competence-status`;
+    const params = new HttpParams().set('companyId', companyId).set('competence', competence);
+    return this.http.get<ApiResponse<any>>(url, { params });
+  }
+
+  /**
+   * Encerra e bloqueia a competência formalmente (geral ou por módulo)
+   */
+  closeCompetence(companyId: string, competence: string, module: string = 'ALL'): Observable<ApiResponse<{ documentsClosed: number; tasksClosed?: number }>> {
     this.isLoading.set(true);
     const url = `${this.baseUrl}${Strings.API_DOCUMENTS}/close-competence`;
 
-    return this.http.post<ApiResponse<{ documentsClosed: number }>>(url, { companyId, competence, module }).pipe(
+    return this.http.post<ApiResponse<any>>(url, { companyId, competence, module }).pipe(
       tap((response) => {
         this.isLoading.set(false);
         if (response.success) {
           this.documents.update((list) =>
             list.map((doc) =>
-              doc.companyId === companyId && doc.competence === competence && doc.module === module
+              doc.companyId === companyId && doc.competence === competence && (module === 'ALL' || doc.module === module)
                 ? { ...doc, isCompetenceClosed: true, stage: 'FECHADO' }
                 : doc
             )

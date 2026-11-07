@@ -93,6 +93,20 @@
           <ion-icon name="add-outline"></ion-icon>
           <span>Nova Tarefa</span>
         </button>
+
+        @if (taskService.selectedCompanyId()) {
+          @if (isCompetenceClosed()) {
+            <div class="badge-competence-locked" title="A competência desta empresa foi encerrada pelo contador">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <span>Competência Fechada</span>
+            </div>
+          } @else {
+            <button type="button" class="btn-close-competence" (click)="promptCloseCompetence()" title="Fechar competência contábil após validação de tarefas">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <span>Fechar Competência</span>
+            </button>
+          }
+        }
       }
 
       <!-- Botão para Recolher/Expandir Resumo de KPIs para Ganhar Espaço Vertical -->
