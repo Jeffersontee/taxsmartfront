@@ -550,21 +550,117 @@
 }
 
 @media (max-width: 768px) {
+  .client-dashboard-container {
+    padding: 12px;
+  }
+
   .company-hero-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 14px;
+    padding: 18px 16px;
+
+    .hero-content {
+      .company-title {
+        font-size: 1.35rem;
+        word-break: break-word;
+      }
+    }
+
+    .hero-actions {
+      width: 100%;
+      .refresh-btn {
+        width: 100%;
+      }
+    }
+  }
+
+  .section-card {
+    padding: 16px;
   }
 
   .tasks-list .task-item-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    padding: 14px;
+    gap: 12px;
+
+    .task-main-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+
+      .task-details {
+        width: 100%;
+
+        .task-title {
+          font-size: 0.95rem;
+          line-height: 1.35;
+          word-break: break-word;
+        }
+
+        .task-desc {
+          font-size: 0.8rem;
+          line-height: 1.35;
+        }
+
+        .task-meta-row {
+          flex-wrap: wrap;
+          gap: 8px;
+          font-size: 0.74rem;
+
+          .due-date,
+          .tax-value {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
 
     .task-actions-col {
       width: 100%;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      border-top: 1px solid var(--app-border, #e2e8f0);
+      padding-top: 10px;
+
+      .task-status-badge {
+        align-self: flex-start;
+        font-size: 0.72rem;
+        padding: 4px 10px;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      .quick-pay-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+
+        .pix-btn,
+        .barcode-btn {
+          width: 100%;
+          margin: 0;
+          font-size: 0.72rem;
+          font-weight: 700;
+          --padding-start: 6px;
+          --padding-end: 6px;
+          white-space: nowrap;
+        }
+      }
+
+      .impediment-action {
+        width: 100%;
+
+        ion-button {
+          width: 100%;
+          margin: 0;
+          font-size: 0.75rem;
+        }
+      }
     }
   }
 }

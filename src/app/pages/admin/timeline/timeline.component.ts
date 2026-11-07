@@ -71,6 +71,8 @@ import {
   chevronUpOutline,
   contractOutline,
   expandOutline,
+  informationCircleOutline,
+  createOutline,
 } from 'ionicons/icons';
 import { TaskService } from '../../../services/task/task.service';
 import { CompanyService } from '../../../services/company/company.service';
@@ -254,6 +256,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       chevronUpOutline,
       contractOutline,
       expandOutline,
+      informationCircleOutline,
+      createOutline,
     });
   }
 
