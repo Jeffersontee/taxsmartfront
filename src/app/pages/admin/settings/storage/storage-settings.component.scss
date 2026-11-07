@@ -320,9 +320,11 @@
 
     .meta-row {
       display: flex;
+      align-items: baseline;
       justify-content: space-between;
+      gap: 8px;
       font-size: 0.75rem;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
 
       &:last-child {
         margin-bottom: 0;
@@ -330,17 +332,30 @@
 
       .meta-label {
         color: #64748b;
+        font-weight: 500;
+        flex-shrink: 0;
+        white-space: nowrap;
       }
 
       .meta-val {
         color: #1e293b;
         font-weight: 600;
+        text-align: right;
+        min-width: 0;
+        word-break: break-word;
 
         &.code-val {
-          font-family: monospace;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
           background: #e2e8f0;
-          padding: 1px 6px;
+          padding: 2px 6px;
           border-radius: 4px;
+          font-size: 0.72rem;
+          display: inline-block;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          vertical-align: middle;
         }
       }
     }

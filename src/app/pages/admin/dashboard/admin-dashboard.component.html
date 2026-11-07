@@ -27,7 +27,7 @@
     <ion-row>
       
       <!-- Total de Empresas -->
-      <ion-col size="12" size-sm="6" size-lg="3">
+      <ion-col size="12" size-sm="6" size-xl="3">
         <ion-card class="kpi-card card-companies">
           <ion-card-content>
             <div class="kpi-icon-box icon-purple">
@@ -43,14 +43,14 @@
       </ion-col>
 
       <!-- Obrigações Concluídas -->
-      <ion-col size="12" size-sm="6" size-lg="3">
+      <ion-col size="12" size-sm="6" size-xl="3">
         <ion-card class="kpi-card card-concluded">
           <ion-card-content>
             <div class="kpi-icon-box icon-green">
               <ion-icon name="checkmark-circle-outline"></ion-icon>
             </div>
             <div class="kpi-info">
-              <span class="kpi-label">Concluídas (10/2026)</span>
+              <span class="kpi-label">Concluídas ({{ currentCompetence }})</span>
               <strong class="kpi-value">{{ taskService.summary()?.concluidas || 4 }}</strong>
               <span class="kpi-subtext">Guias e Folhas Emitidas</span>
             </div>
@@ -59,7 +59,7 @@
       </ion-col>
 
       <!-- Obrigações em Aberto -->
-      <ion-col size="12" size-sm="6" size-lg="3">
+      <ion-col size="12" size-sm="6" size-xl="3">
         <ion-card class="kpi-card card-pending">
           <ion-card-content>
             <div class="kpi-icon-box icon-yellow">
@@ -75,7 +75,7 @@
       </ion-col>
 
       <!-- Impedimentos / Bloqueios -->
-      <ion-col size="12" size-sm="6" size-lg="3">
+      <ion-col size="12" size-sm="6" size-xl="3">
         <ion-card class="kpi-card card-impediment">
           <ion-card-content>
             <div class="kpi-icon-box icon-red">
@@ -84,7 +84,7 @@
             <div class="kpi-info">
               <span class="kpi-label">Impedimentos</span>
               <strong class="kpi-value">{{ taskService.summary()?.impedimentos || 1 }}</strong>
-              <span class="kpi-subtext">Falta Documentos PJ</span>
+              <span class="kpi-subtext">Falta Documentos</span>
             </div>
           </ion-card-content>
         </ion-card>

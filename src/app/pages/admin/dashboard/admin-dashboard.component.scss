@@ -114,20 +114,21 @@
     }
 
     ion-card-content {
-      padding: 20px;
+      padding: 16px 18px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      height: 100%;
     }
 
     .kpi-icon-box {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       flex-shrink: 0;
 
       &.icon-purple {
@@ -154,17 +155,22 @@
     .kpi-info {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      flex: 1;
 
       .kpi-label {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 700;
         color: var(--app-text-secondary, #64748b);
         text-transform: uppercase;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
+        line-height: 1.25;
+        white-space: normal;
+        word-break: normal;
       }
 
       .kpi-value {
-        font-size: 1.5rem;
+        font-size: 1.45rem;
         font-weight: 800;
         color: var(--app-text-primary, #0f172a);
         line-height: 1.2;
@@ -172,8 +178,10 @@
       }
 
       .kpi-subtext {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: var(--app-text-muted, #64748b);
+        line-height: 1.25;
+        white-space: normal;
       }
     }
   }
@@ -345,22 +353,30 @@
 
       .task-title-line {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: 8px;
+        gap: 10px;
         margin-bottom: 4px;
 
         .task-title {
           font-size: 0.9375rem;
           font-weight: 700;
           color: var(--app-text-primary, #f8fafc);
+          line-height: 1.35;
+          min-width: 0;
+          flex: 1;
         }
 
         .status-badge {
-          font-size: 0.7rem;
+          font-size: 0.72rem;
           font-weight: 700;
           padding: 3px 8px;
           border-radius: 6px;
+          flex-shrink: 0;
+          white-space: nowrap;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
       }
 
@@ -458,7 +474,8 @@
       .company-footer-meta {
         display: flex;
         align-items: center;
-        gap: 8px;
+        flex-wrap: wrap;
+        gap: 6px;
 
         .regime-badge {
           font-size: 0.6875rem;
@@ -468,11 +485,14 @@
           border: 1px solid rgba(0, 210, 255, 0.25);
           padding: 2px 6px;
           border-radius: 4px;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         .city-tag {
           font-size: 0.7rem;
           color: var(--app-text-muted, #64748b);
+          white-space: nowrap;
         }
       }
     }
